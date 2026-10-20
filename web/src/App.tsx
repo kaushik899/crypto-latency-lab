@@ -1,5 +1,7 @@
 import { Board } from "./components/Board";
-import { Live } from "./components/Live";
+import { LeadLag } from "./components/LeadLag";
+import { PredictSim } from "./components/Live";
+import { RealLive } from "./components/RealLive";
 import { Method } from "./components/Method";
 import { Research } from "./components/Research";
 
@@ -17,14 +19,17 @@ export default function App() {
         </a>
         <nav aria-label="Sections">
           <a href="#live">Live</a>
-          <a href="#board">Markets</a>
-          <a href="#research">Research</a>
+          <a href="#leadlag">Who moves first</a>
+          <a href="#predict">Simulation</a>
+          <a href="#research">Backtest</a>
           <a href="#method">Method</a>
           <a href="https://github.com/kaushik899/crypto-latency-lab">GitHub</a>
         </nav>
       </header>
       <main>
-        <Live />
+        <RealLive />
+        <LeadLag />
+        <PredictSim />
         <Board />
         <Research />
         <Method />

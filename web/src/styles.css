@@ -216,3 +216,23 @@ tr.hot td:nth-child(7) { color: var(--gap); font-weight: 700; }
   .feed-status { flex-basis: calc(100% - 20px); }
   .steps { grid-template-columns: 1fr; }
 }
+
+/* ---------------------------------------------------------------- real-data additions */
+.race-canvas.real { height: clamp(300px, 40vw, 460px); }
+.race-clock.spot { color: var(--spot); }
+.venue-legend { list-style: none; padding: 0; margin: 10px 2px 6px; display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; }
+.venue-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.venue-legend .vn { font-weight: 600; }
+.venue-legend .vs { color: var(--muted); }
+.venue-legend .vs.down { color: var(--neg); }
+.ledger-sub { margin: 8px 0 0; font-size: 1rem; font-stretch: 105%; }
+.ledger dl div dt { font-size: 14.5px; }
+.h-sec { margin: 0; font-size: clamp(1.8rem, 3.4vw, 2.8rem); line-height: 1.05; font-weight: 800; font-stretch: 120%; letter-spacing: -0.02em; max-width: 18ch; }
+.predict .hero-copy b { color: var(--quote); font-weight: 700; }
+.leadlag .table-wrap { margin-bottom: 28px; }
+.leadlag table { min-width: 640px; }
+.leadlag th .sw { vertical-align: middle; margin-right: 6px; width: 12px; }
+.recorded { margin-top: 12px; }
+.recorded h3 { font-size: 1.4rem; font-stretch: 115%; margin: 0 0 6px; }
+.recorded .verdict-line { margin-top: 18px; max-width: 900px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

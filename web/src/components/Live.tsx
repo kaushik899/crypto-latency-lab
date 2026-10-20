@@ -1,32 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ASSETS, fmtCents, fmtPrice, fmtUsd, type AssetKey } from "../lib/assets";
 import { REGIMES } from "../lib/lab";
 import { useLab } from "../lib/useLab";
 import { Race } from "./Race";
 
-function Ticker({ a }: { a: AssetKey }) {
-  const lab = useLab(500);
-  const p = lab.px[a];
-  // direction over the last ~5 seconds, so the arrow reads as a trend rather than flicker
-  const h = lab.hist[a];
-  let ref: number | undefined;
-  if (h?.t.length) {
-    const cutoff = h.t[h.t.length - 1] - 5;
-    let i = h.t.length - 1;
-    while (i > 0 && h.t[i] > cutoff) i--;
-    ref = h.p[i];
-  }
-  const dir = p !== undefined && ref !== undefined ? Math.sign(p - ref) : 0;
-  return (
-    <span className="tick">
-      <span className="tick-sym">{a}</span>
-      <span className="tick-px">{fmtPrice(p)}</span>
-      <span className={`tick-dir ${dir > 0 ? "up" : dir < 0 ? "dn" : ""}`} aria-hidden>{dir > 0 ? "▲" : dir < 0 ? "▼" : ""}</span>
-    </span>
-  );
-}
-
-export function Live() {
+export function PredictSim() {
   const lab = useLab(250);
   const [asset, setAsset] = useState<AssetKey>("BTC");
   const [win, setWin] = useState<"5m" | "15m">("5m");
@@ -36,33 +14,15 @@ export function Live() {
   const now = Date.now() / 1000;
   const fillRate = s.signals ? s.fills / s.signals : 0;
 
-  const statusText = useMemo(
-    () =>
-      lab.status === "live"
-        ? "Spot prices: live from Binance"
-        : lab.status === "simulated"
-          ? "Spot prices: simulated (Binance unreachable from this network)"
-          : "Connecting to Binance…",
-    [lab.status],
-  );
-
   return (
-    <section className="live" id="live" aria-labelledby="live-title">
-      <div className="tickers" aria-live="off">
-        <span className={`dot ${lab.status}`} aria-hidden />
-        <span className="feed-status">{statusText}</span>
-        {ASSETS.map((a) => (
-          <Ticker key={a.key} a={a.key} />
-        ))}
-      </div>
-
+    <section className="live predict" id="predict" aria-labelledby="predict-title">
       <div className="hero">
         <div className="hero-copy">
-          <h1 id="live-title">Prices move on Binance first. The odds catch up later.</h1>
+          <h2 id="predict-title" className="h-sec">What if it were a prediction market?</h2>
           <p className="lede">
-            Prediction markets ask whether {ASSETS.map((a) => a.key).slice(0, 4).join(", ")} will be up or down a few
-            minutes from now. Their odds trail the spot price by a fraction of a second. This lab measures that lag,
-            prices it like an option, and paper-trades it after fees — to find out whether being fast is enough.
+            The viral bots trade Polymarket&rsquo;s 5- and 15-minute &ldquo;up or down&rdquo; markets, which are blocked in
+            France. Here the same live prices drive a <b>simulated</b> market maker that updates late, and a paper trader
+            prices each market as a binary option and buys only when the gap beats Polymarket&rsquo;s fee.
           </p>
         </div>
 
@@ -150,7 +110,7 @@ export function Live() {
             ))}
             {!lab.trades.length && <li className="empty">Signals appear here when the gap beats the fee.</li>}
           </ol>
-          <p className="fine">Stake ${lab.stake} per order. Quotes come from a simulated market maker that reads the same live prices with a delay — see Method.</p>
+          <p className="fine">Simulated quotes, ${lab.stake} per order. The real Polymarket recorder is in the Python engine.</p>
         </aside>
       </div>
     </section>

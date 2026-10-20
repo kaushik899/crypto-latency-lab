@@ -5,13 +5,13 @@ export function Method() {
     <section className="method" id="method" aria-labelledby="method-title">
       <header className="sec-head">
         <h2 id="method-title">How it works</h2>
-        <p>One pipeline, used three ways: live in this page, live on your machine with real Polymarket books, and offline in the backtester.</p>
+        <p>Two parts. The live sections run on real exchange data in your browser. The prediction-market sections use the same model on a simulated market, because Polymarket is blocked in France.</p>
       </header>
 
       <ol className="steps">
         <li>
-          <h3>Stream spot prices</h3>
-          <p>Binance&rsquo;s public <code>bookTicker</code> stream for BTC, ETH, SOL, XRP, BNB and DOGE. No account or API key — it is read-only market data.</p>
+          <h3>Stream real prices</h3>
+          <p>Public order-book feeds from Binance, Coinbase, Kraken, OKX and Bybit for BTC, ETH, SOL, XRP, BNB and DOGE, sampled every 50 ms. No account or API key — read-only market data. Your clock is synced to Binance&rsquo;s so feed delays are measured fairly.</p>
         </li>
         <li>
           <h3>Price each market like an option</h3>
@@ -36,7 +36,8 @@ export function Method() {
       <div className="caveats">
         <h3>What this page is not</h3>
         <ul>
-          <li>The odds on this page come from a simulated market maker that reads the same live Binance prices after a delay. Real Polymarket books are recorded and replayed by the Python engine on your own machine.</li>
+          <li>Prices in &ldquo;Prices move on Binance first&rdquo; and &ldquo;Who moves first&rdquo; are real, streamed from public exchange feeds with no account. Gaps are measured against each pair&rsquo;s usual price difference, so a USD market and a USDT market are compared fairly; actually capturing a gap would also need money parked on both exchanges and is ignored here.</li>
+          <li>The prediction-market odds come from a simulated market maker that reads the same live Binance prices after a delay. Real Polymarket books can be recorded by the Python engine where Polymarket is legally available.</li>
           <li>Polymarket settles on Chainlink&rsquo;s price, not Binance&rsquo;s. The small difference between them is modelled in the backtester and is a real source of losses near the strike.</li>
           <li>Polymarket is blocked for French users since July 2026 and restricted elsewhere. This project never places orders anywhere.</li>
           <li>Simulated results depend on assumptions about how slow makers and rivals are. They show <em>which</em> assumptions matter, not what you would earn.</li>
