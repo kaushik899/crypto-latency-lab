@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-20T21:19:27.944Z",
+  "minutes": 20.8,
+  "latencyMs": 100,
+  "note": "Recorded in the site's real-data mode from Paris; snapshot taken at 20.8 minutes.",
+  "venues": [
+    {"key": "binance", "name": "Binance", "takerBps": 10, "delayMs": 155, "catchMs": null, "catchN": 0, "censored": 0},
+    {"key": "coinbase", "name": "Coinbase", "takerBps": 50, "delayMs": 53, "catchMs": 350, "catchN": 105, "censored": 8},
+    {"key": "kraken", "name": "Kraken", "takerBps": 80, "delayMs": 21, "catchMs": 300, "catchN": 115, "censored": 1},
+    {"key": "okx", "name": "OKX", "takerBps": 10, "delayMs": 125, "catchMs": 300, "catchN": 112, "censored": 4},
+    {"key": "bybit", "name": "Bybit", "takerBps": 10, "delayMs": 97, "catchMs": 350, "catchN": 114, "censored": 2}
+  ],
+  "arb": {"signals": 0, "fills": 0, "pnl": 0, "gapsSeen": 0}
+}

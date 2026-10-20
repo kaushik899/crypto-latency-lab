@@ -1,18 +1,40 @@
 # Crypto Latency Lab
 
-Prediction markets list "will BTC be up or down in 5 / 15 minutes?" contracts. Their odds lag the
-spot price on Binance by a fraction of a second. Viral posts claim bots turn that lag into fortunes.
-This project measures the lag properly — prices every contract as a digital option, charges the real
-taker fee, makes every order wait its latency — and asks whether the edge survives.
+Viral posts claim bots get rich because crypto prices move on Binance first and everywhere else a
+moment later. This project measures that claim on **real, live data**: it streams order books from
+Binance, Coinbase, Kraken, OKX and Bybit, times how long each exchange takes to follow a move on
+Binance, and checks whether the gaps in between survive real trading fees and real latency. A second
+part asks the same question for Polymarket-style "up or down in 5 minutes" markets, using an
+option-pricing model and a simulator (Polymarket is blocked in France).
 
 **Live site:** https://kaushik899.github.io/crypto-latency-lab/
 
 > Research and paper trading only. Nothing in this repository signs, sends or places orders.
 > No exchange account or API key is needed or used.
 
-![Live race between Binance-implied fair value and market quotes](docs/hero.png)
+![Live prices from five exchanges](docs/hero.png)
 
-## Key result (simulation, 4 random days × 6 h × 612 markets per scenario)
+## Real data: recorded session
+
+20.8 minutes of live quotes captured from Paris on 20 October 2026 (`data/research/real-session.json`),
+all six coins, measured in the site's real-data mode with the clock synced to Binance.
+
+| Exchange | Feed delay to Paris (median) | Follows a Binance move in (median) | Moves timed | Taker fee |
+|---|---|---|---|---|
+| Binance | 155 ms | leader | — | 0.10% |
+| Coinbase | 53 ms | 350 ms | 105 | 0.50% |
+| Kraken | 21 ms | 300 ms | 115 | 0.80% |
+| OKX | 125 ms | 300 ms | 112 | 0.10% |
+| Bybit | 97 ms | 350 ms | 114 | 0.10% |
+
+Binance does lead: when it moves, the other four take roughly 300–350 ms to cover half the move, even
+though Binance's own feed reaches Paris *slower* than theirs. But in the whole session, **not one**
+cross-exchange gap was larger than the two taker fees needed to trade it (0.20% for the cheapest pair),
+so latency-checked paper P&L was **$0**. The lag is real; at retail fees it is not tradable. The
+viral "price gap" profits need maker rebates or VIP fee tiers, co-location, and capital pre-positioned
+on every exchange.
+
+## Simulation: Polymarket-style markets (4 random days × 6 h × 612 markets per scenario)
 
 | Scenario | P&L at 150 ms on $10k | Break-even latency | Half of gaps gone within |
 |---|---|---|---|
@@ -23,12 +45,8 @@ taker fee, makes every order wait its latency — and asks whether the edge surv
 The edge the posts describe is real in a slow, fee-free market. Polymarket's crypto taker fee
 (`0.07 × p × (1 − p)` per share, 1.75¢ at 50¢) removes about a quarter of it. Fast competition removes
 the rest: once rivals react in tens of milliseconds, the orders that still fill are the ones the market
-was right about (see the calibration chart — fills sit *below* the diagonal). Being fast is not enough;
-you have to be the fastest.
-
-These numbers come from a simulator whose assumptions are explicit parameters (`latlab/sim.py`).
-They show which assumptions the profit depends on, not what anyone would earn. The same pipeline runs on
-real recorded data (below).
+was right about. These numbers come from a simulator whose assumptions are explicit parameters
+(`latlab/sim.py`); they show which assumptions the profit depends on, not what anyone would earn.
 
 ## What's inside
 
@@ -36,7 +54,8 @@ real recorded data (below).
 latlab/
   pricing.py     digital-option fair value (normal, Student-t, Merton jump-diffusion), jump-robust EWMA vol
   fees.py        Polymarket taker fee model
-  feeds/         Binance bookTicker websocket · Polymarket Gamma discovery + CLOB order-book websocket
+  feeds/         five exchange websockets (exchanges.py) · Binance · Polymarket Gamma + CLOB order books
+  leadlag.py     record real quotes from five exchanges; catch-up times, lead-lag, fee-aware gaps
   tape.py        time-aligned record of spot + books (from simulation or from a live recording)
   sim.py         correlated GBM + stochastic vol + jumps, oracle basis, lagging market maker, rival latency bots
   strategy.py    fee-aware signals, latency-delayed paper execution, Kelly sizing, global capital ledger
@@ -45,7 +64,7 @@ latlab/
   live.py        live monitor + paper trader + recorder (all six coins)
   tapes.py       recording → tape for the backtester
 web/             React + TypeScript site: live race chart, market board, research charts, method
-tests/           17 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
+tests/           24 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
 ```
 
 ## Assets
@@ -59,6 +78,9 @@ markets for BTC, ETH, SOL and XRP; BNB and DOGE are covered by the live fair-val
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 pytest -q
+
+python -m latlab.leadlag record --minutes 30                # real quotes from five exchanges
+python -m latlab.leadlag analyze data/recordings/leadlag-<time>
 
 python -m latlab.research                                   # simulated study (≈8 min) → data/research/results.json
 python -m latlab.live --minutes 60 --record                 # live monitor + paper trader + recorder
