@@ -14,7 +14,7 @@ const NOTIONAL = 1000;
 
 const ASSET_KEYS = ASSETS.map((a) => a.key);
 const VENUE_KEYS = VENUES.map((v) => v.key);
-const EVENT_BPS: Record<AssetKey, number> = { BTC: 4, ETH: 5, SOL: 7, XRP: 7, BNB: 6, DOGE: 8 };
+const EVENT_BPS: Record<AssetKey, number> = { BTC: 2.5, ETH: 3, SOL: 4, XRP: 4, BNB: 4, DOGE: 5 };
 
 type Ring = { buf: Float64Array; n: number };
 const ring = (): Ring => ({ buf: new Float64Array(RING).fill(NaN), n: 0 });
