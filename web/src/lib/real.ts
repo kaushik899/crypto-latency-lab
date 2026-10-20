@@ -318,7 +318,9 @@ class RealLab {
     const k = Math.min((seconds * 1000) / STEP_MS, this.ticks, RING - 1);
     const t = this.now();
     const out: Partial<Record<VenueKey, { t: number; y: number }[]>> = {};
-    const x0 = ago(this.rings[`${a}:binance`], k - 1);
+    // reference level: the oldest Binance sample in the window that exists
+    let x0 = NaN;
+    for (let i = k - 1; i >= 0 && !isFinite(x0); i--) x0 = ago(this.rings[`${a}:binance`], i);
     for (const v of VENUE_KEYS) {
       const r = this.rings[`${a}:${v}`];
       const pts: { t: number; y: number }[] = [];
