@@ -163,7 +163,8 @@ class RealLab {
           const d = x - xb;
           this.basis[key] = this.basis[key] === undefined ? d : (1 - w) * this.basis[key] + w * d;
         }
-        push(this.rings[key], x - (v === "binance" ? 0 : this.basis[key] ?? 0));
+        if (v !== "binance" && this.basis[key] === undefined) { push(this.rings[key], NaN); continue; }
+        push(this.rings[key], x - (v === "binance" ? 0 : this.basis[key]));
       }
       this.scanGaps(a, t);
       this.detectEvent(a, t);
