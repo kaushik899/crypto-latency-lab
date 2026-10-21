@@ -113,7 +113,7 @@ class Lab {
     const streams = ASSETS.map((a) => `${a.pair}@bookTicker`).join("/");
     const fallback = window.setTimeout(() => this.useSimulatedSpot(), 5000);
     try {
-      const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+      const ws = new WebSocket(`wss://stream.binance.com:443/stream?streams=${streams}`);
       ws.onmessage = (ev) => {
         const d = JSON.parse(ev.data)?.data;
         if (!d?.s) return;
