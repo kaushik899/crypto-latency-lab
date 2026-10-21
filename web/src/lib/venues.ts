@@ -88,7 +88,7 @@ export class VenueConn {
     let sub: unknown = null;
     switch (v.key) {
       case "binance":
-        url = `wss://stream.binance.com:9443/stream?streams=${syms.flatMap((s) => [`${s}@bookTicker`, `${s}@aggTrade`]).join("/")}`;
+        url = `wss://stream.binance.com:443/stream?streams=${syms.flatMap((s) => [`${s}@bookTicker`, `${s}@aggTrade`]).join("/")}`;
         break;
       case "coinbase":
         url = "wss://ws-feed.exchange.coinbase.com";
@@ -99,7 +99,7 @@ export class VenueConn {
         sub = { method: "subscribe", params: { channel: "ticker", symbol: syms, event_trigger: "bbo" } };
         break;
       case "okx":
-        url = "wss://ws.okx.com:8443/ws/v5/public";
+        url = "wss://ws.okx.com/ws/v5/public";
         sub = { op: "subscribe", args: syms.map((instId) => ({ channel: "bbo-tbt", instId })) };
         break;
       case "bybit":

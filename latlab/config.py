@@ -27,6 +27,6 @@ ASSETS: dict[str, Asset] = {a.symbol: a for a in [
 # "btc-updown-15m-<unix start>" — discovery in feeds/polymarket.py verifies them at runtime.
 WINDOWS = {"5m": 300, "15m": 900, "1h": 3600}
 
-BINANCE_WS = "wss://stream.binance.com:9443/stream?streams="
+BINANCE_WS = "wss://stream.binance.com:443/stream?streams="
 POLY_GAMMA = "https://gamma-api.polymarket.com"
 POLY_CLOB_WS = "wss://ws-subscriptions-clob.polymarket.com/ws/market"

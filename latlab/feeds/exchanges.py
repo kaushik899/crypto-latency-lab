@@ -124,14 +124,14 @@ PARSERS: dict[str, Callable[[dict, float], list[Quote]]] = {
 def connection(venue: str) -> tuple[str, dict | None]:
     syms = list(SYMBOLS[venue].values())
     if venue == "binance":
-        return "wss://stream.binance.com:9443/stream?streams=" + "/".join(f"{s}@bookTicker" for s in syms), None
+        return "wss://stream.binance.com:443/stream?streams=" + "/".join(f"{s}@bookTicker" for s in syms), None
     if venue == "coinbase":
         return "wss://ws-feed.exchange.coinbase.com", {"type": "subscribe", "product_ids": syms, "channels": ["ticker"]}
     if venue == "kraken":
         return "wss://ws.kraken.com/v2", {"method": "subscribe",
                                          "params": {"channel": "ticker", "symbol": syms, "event_trigger": "bbo"}}
     if venue == "okx":
-        return "wss://ws.okx.com:8443/ws/v5/public", {"op": "subscribe",
+        return "wss://ws.okx.com/ws/v5/public", {"op": "subscribe",
                                                       "args": [{"channel": "bbo-tbt", "instId": s} for s in syms]}
     if venue == "bybit":
         return "wss://stream.bybit.com/v5/public/spot", {"op": "subscribe", "args": [f"orderbook.1.{s}" for s in syms]}
