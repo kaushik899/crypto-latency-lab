@@ -1,0 +1,74 @@
+[
+ {
+  "id": "gallery",
+  "file": "Hubert Robert - Projet d'aménagement de la Grande Galerie du Louvre (1796).JPG",
+  "title": "Project for the Grande Galerie of the Louvre",
+  "artist": "Hubert Robert",
+  "year": "1796",
+  "where": "Musée du Louvre, Paris",
+  "width": 2400,
+  "height": 1907,
+  "source": "https://commons.wikimedia.org/wiki/File:Hubert_Robert_-_Projet_d%27am%C3%A9nagement_de_la_Grande_Galerie_du_Louvre_(1796).JPG",
+  "license": "Public domain"
+ },
+ {
+  "id": "speed",
+  "file": "Turner - Rain, Steam and Speed - National Gallery file.jpg",
+  "title": "Rain, Steam and Speed – The Great Western Railway",
+  "artist": "J. M. W. Turner",
+  "year": "1844",
+  "where": "National Gallery, London",
+  "width": 2400,
+  "height": 1792,
+  "source": "https://commons.wikimedia.org/wiki/File:Turner_-_Rain,_Steam_and_Speed_-_National_Gallery_file.jpg",
+  "license": "Public domain"
+ },
+ {
+  "id": "babel",
+  "file": "Pieter Bruegel the Elder - The Tower of Babel (Vienna) - Google Art Project - edited.jpg",
+  "title": "The Tower of Babel",
+  "artist": "Pieter Bruegel the Elder",
+  "year": "1563",
+  "where": "Kunsthistorisches Museum, Vienna",
+  "width": 2400,
+  "height": 1756,
+  "source": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_The_Tower_of_Babel_(Vienna)_-_Google_Art_Project_-_edited.jpg",
+  "license": "Public domain"
+ },
+ {
+  "id": "moneylender",
+  "file": "The Moneylender and his Wife by Quinten Massijs.jpg",
+  "title": "The Moneylender and his Wife",
+  "artist": "Quentin Matsys",
+  "year": "1514",
+  "where": "Musée du Louvre, Paris",
+  "width": 2400,
+  "height": 1800,
+  "source": "https://commons.wikimedia.org/wiki/File:The_Moneylender_and_his_Wife_by_Quinten_Massijs.jpg",
+  "license": "Public domain"
+ },
+ {
+  "id": "icarus",
+  "file": "Pieter Bruegel the Elder - Landscape with the Fall of Icarus - Brussels, Royal Museums of Fine Arts of Belgium - Google Arts & Culture.jpg",
+  "title": "Landscape with the Fall of Icarus",
+  "artist": "after Pieter Bruegel the Elder",
+  "year": "c. 1560",
+  "where": "Royal Museums of Fine Arts, Brussels",
+  "width": 2400,
+  "height": 1565,
+  "source": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_Landscape_with_the_Fall_of_Icarus_-_Brussels,_Royal_Museums_of_Fine_Arts_of_Belgium_-_Google_Arts_%26_Culture.jpg",
+  "license": "Public domain"
+ },
+ {
+  "id": "astronomer",
+  "file": "Johannes Vermeer - The Astronomer - 1668.jpg",
+  "title": "The Astronomer",
+  "artist": "Johannes Vermeer",
+  "year": "1668",
+  "where": "Musée du Louvre, Paris",
+  "width": 2400,
+  "height": 2727,
+  "source": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_The_Astronomer_-_1668.jpg",
+  "license": "Public domain"
+ }
+]
