@@ -15,16 +15,16 @@ export function PredictSim() {
   const fillRate = s.signals ? s.fills / s.signals : 0;
 
   return (
-    <section className="live predict" id="predict" aria-labelledby="predict-title">
+    <div className="live predict block" id="predict">
       <div className="hero">
-        <div className="hero-copy">
-          <h2 id="predict-title" className="h-sec">What if it were a prediction market?</h2>
+        <header className="block-head">
+          <h3>What if it were a prediction market?</h3>
           <p className="lede">
             The viral bots trade Polymarket&rsquo;s 5- and 15-minute &ldquo;up or down&rdquo; markets, which are blocked in
             France. Here the same live prices drive a <b>simulated</b> market maker that updates late, and a paper trader
             prices each market as a binary option and buys only when the gap beats Polymarket&rsquo;s fee.
           </p>
-        </div>
+        </header>
 
         <div className="race-panel">
           <div className="race-head">
@@ -113,6 +113,6 @@ export function PredictSim() {
           <p className="fine">Simulated quotes, ${lab.stake} per order. The real Polymarket recorder is in the Python engine.</p>
         </aside>
       </div>
-    </section>
+    </div>
   );
 }

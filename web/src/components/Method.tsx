@@ -2,11 +2,7 @@ const REPO = "https://github.com/kaushik899/crypto-latency-lab";
 
 export function Method() {
   return (
-    <section className="method" id="method" aria-labelledby="method-title">
-      <header className="sec-head">
-        <h2 id="method-title">How it works</h2>
-        <p>Two parts. The live sections run on real exchange data in your browser. The prediction-market sections use the same model on a simulated market, because Polymarket is blocked in France.</p>
-      </header>
+    <div className="method">
 
       <ol className="steps">
         <li>
@@ -55,6 +51,6 @@ python -m latlab.tapes data/recordings/<run>      # recording → tape
 python -m latlab.research --tape data/recordings/<run>/tape`}</pre>
         <a className="btn" href={REPO}>View the code on GitHub</a>
       </div>
-    </section>
+    </div>
   );
 }

@@ -15,7 +15,7 @@ export function RealLive() {
   const bq = real.quotes[asset]?.binance;
 
   return (
-    <section className="live" id="live" aria-labelledby="live-title">
+    <div className="live">
       <div className="tickers">
         <span className={`dot ${live ? "live" : "connecting"}`} aria-hidden />
         <span className="feed-status">
@@ -33,14 +33,6 @@ export function RealLive() {
       </div>
 
       <div className="hero">
-        <div className="hero-copy">
-          <h1 id="live-title">Prices move on Binance first. Everyone else catches up.</h1>
-          <p className="lede">
-            This page streams real order books from five exchanges straight into your browser and times how long each
-            one takes to follow a move on Binance. Then it checks whether the price gaps that open in between are big
-            enough to trade after fees, at your own connection speed.
-          </p>
-        </div>
 
         <div className="race-panel">
           <div className="race-head">
@@ -113,6 +105,6 @@ export function RealLive() {
           <p className="fine">Fees: Binance, OKX, Bybit 0.10%; Coinbase 0.50%; Kraken 0.80% per side (entry-level taker).</p>
         </aside>
       </div>
-    </section>
+    </div>
   );
 }

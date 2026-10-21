@@ -4,8 +4,8 @@ import { real } from "../lib/real";
 import { VENUES } from "../lib/venues";
 
 const SPAN_S = 60;
-const AXIS = "#8BA3B8";
-const GRID = "rgba(139,163,184,0.14)";
+const AXIS = "#A39A8B";
+const GRID = "rgba(163,154,139,0.14)";
 
 /** Live chart: each exchange's price (basis-adjusted, in bps from the window start) and,
  * underneath, the best cross-exchange gap after fees. */
@@ -41,7 +41,7 @@ export function RealRace({ asset }: { asset: AssetKey }) {
       const x = (t: number) => padL + ((t - (now - SPAN_S * 1000)) / (SPAN_S * 1000)) * pw;
       const { prices, gap } = real.raceSeries(assetRef.current, SPAN_S);
 
-      ctx.font = "500 11px 'Archivo Variable', system-ui";
+      ctx.font = "500 11px 'Schibsted Grotesk Variable', system-ui";
       // time grid
       for (let s = 0; s <= SPAN_S; s += 10) {
         const gx = x(now - s * 1000);
@@ -56,7 +56,7 @@ export function RealRace({ asset }: { asset: AssetKey }) {
       if (all.length < 10) {
         ctx.fillStyle = AXIS;
         ctx.textAlign = "left";
-        ctx.font = "500 14px 'Archivo Variable', system-ui";
+        ctx.font = "500 14px 'Schibsted Grotesk Variable', system-ui";
         ctx.fillText("Connecting to Binance, Coinbase, Kraken, OKX and Bybit…", padL + 16, padT + ph / 2);
         return;
       }
@@ -100,9 +100,9 @@ export function RealRace({ asset }: { asset: AssetKey }) {
       const sTop = padT + ph + 14, sBot = sTop + stripH;
       const gMin = -40, gMax = 10;
       const gy = (v: number) => sTop + (1 - (Math.max(gMin, Math.min(gMax, v)) - gMin) / (gMax - gMin)) * stripH;
-      ctx.fillStyle = "rgba(19,38,58,0.9)";
+      ctx.fillStyle = "rgba(30,26,21,0.92)";
       ctx.fillRect(padL, sTop, pw, stripH);
-      ctx.strokeStyle = "rgba(61,214,140,0.6)";
+      ctx.strokeStyle = "rgba(127,203,164,0.6)";
       ctx.setLineDash([4, 4]);
       ctx.beginPath(); ctx.moveTo(padL, gy(0)); ctx.lineTo(padL + pw, gy(0)); ctx.stroke();
       ctx.setLineDash([]);
@@ -110,12 +110,12 @@ export function RealRace({ asset }: { asset: AssetKey }) {
       ctx.fillText("0 bp", padL + pw + 6, gy(0) + 4);
       ctx.fillText(`${gMin}`, padL + pw + 6, sBot);
       if (gap.length > 1) {
-        ctx.strokeStyle = "#B07CFF";
+        ctx.strokeStyle = "#C98BA6";
         ctx.lineWidth = 1.4;
         ctx.beginPath();
         gap.forEach((p, i) => (i ? ctx.lineTo(x(p.t), gy(p.y)) : ctx.moveTo(x(p.t), gy(p.y))));
         ctx.stroke();
-        ctx.fillStyle = "rgba(61,214,140,0.85)";
+        ctx.fillStyle = "rgba(127,203,164,0.85)";
         for (const p of gap) if (p.y > 0) ctx.fillRect(x(p.t) - 1, gy(p.y), 2.5, gy(0) - gy(p.y));
       }
       ctx.fillStyle = AXIS;

@@ -7,10 +7,10 @@ import { VENUES } from "../lib/venues";
 import recorded from "../data/real-session.json";
 
 const OTHERS = VENUES.filter((v) => v.key !== "binance");
-const axis = { stroke: "#5E7A93", fontSize: 12, tickLine: false, axisLine: { stroke: "#24405C" } } as const;
+const axis = { stroke: "#6F675B", fontSize: 12, tickLine: false, axisLine: { stroke: "#3A332A" } } as const;
 const tip = {
-  contentStyle: { background: "#13263A", border: "1px solid #24405C", borderRadius: 8, color: "#E6EEF5", fontSize: 13 },
-  labelStyle: { color: "#8BA3B8" },
+  contentStyle: { background: "#1E1A15", border: "1px solid #3A332A", borderRadius: 8, color: "#EDE6D8", fontSize: 13 },
+  labelStyle: { color: "#A39A8B" },
 } as const;
 const fmtMs = (x: number | null | undefined) => (x != null && isFinite(x) ? `${Math.round(x)}` : "—");
 const REC = recorded as any;
@@ -26,15 +26,7 @@ export function LeadLag() {
   });
 
   return (
-    <section className="leadlag" id="leadlag" aria-labelledby="leadlag-title">
-      <header className="sec-head">
-        <h2 id="leadlag-title">Who moves first</h2>
-        <p>
-          Measured live on this page from real data. When Binance moves sharply, the clock starts; each exchange&rsquo;s
-          time is how long it takes to cover half of that move. Times include the network path to you, so they are what a
-          trader sitting where you are would actually see.
-        </p>
-      </header>
+    <div className="leadlag">
 
       <div className="table-wrap">
         <table>
@@ -78,13 +70,13 @@ export function LeadLag() {
         </div>
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={chart} margin={{ top: 8, right: 16, bottom: 22, left: 0 }}>
-            <CartesianGrid stroke="rgba(139,163,184,0.12)" vertical={false} />
+            <CartesianGrid stroke="rgba(163,154,139,0.12)" vertical={false} />
             <XAxis dataKey="lag" {...axis} tickFormatter={(v) => `${v}`}
-              label={{ value: "Exchange follows Binance by (ms)", position: "insideBottom", offset: -12, fill: "#8BA3B8", fontSize: 12 }} />
+              label={{ value: "Exchange follows Binance by (ms)", position: "insideBottom", offset: -12, fill: "#A39A8B", fontSize: 12 }} />
             <YAxis {...axis} width={44} tickFormatter={(v) => v.toFixed(2)} />
             <Tooltip {...tip} formatter={(v: any, n: any) => [isFinite(v) ? Number(v).toFixed(3) : "—", VENUES.find((x) => x.key === n)?.name ?? n]}
               labelFormatter={(l) => `${l} ms`} />
-            <ReferenceLine x={0} stroke="#5E7A93" strokeDasharray="4 4" />
+            <ReferenceLine x={0} stroke="#6F675B" strokeDasharray="4 4" />
             {OTHERS.map((v) => (
               <Line key={v.key} dataKey={v.key} stroke={v.color} dot={false} strokeWidth={2} isAnimationActive={false} connectNulls />
             ))}
@@ -99,7 +91,7 @@ export function LeadLag() {
       </figure>
 
       {REC?.minutes > 0 && <RecordedSession />}
-    </section>
+    </div>
   );
 }
 

@@ -8,12 +8,12 @@ export function Board() {
     (a, b) => ASSETS.findIndex((x) => x.key === a.asset) - ASSETS.findIndex((x) => x.key === b.asset) || a.end - b.end,
   );
   return (
-    <section className="board" id="board" aria-labelledby="board-title">
-      <header className="sec-head">
-        <h2 id="board-title">Every market at once</h2>
+    <div className="board block" id="board">
+      <header className="block-head">
+        <h3>Every market at once</h3>
         <p>
           {rows.length} markets priced ten times a second. Edge is what buying the cheaper side would earn per share,
-          on average, after Polymarket&rsquo;s taker fee. Purple rows are the moments a fast trader would act.
+          on average, after Polymarket&rsquo;s taker fee. Lit rows are the moments a fast trader would act.
         </p>
       </header>
       <div className="table-wrap">
@@ -59,6 +59,6 @@ export function Board() {
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   );
 }

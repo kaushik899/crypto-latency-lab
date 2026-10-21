@@ -1,42 +1,91 @@
+import { useCallback, useEffect, useState } from "react";
+import { Menu, NextRoom, TopBar } from "./components/Chrome";
 import { Board } from "./components/Board";
+import { Hero } from "./components/Hero";
 import { LeadLag } from "./components/LeadLag";
 import { PredictSim } from "./components/Live";
-import { RealLive } from "./components/RealLive";
 import { Method } from "./components/Method";
+import { RealLive } from "./components/RealLive";
 import { Research } from "./components/Research";
+import { Room } from "./components/Room";
+import { TradeDrawer } from "./components/TradeDrawer";
+import { CREDITS } from "./lib/rooms";
+import { scrollToId, startScroll } from "./lib/scroll";
 
 export default function App() {
+  const [trade, setTrade] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const openTrade = useCallback(() => setTrade(true), []);
+  const closeTrade = useCallback(() => setTrade(false), []);
+  const closeMenu = useCallback(() => setMenu(false), []);
+  useEffect(() => { startScroll(); }, []);
+  useEffect(() => {
+    document.body.style.overflow = trade || menu ? "hidden" : "";
+  }, [trade, menu]);
+
   return (
     <>
       <a className="skip" href="#live">Skip to the live chart</a>
-      <header className="top">
-        <a className="brand" href="#live" aria-label="Crypto Latency Lab home">
-          <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden>
-            <path d="M4 21 C9 21 9 9 14 9 S19 21 24 21 28 15 28 15" fill="none" stroke="#5BC8F5" strokeWidth="2.6" strokeLinecap="round" />
-            <path d="M4 23 H10 V12 H17 V23 H24 V17 H28" fill="none" stroke="#F2A93B" strokeWidth="2.2" strokeLinejoin="round" />
-          </svg>
-          Crypto Latency Lab
-        </a>
-        <nav aria-label="Sections">
-          <a href="#live">Live</a>
-          <a href="#leadlag">Who moves first</a>
-          <a href="#predict">Simulation</a>
-          <a href="#research">Backtest</a>
-          <a href="#method">Method</a>
-          <a href="https://github.com/kaushik899/crypto-latency-lab">GitHub</a>
-        </nav>
-      </header>
-      <main>
-        <RealLive />
-        <LeadLag />
-        <PredictSim />
-        <Board />
-        <Research />
-        <Method />
+      <TopBar onTrade={openTrade} onMenu={() => setMenu(true)} />
+      <main id="top">
+        <Hero onTrade={openTrade} />
+
+        <Room id="live" continues>
+          <RealLive />
+        </Room>
+
+        <Room id="leadlag" focus="55% 40%" lede={<p>
+          When Binance moves sharply, the clock starts. Each exchange&rsquo;s time is how long it takes to cover half the
+          move, measured from your own connection, so it is what a trader sitting where you are would see.
+        </p>}>
+          <LeadLag />
+        </Room>
+
+        <Room id="desk" focus="50% 40%" lede={<>
+          <p>
+            Pick a coin, pick an amount, press buy. Practise on live prices, or connect your own Binance account through a
+            trade desk that runs on your computer, so your key never leaves it.
+          </p>
+          <button className="btn gold" onClick={openTrade}>Trade now</button>
+        </>}>
+          <PredictSim />
+          <Board />
+        </Room>
+
+        <Room id="research" focus="60% 60%" lede={<p>
+          The Python backtester replays 612 simulated prediction markets per scenario across four random days. In a slow,
+          fee-free market almost any bot profits. Add the taker fee and fast rivals, and only near-instant orders survive.
+        </p>}>
+          <Research />
+        </Room>
+
+        <Room id="method" focus="70% 40%" lede={<p>
+          The live rooms run on real exchange data in your browser. The prediction-market rooms use the same model on a
+          simulated market, because Polymarket is blocked in France.
+        </p>}>
+          <Method />
+        </Room>
       </main>
+
       <footer className="foot">
-        <p>Built by Prashasth Kaushik Guda. Research and paper trading only — nothing here places orders or is investment advice.</p>
+        <div className="foot-row">
+          <p>Built by Prashasth Kaushik Guda. Research and paper trading; orders are only ever placed by your own trade desk.
+            Not investment advice.</p>
+          <button className="link" onClick={() => scrollToId("method")}>How it works</button>
+        </div>
+        <p className="foot-credits">
+          Paintings, all public domain, from Wikimedia Commons:{" "}
+          {Object.values(CREDITS).map((c, i, a) => (
+            <span key={c.id}>
+              <a href={c.source}>{c.artist}, <i>{c.title}</i> ({c.year})</a>{i < a.length - 1 ? "; " : "."}
+            </span>
+          ))}
+        </p>
       </footer>
+
+      <NextRoom />
+      <Menu open={menu} onClose={closeMenu} onTrade={openTrade} />
+      <TradeDrawer open={trade} onClose={closeTrade} />
     </>
   );
 }

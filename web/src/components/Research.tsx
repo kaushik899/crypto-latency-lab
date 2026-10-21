@@ -9,14 +9,14 @@ import { fmtUsd } from "../lib/assets";
 type AnyRec = Record<string, any>;
 const R = data as AnyRec;
 const KEYS = Object.keys(R.regimes) as string[];
-const COLORS: Record<string, string> = { no_fees_slow: "#8BA3B8", fees_slow: "#F2A93B", fees_crowded: "#FF6B5B", recorded: "#5BC8F5" };
+const COLORS: Record<string, string> = { no_fees_slow: "#A39A8B", fees_slow: "#D9B26A", fees_crowded: "#E0694B", recorded: "#6E93D6" };
 
-const axis = { stroke: "#5E7A93", fontSize: 12, tickLine: false, axisLine: { stroke: "#24405C" } } as const;
-const grid = <CartesianGrid stroke="rgba(139,163,184,0.12)" vertical={false} />;
+const axis = { stroke: "#6F675B", fontSize: 12, tickLine: false, axisLine: { stroke: "#3A332A" } } as const;
+const grid = <CartesianGrid stroke="rgba(163,154,139,0.12)" vertical={false} />;
 const tip = {
-  contentStyle: { background: "#13263A", border: "1px solid #24405C", borderRadius: 8, color: "#E6EEF5", fontSize: 13 },
-  labelStyle: { color: "#8BA3B8" },
-  cursor: { stroke: "#24405C" },
+  contentStyle: { background: "#1E1A15", border: "1px solid #3A332A", borderRadius: 8, color: "#EDE6D8", fontSize: 13 },
+  labelStyle: { color: "#A39A8B" },
+  cursor: { stroke: "#3A332A" },
 } as const;
 const usd = (v: number) => fmtUsd(v);
 
@@ -65,18 +65,9 @@ export function Research() {
   });
   const baseLat = R.strategy.latency_ms;
   const hours = R.hours;
-  const isSim = R.source === "simulation";
 
   return (
-    <section className="research" id="research" aria-labelledby="research-title">
-      <header className="sec-head">
-        <h2 id="research-title">What the backtester found</h2>
-        <p>
-          {isSim
-            ? `Results from the Python engine on ${R.n_markets} simulated Up/Down markets per scenario (${hours} hours, six coins, three window lengths), repeated over ${R.seeds?.length ?? 1} random days. Simulated, not real money — the point is to see which assumptions the profit depends on.`
-            : `Results from ${hours.toFixed(1)} hours of recorded live data across ${R.n_markets} markets.`}
-        </p>
-      </header>
+    <div className="research">
 
       <Figure
         wide
@@ -86,10 +77,10 @@ export function Research() {
         <ResponsiveContainer width="100%" height={340}>
           <LineChart data={compare} margin={{ top: 10, right: 16, bottom: 22, left: 8 }}>
             {grid}
-            <XAxis dataKey="latency_ms" {...axis} label={{ value: "Order latency (ms)", position: "insideBottom", offset: -12, fill: "#8BA3B8", fontSize: 12 }} />
+            <XAxis dataKey="latency_ms" {...axis} label={{ value: "Order latency (ms)", position: "insideBottom", offset: -12, fill: "#A39A8B", fontSize: 12 }} />
             <YAxis {...axis} tickFormatter={usd} width={70} />
             <Tooltip {...tip} formatter={(v: any, n: any) => [usd(v), R.regimes[n]?.title ?? n]} labelFormatter={(l) => `${l} ms`} />
-            <ReferenceLine y={0} stroke="#8BA3B8" strokeDasharray="4 4" />
+            <ReferenceLine y={0} stroke="#A39A8B" strokeDasharray="4 4" />
             {KEYS.map((k) => (
               <Line key={k} dataKey={k} stroke={COLORS[k]} strokeWidth={k === key ? 3 : 1.6} dot={false} isAnimationActive={false} />
             ))}
@@ -136,7 +127,7 @@ export function Research() {
               <XAxis dataKey="ms" {...axis} type="number" domain={[0, 2000]} />
               <YAxis {...axis} tickFormatter={(v) => `${Math.round(v * 100)}%`} domain={[0, 1]} width={44} />
               <Tooltip {...tip} formatter={(v: any) => [`${(v * 100).toFixed(1)}%`, "still open"]} labelFormatter={(l) => `after ${l} ms`} />
-              <Area dataKey="share" type="monotone" stroke="#B07CFF" fill="rgba(176,124,255,0.25)" strokeWidth={2} isAnimationActive={false} />
+              <Area dataKey="share" type="monotone" stroke="#C98BA6" fill="rgba(201,139,166,0.25)" strokeWidth={2} isAnimationActive={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </Figure>
@@ -149,11 +140,11 @@ export function Research() {
               <YAxis yAxisId="l" {...axis} tickFormatter={usd} width={62} />
               <YAxis yAxisId="r" orientation="right" {...axis} tickFormatter={(v) => `${(v * 100).toFixed(1)}¢`} width={46} />
               <Tooltip {...tip} formatter={(v: any, n: any) => (n === "pnl" ? [usd(v), "P&L"] : [`${(v * 100).toFixed(2)}¢`, "fee / share"])} />
-              <ReferenceLine yAxisId="l" y={0} stroke="#5E7A93" />
+              <ReferenceLine yAxisId="l" y={0} stroke="#6F675B" />
               <Bar yAxisId="l" dataKey="pnl" isAnimationActive={false} radius={[3, 3, 0, 0]}>
-                {(reg.by_price ?? []).map((d: AnyRec, i: number) => <Cell key={i} fill={d.pnl >= 0 ? "#3DD68C" : "#FF6B5B"} />)}
+                {(reg.by_price ?? []).map((d: AnyRec, i: number) => <Cell key={i} fill={d.pnl >= 0 ? "#7FCBA4" : "#E0694B"} />)}
               </Bar>
-              <Line yAxisId="r" dataKey="fee_per_share" stroke="#F2A93B" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
+              <Line yAxisId="r" dataKey="fee_per_share" stroke="#6E93D6" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </Figure>
@@ -166,8 +157,8 @@ export function Research() {
               <YAxis dataKey="realised" type="number" domain={[0, 1]} {...axis} tickFormatter={(v) => `${Math.round(v * 100)}%`} width={44} />
               <ZAxis dataKey="n" range={[30, 260]} />
               <Tooltip {...tip} formatter={(v: any, n: any) => [n === "n" ? v : `${(v * 100).toFixed(1)}%`, n]} />
-              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#5E7A93" strokeDasharray="4 4" />
-              <Scatter data={reg.calibration ?? []} fill="#5BC8F5" isAnimationActive={false} />
+              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#6F675B" strokeDasharray="4 4" />
+              <Scatter data={reg.calibration ?? []} fill="#D9B26A" isAnimationActive={false} />
             </ScatterChart>
           </ResponsiveContainer>
         </Figure>
@@ -175,13 +166,13 @@ export function Research() {
         <Figure title="If the model is wrong" note="The same markets traded with other volatility and tail assumptions. Shrinking the fair value toward 50% mimics a sloppy model, and it is always the worst line on the chart.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={reg.model_risk ?? []} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 4 }}>
-              <CartesianGrid stroke="rgba(139,163,184,0.12)" horizontal={false} />
+              <CartesianGrid stroke="rgba(163,154,139,0.12)" horizontal={false} />
               <XAxis type="number" {...axis} tickFormatter={usd} />
               <YAxis type="category" dataKey="model" {...axis} width={150} />
               <Tooltip {...tip} formatter={(v: any) => [usd(v), "P&L"]} />
-              <ReferenceLine x={0} stroke="#5E7A93" />
+              <ReferenceLine x={0} stroke="#6F675B" />
               <Bar dataKey="pnl" isAnimationActive={false} radius={[0, 3, 3, 0]}>
-                {(reg.model_risk ?? []).map((d: AnyRec, i: number) => <Cell key={i} fill={d.pnl >= 0 ? "#3DD68C" : "#FF6B5B"} />)}
+                {(reg.model_risk ?? []).map((d: AnyRec, i: number) => <Cell key={i} fill={d.pnl >= 0 ? "#7FCBA4" : "#E0694B"} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -194,9 +185,9 @@ export function Research() {
               <XAxis dataKey="asset" {...axis} />
               <YAxis {...axis} tickFormatter={usd} width={62} />
               <Tooltip {...tip} formatter={(v: any) => [usd(v), "P&L"]} />
-              <ReferenceLine y={0} stroke="#5E7A93" />
+              <ReferenceLine y={0} stroke="#6F675B" />
               <Bar dataKey="pnl" isAnimationActive={false} radius={[3, 3, 0, 0]}>
-                {(reg.by_asset ?? []).map((d: AnyRec, i: number) => <Cell key={i} fill={d.pnl >= 0 ? "#3DD68C" : "#FF6B5B"} />)}
+                {(reg.by_asset ?? []).map((d: AnyRec, i: number) => <Cell key={i} fill={d.pnl >= 0 ? "#7FCBA4" : "#E0694B"} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -209,12 +200,12 @@ export function Research() {
               <XAxis dataKey="t" type="number" domain={[0, "dataMax"]} {...axis} tickFormatter={(t) => `${(t / 3600).toFixed(0)}h`} />
               <YAxis {...axis} tickFormatter={usd} width={62} />
               <Tooltip {...tip} formatter={(v: any) => [usd(v), "equity"]} labelFormatter={(t: any) => `${(Number(t) / 3600).toFixed(2)} h`} />
-              <ReferenceLine y={0} stroke="#5E7A93" />
+              <ReferenceLine y={0} stroke="#6F675B" />
               <Line dataKey="equity" stroke={COLORS[key]} strokeWidth={2} dot={false} isAnimationActive={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </Figure>
       </div>
-    </section>
+    </div>
   );
 }

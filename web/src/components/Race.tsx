@@ -3,16 +3,16 @@ import { lab } from "../lib/lab";
 
 const SPAN_S = 60;
 const C = {
-  grid: "rgba(139,163,184,0.14)",
-  axis: "#8BA3B8",
-  fair: "#5BC8F5",
-  quote: "#F2A93B",
-  quoteBand: "rgba(242,169,59,0.10)",
-  gap: "rgba(176,124,255,0.42)",
-  fill: "#3DD68C",
-  miss: "#FF6B5B",
-  text: "#E6EEF5",
-  flight: "rgba(176,124,255,0.10)",
+  grid: "rgba(163,154,139,0.14)",
+  axis: "#A39A8B",
+  fair: "#D9B26A",
+  quote: "#6E93D6",
+  quoteBand: "rgba(110,147,214,0.12)",
+  gap: "rgba(201,139,166,0.42)",
+  fill: "#7FCBA4",
+  miss: "#E0694B",
+  text: "#EDE6D8",
+  flight: "rgba(201,139,166,0.10)",
 };
 
 export function Race({ marketId }: { marketId: string | undefined }) {
@@ -46,7 +46,7 @@ export function Race({ marketId }: { marketId: string | undefined }) {
       // grid: every 10 s
       ctx.strokeStyle = C.grid;
       ctx.lineWidth = 1;
-      ctx.font = "500 11px 'Archivo Variable', system-ui";
+      ctx.font = "500 11px 'Schibsted Grotesk Variable', system-ui";
       ctx.fillStyle = C.axis;
       for (let s = 0; s <= SPAN_S; s += 10) {
         const gx = x(now - s);
@@ -57,7 +57,7 @@ export function Race({ marketId }: { marketId: string | undefined }) {
       if (!m || m.history.length < 2) {
         ctx.fillStyle = C.axis;
         ctx.textAlign = "left";
-        ctx.font = "500 14px 'Archivo Variable', system-ui";
+        ctx.font = "500 14px 'Schibsted Grotesk Variable', system-ui";
         ctx.fillText(lab.status === "connecting" ? "Connecting to Binance…" : "Waiting for the first quotes…", padL + 16, padT + ph / 2);
         return;
       }
@@ -165,14 +165,14 @@ export function Race({ marketId }: { marketId: string | undefined }) {
         { v: last.bid, c: C.quote, t: "bid" },
       ].sort((a, b) => b.v - a.v);
       let prevY = -99;
-      ctx.font = "600 11px 'Archivo Variable', system-ui";
+      ctx.font = "600 11px 'Schibsted Grotesk Variable', system-ui";
       for (const tg of tags) {
         let Y = y(tg.v);
         if (Y - prevY < 15) Y = prevY + 15;
         prevY = Y;
         ctx.fillStyle = tg.c;
         ctx.fillRect(padL + pw + 2, Y - 8, padR - 4, 16);
-        ctx.fillStyle = "#0D1B2A";
+        ctx.fillStyle = "#13100D";
         ctx.textAlign = "left";
         ctx.fillText(`${tg.t} ${(tg.v * 100).toFixed(1)}`, padL + pw + 6, Y + 4);
       }

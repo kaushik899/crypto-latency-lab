@@ -12,7 +12,36 @@ option-pricing model and a simulator (Polymarket is blocked in France).
 > Research and paper trading only. Nothing in this repository signs, sends or places orders.
 > No exchange account or API key is needed or used.
 
-![Live prices from five exchanges](docs/hero.png)
+![The gallery entrance: a camera dolly into Turner's Rain, Steam and Speed](docs/hero.png)
+
+The site is a museum of market timing. Each room hangs a public-domain painting chosen for its idea —
+Turner's *Rain, Steam and Speed* for latency, Bruegel's *Tower of Babel* for five exchanges quoting one price,
+Matsys' *Moneylender and his Wife* for the trade desk, *The Fall of Icarus* for the backtest, Vermeer's
+*Astronomer* for the method — and scrolling dollies the camera from Hubert Robert's Grande Galerie of the
+Louvre into the first frame.
+
+## Trade now (one click, your own Binance account)
+
+The site has a **Trade now** button. *Practice* fills at the live Binance price with a realistic order
+delay and fee, no account needed. *My Binance* places real market orders in about a fifth of a second
+through a small **trade desk** that runs on your computer:
+
+```bash
+# 1. free practice keys: https://testnet.binance.vision (log in with GitHub)
+export BINANCE_TESTNET_KEY=...  BINANCE_TESTNET_SECRET=...
+python -m latlab.desk                     # prints a six-digit pairing code
+
+# 2. real money, when you are ready (API key: Spot trading ON, withdrawals OFF)
+export BINANCE_API_KEY=...  BINANCE_API_SECRET=...
+python -m latlab.desk --live --max-order 25
+```
+
+Then open the site, click **Trade now → My Binance**, and enter the code. Why a local desk: Binance
+refuses signed requests from web pages (CORS), and a public website must never hold a secret key. The
+desk keeps the key on your machine, listens on 127.0.0.1 only, answers only this site and only with the
+pairing code, caps each order (`--max-order`), allows one order per second, keeps one warm HTTPS
+connection to Binance so orders skip the TLS handshake, and logs every order to `data/trades/`.
+Live orders always need a second click within four seconds.
 
 ## Real data: recorded session
 
@@ -56,6 +85,7 @@ latlab/
   fees.py        Polymarket taker fee model
   feeds/         five exchange websockets (exchanges.py) · Binance · Polymarket Gamma + CLOB order books
   leadlag.py     record real quotes from five exchanges; catch-up times, lead-lag, fee-aware gaps
+  desk.py        local Binance trade desk behind the site's Trade now button (testnet default)
   tape.py        time-aligned record of spot + books (from simulation or from a live recording)
   sim.py         correlated GBM + stochastic vol + jumps, oracle basis, lagging market maker, rival latency bots
   strategy.py    fee-aware signals, latency-delayed paper execution, Kelly sizing, global capital ledger
@@ -63,8 +93,8 @@ latlab/
   research.py    the study: latency sweeps over seeds, fee/competition regimes, gap lifetimes, model risk
   live.py        live monitor + paper trader + recorder (all six coins)
   tapes.py       recording → tape for the backtester
-web/             React + TypeScript site: live race chart, market board, research charts, method
-tests/           24 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
+web/             React + TypeScript gallery site: live rooms, Trade now drawer, research charts, method
+tests/           31 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
 ```
 
 ## Assets
@@ -110,3 +140,8 @@ price, capped by displayed size and a global capital budget. Positions settle on
 ## Author
 
 Prashasth Kaushik Guda — MSc in Management, SKEMA Business School (Paris).
+
+## Credits
+
+Paintings are public domain, fetched from Wikimedia Commons by `web/scripts/fetch-paintings.mjs`
+(see `web/public/paintings/credits.json` for sources). Type: Instrument Serif and Schibsted Grotesk.

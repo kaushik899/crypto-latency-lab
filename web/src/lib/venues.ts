@@ -27,15 +27,15 @@ export type VenueInfo = {
 // Entry-level spot taker fees, checked October 2026: Binance/OKX/Bybit 0.10%;
 // Coinbase Advanced 0.50% for EU users (Sept 2026 schedule); Kraken Pro tier 1 0.80% (July 2026).
 export const VENUES: VenueInfo[] = [
-  { key: "binance", name: "Binance", quote: "USDT", takerBps: 10, color: "#5BC8F5",
+  { key: "binance", name: "Binance", quote: "USDT", takerBps: 10, color: "#D9B26A",
     symbols: { BTC: "btcusdt", ETH: "ethusdt", SOL: "solusdt", XRP: "xrpusdt", BNB: "bnbusdt", DOGE: "dogeusdt" } },
-  { key: "coinbase", name: "Coinbase", quote: "USD", takerBps: 50, color: "#F2A93B",
+  { key: "coinbase", name: "Coinbase", quote: "USD", takerBps: 50, color: "#6E93D6",
     symbols: { BTC: "BTC-USD", ETH: "ETH-USD", SOL: "SOL-USD", XRP: "XRP-USD", BNB: "BNB-USD", DOGE: "DOGE-USD" } },
-  { key: "kraken", name: "Kraken", quote: "USD", takerBps: 80, color: "#B07CFF",
+  { key: "kraken", name: "Kraken", quote: "USD", takerBps: 80, color: "#5FAE97",
     symbols: { BTC: "BTC/USD", ETH: "ETH/USD", SOL: "SOL/USD", XRP: "XRP/USD", BNB: "BNB/USD", DOGE: "DOGE/USD" } },
-  { key: "okx", name: "OKX", quote: "USDT", takerBps: 10, color: "#E6EEF5",
+  { key: "okx", name: "OKX", quote: "USDT", takerBps: 10, color: "#E9E2D4",
     symbols: { BTC: "BTC-USDT", ETH: "ETH-USDT", SOL: "SOL-USDT", XRP: "XRP-USDT", BNB: "BNB-USDT", DOGE: "DOGE-USDT" } },
-  { key: "bybit", name: "Bybit", quote: "USDT", takerBps: 10, color: "#FF8FB1",
+  { key: "bybit", name: "Bybit", quote: "USDT", takerBps: 10, color: "#DD6A48",
     symbols: { BTC: "BTCUSDT", ETH: "ETHUSDT", SOL: "SOLUSDT", XRP: "XRPUSDT", BNB: "BNBUSDT", DOGE: "DOGEUSDT" } },
 ];
 
