@@ -1,6 +1,11 @@
 name: Fetch paintings
 on:
   workflow_dispatch:
+    inputs:
+      only:
+        description: ids to refetch (space-separated), empty = all
+        required: false
+        default: ""
 permissions:
   contents: write
 jobs:
@@ -11,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node web/scripts/fetch-paintings.mjs
+      - run: node web/scripts/fetch-paintings.mjs ${{ inputs.only }}
       - name: Commit paintings
         run: |
           git config user.name "github-actions[bot]"

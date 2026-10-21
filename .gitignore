@@ -8,3 +8,4 @@ data/recordings/*
 !data/recordings/.gitkeep
 .env
 *.key
+data/trades/

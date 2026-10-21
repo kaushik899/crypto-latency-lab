@@ -12,7 +12,7 @@ const WORKS = [
     title: "Rain, Steam and Speed – The Great Western Railway", artist: "J. M. W. Turner", year: "1844", where: "National Gallery, London" },
   { id: "babel", file: "Pieter Bruegel the Elder - The Tower of Babel (Vienna) - Google Art Project - edited.jpg",
     title: "The Tower of Babel", artist: "Pieter Bruegel the Elder", year: "1563", where: "Kunsthistorisches Museum, Vienna" },
-  { id: "moneylender", file: "The Moneylender and his Wife by Quinten Massijs.jpg",
+  { id: "moneylender", file: "Quinten Massijs (I) - The Moneylender and his Wife - WGA14281.jpg",
     title: "The Moneylender and his Wife", artist: "Quentin Matsys", year: "1514", where: "Musée du Louvre, Paris" },
   { id: "icarus", file: "Pieter Bruegel the Elder - Landscape with the Fall of Icarus - Brussels, Royal Museums of Fine Arts of Belgium - Google Arts & Culture.jpg",
     title: "Landscape with the Fall of Icarus", artist: "after Pieter Bruegel the Elder", year: "c. 1560", where: "Royal Museums of Fine Arts, Brussels" },
@@ -31,8 +31,13 @@ async function info(file, width) {
 }
 
 await mkdir(OUT, { recursive: true });
+const only = process.argv.slice(2);
 const credits = [];
 for (const w of WORKS) {
+  if (only.length && !only.includes(w.id)) {
+    try { credits.push(JSON.parse(await (await import("node:fs/promises")).readFile(new URL("credits.json", OUT), "utf8")).find((c) => c.id === w.id)); } catch {}
+    continue;
+  }
   for (const [suffix, width] of [["", 2400], ["-sm", 1100]]) {
     const ii = await info(w.file, width);
     const r = await fetch(ii.thumburl, { headers: { "User-Agent": UA } });
@@ -44,4 +49,4 @@ for (const w of WORKS) {
     await new Promise((res) => setTimeout(res, 800));
   }
 }
-await writeFile(new URL("credits.json", OUT), JSON.stringify(credits, null, 1));
+await writeFile(new URL("credits.json", OUT), JSON.stringify(credits.filter(Boolean), null, 1));
