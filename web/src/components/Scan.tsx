@@ -23,6 +23,7 @@ const SORTS: [SortKey, string][] = [
 
 const f = (x: number | null | undefined, dp = 1, unit = "") => (x == null ? "—" : `${x.toFixed(dp)}${unit}`);
 const sgn = (x: number | null | undefined, dp = 1) => (x == null ? "—" : `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(x).toFixed(dp)}%`);
+const bp = (x: number | null | undefined, plus = false) => (x == null ? "—" : `${x > 0 && plus ? "+" : x < 0 ? "−" : ""}${Math.abs(x / 100).toFixed(2)}%`);
 const money = (x?: number) => (x == null ? "—" : x >= 1e9 ? `$${(x / 1e9).toFixed(1)}B` : x >= 1e6 ? `$${(x / 1e6).toFixed(0)}M` : `$${(x / 1e3).toFixed(0)}K`);
 
 function useScan(): AnyRec {
@@ -69,12 +70,12 @@ function Rates({ br, setup }: { br: AnyRec; setup: string }) {
               <tr key={h}>
                 <th scope="row">{h} day{h === "1" ? "" : "s"}</th>
                 <td className="num r">{c.all?.n?.toLocaleString() ?? 0}</td>
-                <td className={`num r ${(c.all?.mean_bps ?? 0) >= 0 ? "pos" : "neg"}`}>{c.all?.mean_bps == null ? "—" : `${(c.all.mean_bps / 100).toFixed(2)}%`}</td>
-                <td className={`num r ${(c.all?.excess_bps ?? 0) >= 0 ? "pos" : "neg"}`}>{c.all?.excess_bps == null ? "—" : `${c.all.excess_bps > 0 ? "+" : ""}${(c.all.excess_bps / 100).toFixed(2)}%`}</td>
-                <td className="num r">{c.all?.t ?? "—"}</td>
+                <td className={`num r ${(c.all?.mean_bps ?? 0) >= 0 ? "pos" : "neg"}`}>{bp(c.all?.mean_bps)}</td>
+                <td className={`num r ${(c.all?.excess_bps ?? 0) >= 0 ? "pos" : "neg"}`}>{bp(c.all?.excess_bps, true)}</td>
+                <td className="num r">{c.all?.t == null ? "—" : String(c.all.t).replace("-", "−")}</td>
                 <td className="num r">{c.all?.win == null ? "—" : `${Math.round(c.all.win * 100)}%`}</td>
                 <td>{c.held ? <span className="gate open">Edge held</span>
-                  : `${c.out_of_sample?.excess_bps == null ? "—" : `${c.out_of_sample.excess_bps > 0 ? "+" : ""}${(c.out_of_sample.excess_bps / 100).toFixed(2)}%`} vs avg`}</td>
+                  : `${bp(c.out_of_sample?.excess_bps, true)} vs avg`}</td>
               </tr>
             ))}
           </tbody>

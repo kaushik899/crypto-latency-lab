@@ -133,9 +133,16 @@ The same discipline on US equities, built on Jake Schincariol's MIT-licensed
    with a plan (entry, stop, target), the toolkit's Time Machine odds (10,000 replays of that stock's own
    past bars) and a size for a small account: whole shares when they fit, fractional shares otherwise, and
    a maximum loss of 1% of the account by default.
-3. **Score, after the close** (`... score`). Every published setup is replayed on the real bars, net of
+3. **Scan every US stock** (`... scan`). The Day Trader scanner's five chart rules (20-day closing high, bull
+   flag, back above the 20-day average, oversold, oversold bounce), vectorised and checked to match the
+   toolkit exactly, on two years of daily closes for every listed stock. Each rule gets a base rate: what
+   happened after every past signal on ~1,500 liquid stocks, entering at the next close, net of costs and
+   against the average stock the same days, with Newey-West t-statistics and a held-out final third. Each of
+   today's matches is enriched from its own price-and-volume chart (relative volume, ATR, 50/200-day trend,
+   distance to the 52-week high).
+4. **Score, after the close** (`... score`). Every published setup is replayed on the real bars, net of
    costs, into a public track record — the validated ones and the watch-only ones separately.
-4. **Trade it, one approval per order.** Connect a free Alpaca paper account (any country) with
+5. **Trade it, one approval per order.** Connect a free Alpaca paper account (any country) with
    `python -m latlab.connect`, start the desk, pair it on the site. *Preview ticket* makes the desk re-check
    the plan against your live equity (size cap, max loss, reward ≥ 1.5× risk, 9:45–15:30 ET, the
    pattern-day-trader limit on small live margin accounts) and return a one-time ticket that expires in 90 s.
