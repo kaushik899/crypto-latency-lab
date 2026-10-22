@@ -1,1 +1,13 @@
-[]
+[
+ {
+  "date": "2026-10-22",
+  "symbol": "COST",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 11,
+  "published": "10:44",
+  "entry": 1008.55,
+  "stop": 1003.16,
+  "target": 1013.94
+ }
+]
