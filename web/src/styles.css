@@ -626,5 +626,4 @@ html.lenis-stopped { overflow: hidden; }
 .yb-v { position: absolute; left: 0; right: 0; text-align: center; font-size: 10.5px; font-variant-numeric: tabular-nums; color: var(--stone); white-space: nowrap; }
 .yb.up .yb-v { bottom: calc(50% + var(--h) / 2 * .82 + 2px); } .yb.down .yb-v { top: calc(50% + var(--h) / 2 * .82 + 2px); }
 .yb-y { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-size: 10px; color: var(--smoke); }
-.years-bars::before { content: ""; grid-column: 1 / -1; }
 @media (max-width: 520px) { .yb-v { display: none; } }
