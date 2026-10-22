@@ -625,5 +625,9 @@ html.lenis-stopped { overflow: hidden; }
 .yb.down .yb-bar { top: 50%; background: linear-gradient(to bottom, rgba(224,105,75,.35), var(--vermilion)); }
 .yb-v { position: absolute; left: 0; right: 0; text-align: center; font-size: 10.5px; font-variant-numeric: tabular-nums; color: var(--stone); white-space: nowrap; }
 .yb.up .yb-v { bottom: calc(50% + var(--h) / 2 * .82 + 2px); } .yb.down .yb-v { top: calc(50% + var(--h) / 2 * .82 + 2px); }
-.yb-y { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-size: 10px; color: var(--smoke); }
+.yb-y { position: absolute; left: 0; right: 0; bottom: -16px; text-align: center; font-size: 10.5px; color: var(--smoke); }
+.years-bars { margin-bottom: 16px; border-bottom: 0; background: linear-gradient(var(--line), var(--line)) 0 50% / 100% 1px no-repeat; }
 @media (max-width: 520px) { .yb-v { display: none; } }
+
+/* nothing may widen the page sideways (paintings scale inside their rooms); clip keeps sticky working */
+html, body { overflow-x: clip; }

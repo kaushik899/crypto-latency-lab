@@ -227,7 +227,8 @@ export function Planner() {
 
       {choice.kind === "index" && doc.index?.[choice.sym!]?.years && (() => {
         const ix = doc.index[choice.sym!];
-        const ys = Object.entries(ix.years as Record<string, number>);
+        // complete calendar years only: the current year is still running
+        const ys = Object.entries(ix.years as Record<string, number>).filter(([y]) => y < ix.last_date.slice(0, 4));
         const m = Math.max(...ys.map(([, v]) => Math.abs(v)), 1);
         return (
           <figure className="years">
