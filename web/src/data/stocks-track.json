@@ -1,1 +1,28 @@
-{"pending": true}
+{
+ "rows": [],
+ "summary": {
+  "VALIDATED": {
+   "n": 0,
+   "days": 0,
+   "mean_R": null,
+   "t": null,
+   "win": null,
+   "pf": null,
+   "max_dd_R": null,
+   "mean_bps": null,
+   "total_R": 0.0
+  },
+  "WATCH": {
+   "n": 0,
+   "days": 0,
+   "mean_R": null,
+   "t": null,
+   "win": null,
+   "pf": null,
+   "max_dd_R": null,
+   "mean_bps": null,
+   "total_R": 0.0
+  }
+ },
+ "generated": "2026-10-22T08:27:12Z"
+}
