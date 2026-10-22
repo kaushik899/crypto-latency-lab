@@ -147,7 +147,7 @@ export function Planner() {
       : `The scan lists the stocks each evening. Buy at the next day’s close (22:00 Paris, 16:00 New York) and sell ${holdLabel(choice, h)} later at the close.`;
   const where = choice.market === "crypto"
     ? "A crypto exchange such as Binance (fees here: 0.10% each way). Practise first on Binance Testnet through your desk."
-    : "A US-stock broker account. Practise first on a free Alpaca paper account through your desk (below); fees here assume a commission-free broker.";
+    : "A US-stock broker account. Practise first on a free Alpaca paper or Trading 212 practice account through your desk (below); fees here assume a commission-free broker.";
 
   return (
     <section className="plan" aria-labelledby="plan-h">

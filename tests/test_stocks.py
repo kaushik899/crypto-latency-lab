@@ -261,3 +261,72 @@ def test_trend_filter_cuts_a_crash():
     e = strat.evaluate("t", cal, px, w, "SPY", 5.0, 252, "", "")
     assert e["stats"]["max_dd_pct"] > e["hold_stats"]["max_dd_pct"] + 15      # far shallower drawdown
     assert e["signal"]["hold"] == {"SPY": 1.0}
+
+
+# ---------------------------------------------------------------- Trading 212
+from latlab.stocks import t212
+
+
+class _FakeT212Http:
+    def __init__(self, held=None):
+        self.calls = []
+        self.held = held if held is not None else []
+
+    async def __call__(self, method, path, body=None):
+        self.calls.append((method, path, body))
+        if path == "/equity/account/summary":
+            return 200, {"cash": {"availableToTrade": 900}, "currency": "EUR", "totalValue": 1000}
+        if path == "/equity/positions":
+            return 200, [{"instrument": {"ticker": f"{s}_US_EQ"}, "quantity": q, "averagePricePaid": 50, "currentPrice": 50,
+                          "walletImpact": {"currentValue": 50 * q, "unrealizedProfitLoss": 0, "currency": "EUR"}} for s, q in self.held]
+        return 200, {"id": len(self.calls), "status": "NEW"}
+
+
+def _t212(live, prices, clock_t=dt.time(11, 0), held=None):
+    async def price_fn(syms):
+        return {s: {"last": prices[s]} for s in syms if s in prices}
+    c = t212.Trading212("k", "s", live=live, price_fn=price_fn,
+                        clock=lambda: dt.datetime.combine(dt.date(2026, 10, 21), clock_t))
+    c.call = _FakeT212Http(held)
+    return c
+
+
+def test_t212_bodies_and_auth():
+    assert t212.market_body("AAPL", 2) == {"ticker": "AAPL_US_EQ", "quantity": 2, "extendedHours": False}
+    assert t212.stop_body("AAPL", 2, 180.123) == {"ticker": "AAPL_US_EQ", "quantity": -2, "stopPrice": 180.12, "timeValidity": "DAY"}
+    c = t212.Trading212("key", "secret")
+    import base64
+    assert c.headers["Authorization"] == "Basic " + base64.b64encode(b"key:secret").decode()
+    assert c.base.startswith("https://demo.") and t212.Trading212("k", "s", live=True).base.startswith("https://live.")
+
+
+def test_t212_live_is_market_only_and_desk_exits_at_stop():
+    async def go():
+        c = _t212(True, {"AAPL": 49.0}, held=[("AAPL", 2)])
+        r = await c.place_ticket({"symbol": "AAPL", "qty": 2, "stop": 49.5, "target": 52})
+        assert r["ok"] and [x[1] for x in c.call.calls] == ["/equity/orders/market"]      # no stop order on live
+        await c.check_exits()
+        sells = [x for x in c.call.calls if x[1] == "/equity/orders/market" and x[2]["quantity"] < 0]
+        assert len(sells) == 1 and sells[0][2]["quantity"] == -2 and "AAPL" not in c.guards
+    asyncio.run(go())
+
+
+def test_t212_practice_rests_a_stop_and_flattens_at_1555():
+    async def go():
+        c = _t212(False, {"MSFT": 50.0}, clock_t=dt.time(15, 56), held=[("MSFT", 1)])
+        await c.place_ticket({"symbol": "MSFT", "qty": 1, "stop": 49, "target": 53})
+        assert [x[1] for x in c.call.calls] == ["/equity/orders/market", "/equity/orders/stop"]
+        await c.check_exits()
+        assert ("DELETE", "/equity/orders/2", None) in c.call.calls                      # resting stop cancelled
+        assert c.call.calls[-1][1] == "/equity/orders/market" and c.call.calls[-1][2]["quantity"] == -1
+    asyncio.run(go())
+
+
+def test_t212_account_shape_and_no_us_daytrade_rule():
+    async def go():
+        c = _t212(False, {})
+        a = await c.account()
+        assert a["equity"] == 1000 and a["cash"] == 900 and a["currency"] == "EUR"
+    asyncio.run(go())
+    checks = sdesk.check_ticket("AAPL", 1, 50, 49, 52, 1000, 1, 200, dt.datetime(2026, 10, 21, 10, 30), None)
+    assert not any("pattern-day-trader" in c["check"] for c in checks)

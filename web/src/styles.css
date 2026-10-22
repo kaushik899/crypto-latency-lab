@@ -734,3 +734,5 @@ html, body { overflow-x: clip; }
 .tick { animation: tick 1.2s ease-out; border-radius: 3px; padding: 0 2px; }
 @keyframes tick { from { background: rgba(217,178,106,.35); } to { background: transparent; } }
 @media (prefers-reduced-motion: reduce) { .live-dot, .tick { animation: none; } }
+.watching { font-size: 13.5px; color: var(--stone); padding: 10px 12px; border: 1px solid rgba(127,203,164,.4); border-radius: var(--r); background: rgba(127,203,164,.06); }
+.watching ul { margin: 6px 0 0; padding-left: 18px; color: var(--plaster); }

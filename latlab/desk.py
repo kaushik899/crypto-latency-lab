@@ -54,6 +54,7 @@ KEY_PAGES = {
     "bybit": ("https://www.bybit.com/app/user/api-management", "https://testnet.bybit.com/app/user/api-management"),
     "kraken": ("https://pro.kraken.com/app/settings/api", None),
     "coinbase": ("https://www.coinbase.com/settings/api", None),
+    "trading212": ("https://app.trading212.com/", "https://app.trading212.com/"),
     "alpaca": ("https://app.alpaca.markets/brokerage/dashboard/overview", "https://app.alpaca.markets/paper/dashboard/overview"),
 }
 
@@ -243,7 +244,7 @@ class Desk:
         for ex, info in connect.EXCHANGES.items():
             live_url, test_url = KEY_PAGES.get(ex, (None, None))
             out.append({
-                "id": ex, "name": info["name"], "market": "stocks" if ex == "alpaca" else "crypto",
+                "id": ex, "name": info["name"], "market": "stocks" if ex in ("alpaca", "trading212") else "crypto",
                 "practice": bool(info.get("testnet")), "passphrase": bool(info.get("password")),
                 "help": info.get("help"), "practiceHelp": info.get("testnet_help"),
                 "keyUrl": live_url, "practiceUrl": test_url,
@@ -295,10 +296,11 @@ class Desk:
             if old:
                 await old.close()
             return True
-        if ex == "alpaca":
+        if ex in ("alpaca", "trading212"):
             from .stocks.alpaca import Alpaca
+            from .stocks.t212 import Trading212
             old = self.stocks.client
-            self.stocks.client = Alpaca(key, sec, live=mode == "live")
+            self.stocks.client = (Alpaca if ex == "alpaca" else Trading212)(key, sec, live=mode == "live")
             await self.stocks.client.start()
             if old:
                 await old.close()
@@ -315,7 +317,8 @@ class Desk:
         if removed and name == f"binance:{self.mode}" and self.client:
             await self.client.close()
             self.client = None
-        if removed and name == f"alpaca:{self.mode}" and self.stocks.client:
+        if removed and name in (f"alpaca:{self.mode}", f"trading212:{self.mode}") and self.stocks.client \
+                and getattr(self.stocks.client, "kind", "alpaca") == name.split(":")[0]:
             await self.stocks.client.close()
             self.stocks.client = None
         return self.cors(req, web.json_response({"ok": removed, "accounts": self.accounts_info()}))
@@ -429,6 +432,11 @@ async def serve(a):
         from .stocks.alpaca import Alpaca
         stocks = Alpaca(sc["key"], sc["secret"], live=live)
         await stocks.start()
+    elif (sc := connect.load("trading212", mode)):
+        from .stocks.t212 import Trading212
+        stocks = Trading212(sc["key"], sc["secret"], live=live)
+        await stocks.start()
+        print(f"  Trading 212 {'REAL-MONEY' if live else 'practice'} account connected.")
         print(f"  Alpaca {'LIVE' if live else 'paper'} account connected: stock tickets capped at "
               f"${a.max_stock_order:g}, {a.stock_risk_pct:g}% max loss, one approval per order.")
     else:

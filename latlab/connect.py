@@ -38,6 +38,10 @@ EXCHANGES = {
                "help": "kraken.com → Settings → API. Allow Query Funds + Create & Modify Orders only."},
     "coinbase": {"name": "Coinbase Advanced", "testnet": False, "password": False,
                  "help": "coinbase.com/settings/api → New key with View + Trade (no Transfer)."},
+    "trading212": {"name": "Trading 212", "testnet": True, "password": False,
+                   "help": "Trading 212 app → Settings → API (Beta) → Generate key, on your Invest or Stocks ISA account. "
+                           "Tick the account, portfolio and orders permissions. Keys cannot withdraw money.",
+                   "testnet_help": "Trading 212 app → switch to Practice → Settings → API (Beta) → Generate key."},
     "alpaca": {"name": "Alpaca (US stocks)", "testnet": True, "password": False,
                "help": "app.alpaca.markets → switch to your Live account → API Keys → Generate. Trading-API "
                        "keys cannot withdraw money.",
@@ -134,6 +138,8 @@ async def verify(exchange: str, mode: str, creds: dict) -> tuple[bool, str, dict
     """(ok, message, balances). Refuses keys that can withdraw, where the exchange tells us."""
     if exchange == "alpaca":
         return await verify_alpaca(mode, creds)
+    if exchange == "trading212":
+        return await verify_t212(mode, creds)
     import ccxt.async_support as ccxt
 
     ex = getattr(ccxt, exchange)({"apiKey": creds["key"], "secret": creds["secret"], "password": creds.get("password"),
@@ -199,6 +205,25 @@ async def verify_alpaca(mode: str, creds: dict) -> tuple[bool, str, dict]:
         note += (" Under $25,000 in a margin account, US rules allow at most 3 day trades in 5 business days "
                  "(pattern-day-trader rule); a cash account avoids it but must wait for settlement.")
     return True, note, {"USD": float(a.get("cash") or 0)}
+
+
+async def verify_t212(mode: str, creds: dict) -> tuple[bool, str, dict]:
+    from .stocks.t212 import Trading212
+    import aiohttp
+    c = Trading212(creds["key"], creds["secret"], live=mode == "live")
+    c.http = aiohttp.ClientSession(headers=c.headers, timeout=aiohttp.ClientTimeout(total=10))
+    try:
+        a = await c.account()
+    except Exception as e:  # noqa: BLE001
+        return False, f"Trading 212 rejected this key: {e}", {}
+    finally:
+        await c.http.close()
+    note = (f"Verified Trading 212 {'real-money' if mode == 'live' else 'practice'} account "
+            f"({a.get('currency')}, total {a.get('equity')}). API keys cannot withdraw.")
+    if mode == "live":
+        note += (" Its API takes market orders only for real money: your desk watches each position and sells at "
+                 "the stop or target, so keep the desk running while a trade is open.")
+    return True, note, {a.get("currency") or "cash": float(a.get("cash") or 0)}
 
 
 # ---------------------------------------------------------------------------- CLI

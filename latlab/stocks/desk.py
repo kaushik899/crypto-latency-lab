@@ -87,7 +87,10 @@ class StockDesk:
                                                      self.client.open_orders())
         except Exception as e:  # noqa: BLE001
             return self._j(req, {"error": f"Alpaca: {e}"}, 502)
-        return self._j(req, {"connected": True, "live": self.client.live, "account": acct, "positions": pos,
+        extra = {}
+        if hasattr(self.client, "guards"):
+            extra = {"broker": "Trading 212", "watching": self.client.guards, "events": self.client.events[-10:]}
+        return self._j(req, {"connected": True, "live": self.client.live, "account": acct, "positions": pos, **extra,
                              "orders": orders, "maxOrder": self.max_order, "riskPct": self.risk_pct})
 
     async def quote(self, req):
@@ -119,11 +122,15 @@ class StockDesk:
             return self._j(req, {"error": f"Bad ticket: {e}"}, 400)
         acct = await self.client.account()
         equity = float(acct.get("equity") or 0)
+        t212 = getattr(self.client, "kind", "") == "trading212"
         checks = check_ticket(symbol, qty, entry, stop, target, equity, self.risk_pct, self.max_order, _now_et(),
-                              {**acct, "live": self.client.live})
+                              None if t212 else {**acct, "live": self.client.live})   # US day-trade rule: US brokers only
         frac = qty != int(qty)
-        kind = ("fractional market buy + separate stop (no automatic target: close it yourself or at 15:55)"
-                if frac else "bracket: market buy + take-profit + stop-loss, day only")
+        if hasattr(self.client, "ticket_kind"):
+            kind = self.client.ticket_kind(frac)
+        else:
+            kind = ("fractional market buy + separate stop (no automatic target: close it yourself or at 15:55)"
+                    if frac else "bracket: market buy + take-profit + stop-loss, day only")
         summary = (f"BUY {qty:g} {symbol} ≈ ${qty * entry:,.2f} · stop {stop:.2f} · target {target:.2f} · "
                    f"max loss ≈ ${(entry - stop) * qty:,.2f} · {'REAL MONEY' if self.client.live else 'paper account'}")
         ok = all(c["ok"] for c in checks)
@@ -153,7 +160,10 @@ class StockDesk:
                 return self._j(req, {"error": "One stock order every 2 seconds."}, 429)
             self.last_order = time.time()
             t0 = time.perf_counter()
-            if t["fractional"]:
+            if hasattr(self.client, "place_ticket"):
+                result = await self.client.place_ticket(t)
+                st, r = (200 if result["ok"] else 400), (result.get("orders") or [None])[0]
+            elif t["fractional"]:
                 buy, stp = fractional_bodies(t["symbol"], t["qty"], t["stop"])
                 st, r = await self.client.submit(buy)
                 st2, r2 = (await self.client.submit(stp)) if st == 200 else (None, None)

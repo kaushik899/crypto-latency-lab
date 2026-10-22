@@ -225,9 +225,9 @@ function Account({ refreshKey }: { refreshKey: number }) {
   if (!st.connected) {
     return (
       <div className="stk-acct">
-        <h4>Your Alpaca account</h4>
-        <p className="muted">The desk is paired but has no Alpaca key yet. A paper account is free from any country:
-          open <i>Trade now → My accounts → Connect accounts → Alpaca</i>.</p>
+        <h4>Your stock account</h4>
+        <p className="muted">The desk is paired but has no stock broker yet. Connect Alpaca (free paper account, any country) or
+          Trading 212 (Invest or ISA, practice or real): <i>Trade now → My accounts → Connect accounts</i>.</p>
       </div>
     );
   }
@@ -236,7 +236,7 @@ function Account({ refreshKey }: { refreshKey: number }) {
   return (
     <div className="stk-acct">
       <div className="auto-head">
-        <h4>Your Alpaca account</h4>
+        <h4>Your {st.broker ?? "Alpaca"} account</h4>
         <span className={`bot-state ${st.live ? "live" : "on"}`}>{st.live ? "Real money" : "Paper"}</span>
       </div>
       <dl className="setup-plan">
@@ -245,6 +245,19 @@ function Account({ refreshKey }: { refreshKey: number }) {
         <div><dt>Buying power</dt><dd className="num">{usd(Number(a.buying_power))}</dd></div>
         <div><dt>Day trades (5 d)</dt><dd className="num">{a.daytrade_count ?? 0}</dd></div>
       </dl>
+      {st.watching && Object.keys(st.watching).length > 0 && (
+        <div className="watching" role="status">
+          <span className="live-dot" aria-hidden /> Your desk is watching {Object.keys(st.watching).length} position
+          {Object.keys(st.watching).length > 1 ? "s" : ""} and will sell at market at the stop, the target or 15:55 New York.
+          Keep it running.
+          <ul>{Object.entries(st.watching as Record<string, AnyRec>).map(([sym, g]) => (
+            <li key={sym}><b>{sym}</b> · {g.qty} sh · stop {Number(g.stop).toFixed(2)} · target {Number(g.target).toFixed(2)}</li>))}</ul>
+        </div>
+      )}
+      {st.events?.length > 0 && (
+        <ol className="events">{[...st.events].reverse().map((e: AnyRec, i: number) => (
+          <li key={i} className={e.ok ? "" : "warn"}><time>{new Date(e.t * 1000).toLocaleTimeString("en-GB")}</time> {e.symbol} · {e.why}{e.error ? ` · ${e.error}` : ""}</li>))}</ol>
+      )}
       {st.positions?.length > 0 && (
         <ol className="blotter">
           {st.positions.map((p: AnyRec) => (
@@ -362,7 +375,7 @@ export function Stocks({ onConnect }: { onConnect: () => void }) {
             <div className="stk-acct">
               <h4>Trade it</h4>
               <p className="muted">
-                Orders go from your own trade desk to Alpaca, with a stop and a target attached. The desk re-checks every
+                Orders go from your own trade desk to Alpaca or Trading 212, with a stop and a target. The desk re-checks every
                 ticket against your live account; nothing is sent until you press <i>Place this order</i>.
               </p>
               <button className="btn gold" onClick={onConnect}>Connect my accounts</button>

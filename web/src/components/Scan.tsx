@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useScanData } from "../lib/scanData";
 import { desk, deskCall, onDesk } from "../lib/trade";
 
-/** Real-time IEX prices for the visible rows, through the paired desk's Alpaca account (every 5 s). */
+/** Real-time IEX prices for the visible rows, through the paired desk's stock broker (every 5 s). */
 function useLive(symbols: string[]): Record<string, AnyRec> {
   const [paired, setPaired] = useState(!!desk.status);
   const [live, setLive] = useState<Record<string, AnyRec>>({});
@@ -16,7 +16,7 @@ function useLive(symbols: string[]): Record<string, AnyRec> {
       try {
         const j = await deskCall(`/stocks/live?symbols=${encodeURIComponent(key)}`);
         if (alive && !j.error) setLive((prev) => ({ ...prev, ...j }));
-      } catch { off.current = true; return; }        // no Alpaca key: stay on end-of-day data
+      } catch { off.current = true; return; }        // no broker key: stay on end-of-day data
       if (alive) id = window.setTimeout(pull, 5000);
     };
     pull();
@@ -214,8 +214,8 @@ export function Scan() {
       {rows.length > n && <button className="link" onClick={() => setN((x) => x + 50)}>Show {Math.min(50, rows.length - n)} more</button>}
       <p className="fine">
         {isLive
-          ? "Now prices are real time from your Alpaca account (IEX feed), refreshed every 5 seconds; the other columns are end of day."
-          : "Free Yahoo Finance data, unofficial and end of day. Connect an Alpaca key to your desk for real-time prices."}{" "}
+          ? "Now prices come through your desk (Alpaca: real-time IEX; Trading 212: Yahoo, may lag), refreshed every 5 seconds; the other columns are end of day."
+          : "Free Yahoo Finance data, unofficial and end of day. Connect Alpaca or Trading 212 to your desk for live prices."}{" "}
         {money(hits[0]?.dollar_volume)} traded in the busiest match yesterday.
         “Daily range” is the 14-day average true range as a share of price. Check the news before acting on any chart: a
         drop to RSI 20 is often a headline, not a bargain. Not investment advice.

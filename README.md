@@ -34,8 +34,9 @@ irm https://raw.githubusercontent.com/kaushik899/crypto-latency-lab/main/scripts
 ```
 
 That installs (or updates) the private trade desk on your computer, starts it, and opens the site already
-paired. In **Trade now → My accounts → Connect accounts**, pick Binance, OKX, Bybit, Kraken, Coinbase or
-Alpaca, open its API-key page from the link, and paste the key: it goes from the page to the desk on
+paired. In **Trade now → My accounts → Connect accounts**, pick Binance, OKX, Bybit, Kraken, Coinbase, Alpaca
+or Trading 212 (Invest or Stocks ISA; its real-money API takes market orders only, so the desk itself
+sells at your stop or target while it runs), open its API-key page from the link, and paste the key: it goes from the page to the desk on
 127.0.0.1 only, is checked with the venue (keys that can withdraw are refused) and saved in your system
 keychain. Then trade crypto or US stocks from the same drawer: crypto in one click, stocks as a day order
 with a stop and target that your desk re-checks before you press *Place this order*.

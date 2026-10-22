@@ -50,6 +50,8 @@ def fractional_bodies(symbol: str, qty: float, stop: float) -> tuple[dict, dict]
 
 
 class Alpaca:
+    kind = "alpaca"
+
     def __init__(self, key: str, secret: str, live: bool = False):
         self.base = LIVE_URL if live else PAPER_URL
         self.live = live

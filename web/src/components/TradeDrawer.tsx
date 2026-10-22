@@ -101,7 +101,7 @@ export function TradeDrawer({ open, onClose, tab }: { open: boolean; onClose: ()
         ) : !desk ? (
           <div className="desk-setup">
             <p className="drawer-note">
-              Connect Binance, OKX, Bybit, Kraken, Coinbase or Alpaca in under a minute. Your keys never touch this
+              Connect Binance, OKX, Bybit, Kraken, Coinbase, Alpaca or Trading 212 in under a minute. Your keys never touch this
               website: a small private desk on your computer keeps them and places each order the moment you click.
             </p>
             <StartDesk />

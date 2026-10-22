@@ -67,7 +67,7 @@ export function StockTicket() {
           <div><dt>If the target hits ({target.toFixed(2)})</dt><dd className="num pos">+{usd(win)}</dd></div>
           <div><dt>If the stop hits ({stop.toFixed(2)})</dt><dd className="num neg">{usd(loss)}</dd></div>
         </dl>
-      ) : !err && <p className="fine">Fetching a price from your Alpaca account…</p>}
+      ) : !err && <p className="fine">Fetching a price through your desk…</p>}
       {!ticket && !done && <button className="btn gold" disabled={busy || !q || qty <= 0} onClick={preview}>Preview ticket</button>}
       {ticket && (
         <div className="ticket-card" role="dialog" aria-label="Order ticket">
