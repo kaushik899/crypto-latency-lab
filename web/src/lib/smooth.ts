@@ -26,7 +26,7 @@ export function smoothTo(el: HTMLElement) {
 }
 
 const REVEAL = [".block", ".room-lede", ".plate", ".setup", ".rates", ".plan", ".po", ".stk-acct", ".stk-track",
-  ".stk-scan", ".stk-edge", ".auto-pub", ".auto-mine", ".strat-list li", ".auto-fig", ".rank"].join(",");
+  ".stk-scan", ".stk-edge", ".rule", ".rules", ".auto-pub", ".auto-mine", ".strat-list li", ".auto-fig", ".rank"].join(",");
 
 export function startReveal() {
   if (reduced() || !("IntersectionObserver" in window)) return;

@@ -4,6 +4,7 @@ import todayBundled from "../data/stocks-today.json";
 import trackBundled from "../data/stocks-track.json";
 import { desk, deskCall, onDesk } from "../lib/trade";
 import { Planner } from "./Planner";
+import { Rules } from "./Rules";
 import { Scan } from "./Scan";
 
 type AnyRec = Record<string, any>;
@@ -307,6 +308,8 @@ export function Stocks({ onConnect }: { onConnect: () => void }) {
       </header>
 
       <Planner />
+
+      <Rules />
 
       <div className="stk-grid">
         <section className="stk-today" aria-labelledby="stk-today-h">

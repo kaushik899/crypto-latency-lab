@@ -1,5 +1,29 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useScanData } from "../lib/scanData";
+import { desk, deskCall, onDesk } from "../lib/trade";
+
+/** Real-time IEX prices for the visible rows, through the paired desk's Alpaca account (every 5 s). */
+function useLive(symbols: string[]): Record<string, AnyRec> {
+  const [paired, setPaired] = useState(!!desk.status);
+  const [live, setLive] = useState<Record<string, AnyRec>>({});
+  const key = symbols.join(",");
+  const off = useRef(false);
+  useEffect(() => onDesk(() => setPaired(!!desk.status)), []);
+  useEffect(() => {
+    if (!paired || !key || off.current) return;
+    let alive = true, id = 0;
+    const pull = async () => {
+      try {
+        const j = await deskCall(`/stocks/live?symbols=${encodeURIComponent(key)}`);
+        if (alive && !j.error) setLive((prev) => ({ ...prev, ...j }));
+      } catch { off.current = true; return; }        // no Alpaca key: stay on end-of-day data
+      if (alive) id = window.setTimeout(pull, 5000);
+    };
+    pull();
+    return () => { alive = false; window.clearTimeout(id); };
+  }, [paired, key]);
+  return live;
+}
 
 type AnyRec = Record<string, any>;
 const SETUPS = ["breakout_20d", "bull_flag", "reclaim_ma20", "oversold", "oversold_bounce"] as const;
@@ -104,6 +128,9 @@ export function Scan() {
     return r;
   }, [hits, setup, q, sort, hot, trend]);
 
+  const live = useLive(rows.slice(0, n).map((h) => h.symbol));
+  const isLive = Object.keys(live).length > 0;
+
   if (doc.pending || !hits.length) {
     return (
       <section className="stk-scan" aria-labelledby="scan-h">
@@ -155,7 +182,7 @@ export function Scan() {
       <div className="table-wrap">
         <table className="auto-table scan-t">
           <thead>
-            <tr><th scope="col">Stock</th><th scope="col" className="hide-s">60 days</th><th scope="col" className="r">Close</th>
+            <tr><th scope="col">Stock</th><th scope="col" className="hide-s">60 days</th><th scope="col" className="r">{isLive ? <>Now <span className="live-dot" aria-label="live" /></> : "Close"}</th>
               <th scope="col" className="r">Day</th><th scope="col" className="r">RSI</th>
               <th scope="col" className="r hide-s">Volume vs normal</th><th scope="col" className="r hide-s">Daily range</th>
               <th scope="col" className="r hide-s">vs 200-day</th><th scope="col" className="r hide-s">From 52-wk high</th>
@@ -166,8 +193,9 @@ export function Scan() {
               <tr key={h.symbol}>
                 <th scope="row"><b>{h.symbol}</b><small>{h.name}</small></th>
                 <td className="hide-s"><Spark v={h.spark} up={(h.chg_5d ?? 0) >= 0} /></td>
-                <td className="num r">{h.price?.toFixed(2)}</td>
-                <td className={`num r ${(h.chg_1d ?? 0) >= 0 ? "pos" : "neg"}`}>{sgn(h.chg_1d)}</td>
+                <td className="num r">{live[h.symbol]?.last
+                  ? <span key={live[h.symbol].last} className="tick">{Number(live[h.symbol].last).toFixed(2)}</span> : h.price?.toFixed(2)}</td>
+                <td className={`num r ${((live[h.symbol]?.chg_pct ?? h.chg_1d) ?? 0) >= 0 ? "pos" : "neg"}`}>{sgn(live[h.symbol]?.chg_pct ?? h.chg_1d)}</td>
                 <td className="num r">{f(h.rsi, 0)}</td>
                 <td className={`num r hide-s ${(h.rel_volume ?? 0) >= 1.5 ? "hot" : ""}`}>{h.rel_volume == null ? "—" : `${h.rel_volume.toFixed(1)}×`}</td>
                 <td className="num r hide-s">{f(h.atr_pct, 1, "%")}</td>
@@ -185,7 +213,10 @@ export function Scan() {
       </div>
       {rows.length > n && <button className="link" onClick={() => setN((x) => x + 50)}>Show {Math.min(50, rows.length - n)} more</button>}
       <p className="fine">
-        Free Yahoo Finance data, unofficial and end of day; {money(hits[0]?.dollar_volume)} traded in the busiest match.
+        {isLive
+          ? "Now prices are real time from your Alpaca account (IEX feed), refreshed every 5 seconds; the other columns are end of day."
+          : "Free Yahoo Finance data, unofficial and end of day. Connect an Alpaca key to your desk for real-time prices."}{" "}
+        {money(hits[0]?.dollar_volume)} traded in the busiest match yesterday.
         “Daily range” is the 14-day average true range as a share of price. Check the news before acting on any chart: a
         drop to RSI 20 is often a headline, not a bargain. Not investment advice.
       </p>

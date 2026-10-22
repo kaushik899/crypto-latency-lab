@@ -262,6 +262,15 @@ def evaluate(name, calendar, prices, weights, bench_asset, cost_bps, per_year, d
         "stats": s_all, "hold_stats": b_all, "halves": parts,
         "verdict": ("steadier_and_richer" if steadier and richer else "steadier" if steadier
                     else "richer" if richer else "no_better"),
+        "facts": {
+            "smaller_crashes_both_halves": all(parts[p]["rule"]["max_dd_pct"] > parts[p]["hold"]["max_dd_pct"] for p in parts),
+            "better_sharpe_both_halves": all((parts[p]["rule"].get("sharpe") or -9) > (parts[p]["hold"].get("sharpe") or -9) for p in parts),
+            "higher_return_both_halves": richer,
+            "higher_return_overall": s_all["cagr_pct"] > b_all["cagr_pct"],
+            "better_sharpe_overall": (s_all.get("sharpe") or -9) > (b_all.get("sharpe") or -9),
+            "split": cal[half],
+        },
+        "next_check": "every day at the close" if per_year == 365 else "the last trading day of each month, at the close",
         "signal": {"hold": {k: round(v, 3) for k, v in (cur or {}).items()}, "decided": cal[last_i] if last_i is not None else None,
                    "since": since or cal[0]},
         "switches_per_year": round(switches / years, 1) if years else None,
