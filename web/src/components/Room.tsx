@@ -17,7 +17,7 @@ export function Room({ id, lede, children, focus = "50% 50%", continues = false 
         <div className="room-shade" />
       </div>
       <header className={continues ? "room-compact" : "room-intro"}>
-        <p className="room-no">Room {["I", "II", "III", "IV", "V"][idx]} · {room.short}</p>
+        <p className="room-no">Room {["I", "II", "III", "IV", "V", "VI", "VII"][idx]} · {room.short}</p>
         <h2 id={`${id}-title`} className="room-title">{room.title}</h2>
         {lede && <div className="room-lede">{lede}</div>}
         {!continues && <p className="plate">

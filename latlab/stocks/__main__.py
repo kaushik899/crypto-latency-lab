@@ -99,7 +99,7 @@ def cmd_today(a) -> int:
     et = tm.to_eastern(now)
     d = et.date().isoformat()
     edge_doc = _load(WEB / "stocks-edge.json", None)
-    if not edge_doc:
+    if not edge_doc or edge_doc.get("pending") or not edge_doc.get("symbols"):
         print("run research first", file=sys.stderr)
         return 1
     session = sc.session(et.date())
@@ -151,7 +151,9 @@ def cmd_today(a) -> int:
 def cmd_score(a) -> int:
     now = dt.datetime.utcnow()
     track_path = WEB / "stocks-track.json"
-    track = _load(track_path, {"rows": []})
+    track = _load(track_path, {})
+    track.pop("pending", None)
+    track.setdefault("rows", [])
     done = {(r["date"], r["symbol"], r["rule"]) for r in track["rows"]}
     files = sorted(PICKS.glob("*.json"))
     todo = []

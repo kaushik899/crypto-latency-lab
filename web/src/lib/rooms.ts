@@ -1,6 +1,6 @@
 import credits from "../../public/paintings/credits.json";
 
-export type PaintingId = "gallery" | "speed" | "babel" | "moneylender" | "icarus" | "astronomer";
+export type PaintingId = "gallery" | "speed" | "babel" | "moneylender" | "icarus" | "astronomer" | "exchange";
 
 export type Credit = { id: PaintingId; title: string; artist: string; year: string; where: string; source: string };
 
@@ -20,6 +20,7 @@ export const ROOMS: RoomMeta[] = [
   { id: "live", painting: "speed", short: "Speed", title: "Watch the lag, live." },
   { id: "leadlag", painting: "babel", short: "Babel", title: "Five exchanges, one price, different clocks." },
   { id: "desk", painting: "moneylender", short: "The desk", title: "Weigh every trade before you make it." },
+  { id: "stocks", painting: "exchange", short: "The exchange", title: "Every US stock, tested before it is traded." },
   { id: "research", painting: "icarus", short: "Icarus", title: "Faster than the fee is not fast enough." },
   { id: "method", painting: "astronomer", short: "Method", title: "How every number here is measured." },
 ];

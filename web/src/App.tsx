@@ -9,6 +9,7 @@ import { Method } from "./components/Method";
 import { RealLive } from "./components/RealLive";
 import { Research } from "./components/Research";
 import { Room } from "./components/Room";
+import { Stocks } from "./components/Stocks";
 import { TradeDrawer } from "./components/TradeDrawer";
 import { CREDITS } from "./lib/rooms";
 import { scrollToId, startScroll } from "./lib/scroll";
@@ -56,6 +57,14 @@ export default function App() {
           <AutoTrader onConnect={openTrade} />
           <PredictSim />
           <Board />
+        </Room>
+
+        <Room id="stocks" focus="55% 22%" lede={<p>
+          Not only crypto: the same discipline on US stocks. Rules are tested walk-forward on the most liquid names with
+          real costs, today&rsquo;s breakouts are posted with a plan and a size for a small account, and every order waits
+          for your own approval through the desk.
+        </p>}>
+          <Stocks onConnect={openTrade} />
         </Room>
 
         <Room id="research" focus="60% 60%" lede={<p>

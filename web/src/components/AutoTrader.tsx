@@ -59,6 +59,7 @@ function Published() {
         replays every strategy on them in paper mode and republishes this page. Last run {ago(last.recordedAt)};{" "}
         {SESSIONS.length} session{SESSIONS.length === 1 ? "" : "s"} so far.
       </p>
+      <div className="table-wrap">
       <table className="auto-table">
         <thead>
           <tr><th scope="col">Strategy</th><th scope="col" className="r">Markets where it predicts</th>
@@ -77,6 +78,7 @@ function Published() {
           ))}
         </tbody>
       </table>
+      </div>
       <p className="fine">
         Last session: {last.botCounts?.observations?.toLocaleString() ?? 0} predictions checked against what happened next;{" "}
         {last.botCounts?.signals ?? 0} were confident enough to beat fees and spread, {last.botCounts?.below_cost?.toLocaleString() ?? 0} were real but too small.

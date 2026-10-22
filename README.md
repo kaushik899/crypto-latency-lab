@@ -9,14 +9,15 @@ option-pricing model and a simulator (Polymarket is blocked in France).
 
 **Live site:** https://kaushik899.github.io/crypto-latency-lab/
 
-> Research and paper trading only. Nothing in this repository signs, sends or places orders.
-> No exchange account or API key is needed or used.
+> Research and paper trading by default. Orders are only ever sent by the trade desk running on your
+> own computer, with your own keys: crypto auto-trading with real money needs `--live --auto` plus a
+> passed performance gate, and every stock order needs your click on its ticket. Not investment advice.
 
 ![The gallery entrance: a camera dolly into Turner's Rain, Steam and Speed](docs/hero.png)
 
 The site is a museum of market timing. Each room hangs a public-domain painting chosen for its idea —
 Turner's *Rain, Steam and Speed* for latency, Bruegel's *Tower of Babel* for five exchanges quoting one price,
-Matsys' *Moneylender and his Wife* for the trade desk, *The Fall of Icarus* for the backtest, Vermeer's
+Matsys' *Moneylender and his Wife* for the trade desk, Degas' *Portraits at the Stock Exchange* for the stock lab, *The Fall of Icarus* for the backtest, Vermeer's
 *Astronomer* for the method — and scrolling dollies the camera from Hubert Robert's Grande Galerie of the
 Louvre into the first frame.
 
@@ -115,12 +116,44 @@ It does not promise profit. On a synthetic market with a real 0.6 s lag it finds
 (about 480 trades, t of 6 to 9) when costs are zero, and correctly stays out when 0.10% fees make the
 lag unprofitable.
 
+## Stocks: every liquid US stock, tested before it is traded
+
+The same discipline on US equities, built on Jake Schincariol's MIT-licensed
+[Day Trader toolkit](https://github.com/Jakeschincariol/day-trader-skill) (vendored, unmodified, in
+`vendor/`; its 315 tests run in CI).
+
+1. **Research, every trading morning** (`python -m latlab.stocks research`). Ranks the ~6,000 US stocks and
+   ADRs from Nasdaq Trader by dollar volume, pulls 60 days of 5-minute bars for the 150 most liquid, and
+   replays 18 opening-range-breakout rules (5/15/30-minute range × stop at the range middle or low ×
+   1R, 2R or hold to 15:55). Entries are at the **next bar's open** plus slippage, stops are checked before
+   targets, everything is flat by 15:55, and SEC and FINRA fees are charged. Rules are ranked on the first
+   40 days only; a rule is *fundable* only if it clears t ≥ 3 there (18 rules tried, so a corrected bar,
+   t clustered by day) **and** stays positive on the last 20 days it never saw.
+2. **Today, every 30 minutes in the session** (`... today`). Fresh breakouts on the researched stocks, each
+   with a plan (entry, stop, target), the toolkit's Time Machine odds (10,000 replays of that stock's own
+   past bars) and a size for a small account: whole shares when they fit, fractional shares otherwise, and
+   a maximum loss of 1% of the account by default.
+3. **Score, after the close** (`... score`). Every published setup is replayed on the real bars, net of
+   costs, into a public track record — the validated ones and the watch-only ones separately.
+4. **Trade it, one approval per order.** Connect a free Alpaca paper account (any country) with
+   `python -m latlab.connect`, start the desk, pair it on the site. *Preview ticket* makes the desk re-check
+   the plan against your live equity (size cap, max loss, reward ≥ 1.5× risk, 9:45–15:30 ET, the
+   pattern-day-trader limit on small live margin accounts) and return a one-time ticket that expires in 90 s.
+   Only *Place this order* sends it: a bracket order (market entry, take-profit, stop-loss) for whole
+   shares, or a market buy plus a stop for fractional ones. Nothing trades stocks automatically.
+
+Honest expectation: most published intraday rules do not survive costs and an out-of-sample test, and
+most retail day traders lose money. When no rule passes, the site says so and funds nothing.
+
 ## Self-updating research
 
 `.github/workflows/research.yml` runs every four hours: it records 20 minutes of live quotes (30
 Binance markets via its public data mirror, plus Coinbase, Kraken, OKX and Bybit), measures who follows
 Binance, replays every auto-trader strategy on the recording in paper mode (continuing the calibration
 from previous sessions in `data/bot/models.json`) and commits the result, which redeploys the site.
+`.github/workflows/stocks.yml` runs the stock research before the US open, today's setups every
+30 minutes while the market is open, and the scoring after the close; the open page also refreshes
+those files from the repo every few minutes.
 
 ## What's inside
 
@@ -133,6 +166,8 @@ latlab/
   desk.py        local trade desk behind Trade now and the Auto-trader panel (testnet default)
   connect.py     one-command account connection with key and withdrawal-permission checks
   universe.py    top Binance markets by volume, minus stablecoins and tokenised stocks
+  stocks/        US stocks: universe + liquidity rank, walk-forward ORB edge test, daily setups,
+                 small-account sizing, track record, Alpaca client, desk ticket routes
   bot/           auto-trader: strategies, online models, risk, ledger + gate, paper/ccxt brokers, runner
   tape.py        time-aligned record of spot + books (from simulation or from a live recording)
   sim.py         correlated GBM + stochastic vol + jumps, oracle basis, lagging market maker, rival latency bots
@@ -142,7 +177,7 @@ latlab/
   live.py        live monitor + paper trader + recorder (all six coins)
   tapes.py       recording → tape for the backtester
 web/             React + TypeScript gallery site: live rooms, Trade now drawer, research charts, method
-tests/           43 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
+tests/           52 tests (plus 315 in the vendored toolkit) (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
 ```
 
 ## Assets

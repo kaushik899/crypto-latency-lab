@@ -466,3 +466,56 @@ html:not([data-plate]) .next-card { opacity: 0; transform: translateY(-8px); poi
 @media (max-width: 420px) {
   .logo-word { display: none; }
 }
+
+/* ---------- Stock lab ---------- */
+.stk { display: grid; gap: 26px; }
+.stk h4 { margin: 0; font: 400 28px/1 var(--serif); }
+.stk-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.stk-today, .stk-side, .stk-acct, .stk-track, .stk-edge { min-width: 0; display: grid; gap: 14px; align-content: start; }
+.stk-side { gap: 22px; }
+.stk-acct, .stk-track { padding: 16px; border: 1px solid var(--line); border-radius: var(--r); background: rgba(10,8,6,.4); }
+.stk-acct-in { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.setups { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 12px; }
+.setup { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: var(--r); background: rgba(10,8,6,.45);
+  animation: setup-in .5s cubic-bezier(.2,.7,.2,1) both; }
+.setup:nth-child(2) { animation-delay: .06s; } .setup:nth-child(3) { animation-delay: .12s; } .setup:nth-child(4) { animation-delay: .18s; }
+.setup.is-valid { border-color: rgba(217,178,106,.55); box-shadow: inset 0 0 0 1px rgba(217,178,106,.12); }
+@keyframes setup-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .setup { animation: none; } }
+.setup-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.setup-top .sym { font: 400 30px/1 var(--serif); color: var(--plaster); letter-spacing: .01em; }
+.setup-top .muted { font-size: 13px; margin-left: auto; }
+.setup-plan { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px 12px; }
+.setup-plan div { min-width: 0; }
+.setup-plan dt { font-size: 12px; color: var(--smoke); }
+.setup-plan dd { margin: 0; font-size: 15px; font-variant-numeric: tabular-nums; }
+.candles { width: 100%; height: auto; display: block; background: rgba(0,0,0,.25); border-radius: var(--r); }
+.candles .up line, .candles .up rect { stroke: var(--verdigris); fill: var(--verdigris); }
+.candles .down line, .candles .down rect { stroke: var(--vermilion); fill: var(--vermilion); }
+.candles .or-band { fill: rgba(217,178,106,.12); }
+.candles .lv line { stroke-width: 1; stroke-dasharray: 4 3; }
+.candles .lv text { font: 600 9px var(--sans); }
+.candles .target line { stroke: var(--verdigris); } .candles .target text { fill: var(--verdigris); }
+.candles .entry line { stroke: var(--gold); } .candles .entry text { fill: var(--gold); }
+.candles .stop line { stroke: var(--vermilion); } .candles .stop text { fill: var(--vermilion); }
+.odds { display: grid; gap: 6px; }
+.odds-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--umber-3); }
+.odds-bar span { display: block; height: 100%; transition: width .8s cubic-bezier(.2,.7,.2,1); }
+.odds-bar .t { background: var(--verdigris); } .odds-bar .n { background: var(--smoke); } .odds-bar .s { background: var(--vermilion); }
+.odds-key { margin: 0; font-size: 12.5px; color: var(--stone); }
+.ticket { display: grid; gap: 8px; }
+.ticket-card { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--gold); border-radius: var(--r); background: var(--umber-2); }
+.ticket-sum { margin: 0; font-weight: 600; }
+.ticket-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ticket-ok { margin: 0; color: var(--verdigris); font-size: 14px; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 13px; }
+.checks li.ok span { color: var(--verdigris); } .checks li.no { color: #f6c9bd; } .checks li.no span { color: var(--vermilion); }
+.checks em { color: var(--smoke); font-style: normal; margin-left: 4px; }
+.stk-rules td:last-child { white-space: nowrap; }
+@media (max-width: 900px) {
+  .stk-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .stk-acct-in { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .setup-top .muted { margin-left: 0; width: 100%; }
+}
