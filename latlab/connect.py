@@ -194,7 +194,16 @@ async def verify_alpaca(mode: str, creds: dict) -> tuple[bool, str, dict]:
     try:
         a = await c.account()
     except Exception as e:  # noqa: BLE001
-        return False, f"Alpaca rejected this key: {e}", {}
+        msg = f"Alpaca rejected this key: {e}."
+        k = creds["key"].strip().upper()
+        if mode != "live" and k.startswith("AK"):
+            msg += " This is a LIVE key (it starts with AK): choose Real money, or make a key on the Paper dashboard (it starts with PK)."
+        elif mode == "live" and k.startswith("PK"):
+            msg += " This is a PAPER key (it starts with PK): choose Paper, or make a key on the Live dashboard."
+        elif "unauthorized" in str(e).lower() or "forbidden" in str(e).lower():
+            msg += (" Check that the key and the secret come from the same 'Generate' (the secret is shown only once; "
+                    "if in doubt, regenerate) and that you did not swap them.")
+        return False, msg, {}
     finally:
         await c.close()
     if a.get("trading_blocked") or a.get("account_blocked"):
