@@ -102,7 +102,8 @@ def run_positions(calendar: list[str], prices: dict[str, np.ndarray], weights: l
 
 
 def month_ends(calendar: list[str]) -> list[bool]:
-    return [i == len(calendar) - 1 or calendar[i][:7] != calendar[i + 1][:7] for i in range(len(calendar))]
+    """Last session of each COMPLETE month (the running month has no month-end yet)."""
+    return [i < len(calendar) - 1 and calendar[i][:7] != calendar[i + 1][:7] for i in range(len(calendar))]
 
 
 def stats(calendar: list[str], eq: np.ndarray, per_year: int) -> dict:
@@ -266,12 +267,32 @@ def run(log=print, pause: float = 0.4) -> dict:
     series = {}
     for s in SYMBOLS:
         try:
-            series[s] = fetch(s, sc)
-            log(f"  {s}: {len(series[s][0])} days from {series[s][0][0]}")
+            days, px = fetch(s, sc)
+            if len(days) < 300:
+                raise RuntimeError(f"only {len(days)} days")
+            series[s] = (days, px)
+            log(f"  {s}: {len(days)} days from {days[0]}")
         except Exception as exc:  # noqa: BLE001
             log(f"  {s} unavailable: {exc}")
         time.sleep(pause)
-    out = {"generated": dt.datetime.utcnow().isoformat(timespec="seconds") + "Z", "rules": []}
+    import traceback
+    out = {"generated": dt.datetime.utcnow().isoformat(timespec="seconds") + "Z", "rules": [], "errors": [],
+           "history": {k: [v[0][0], v[0][-1], len(v[0])] for k, v in series.items()}}
+
+    def safe(fn, label):
+        try:
+            return fn()
+        except Exception:  # noqa: BLE001 - one rule never stops the others; the error is published
+            out["errors"].append(f"{label}: {traceback.format_exc()[-1500:]}")
+            log(out["errors"][-1])
+            return None
+    safe(lambda: _equities(series, sc, out, safe), "equities")
+    if "BTC-USD" in series:
+        safe(lambda: _crypto(series, out, safe), "crypto")
+    return out
+
+
+def _equities(series, sc, out, safe):
     if "SPY" in series:
         cal = series["SPY"][0]
         today = sc.to_eastern(dt.datetime.utcnow()).date().isoformat()
@@ -295,19 +316,21 @@ def run(log=print, pause: float = 0.4) -> dict:
                           "Each month: hold the 3 S&P sector funds with the best 6-month return, equal weights.",
                           "Moskowitz & Grinblatt (1999)"))
         for name, w, bench, desc, src in cands:
-            e = evaluate(name, cal, P, w, bench, ETF_COST_BPS, 252, desc, src)
+            e = safe(lambda: evaluate(name, cal, P, w, bench, ETF_COST_BPS, 252, desc, src), name)
             if e:
                 out["rules"].append(e)
+
+
+def _crypto(series, out, safe):
     if "BTC-USD" in series:
         cal_c, px = series["BTC-USD"]
         today_utc = dt.datetime.utcnow().date().isoformat()
         keep = [i for i, d in enumerate(cal_c) if d < today_utc]
         cal_c, px = [cal_c[i] for i in keep], px[keep]
         Pc = {"BTC-USD": px}
-        e = evaluate("Bitcoin with a 200-day trend filter", cal_c, Pc, daily_sma_filter(cal_c, Pc, "BTC-USD"),
+        e = safe(lambda: evaluate("Bitcoin with a 200-day trend filter", cal_c, Pc, daily_sma_filter(cal_c, Pc, "BTC-USD"),
                      "BTC-USD", CRYPTO_COST_BPS, 365,
                      "Hold Bitcoin while its daily close is above its 200-day average; otherwise cash (USDT).",
-                     "Classic trend following, as in Faber (2007)")
+                     "Classic trend following, as in Faber (2007)"), "BTC")
         if e:
             out["rules"].append(e)
-    return out

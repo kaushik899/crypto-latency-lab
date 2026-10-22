@@ -48,7 +48,7 @@ jobs:
         run: python -m latlab.stocks scan
       - name: Long-horizon rules (decades of history)
         if: steps.task.outputs.task == 'research' || steps.task.outputs.task == 'strategies' || steps.task.outputs.task == 'all'
-        run: python -m latlab.stocks strategies
+        run: python -m latlab.stocks strategies || echo '::warning::strategies step failed'
       - name: Today
         if: steps.task.outputs.task == 'today' || steps.task.outputs.task == 'all'
         run: python -m latlab.stocks today --top 150 --account 500 --risk-pct 1 --replays 4000
