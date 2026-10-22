@@ -5,6 +5,8 @@ research  rank the most liquid US stocks, pull 60 days of 5-minute bars, walk-fo
 today     during the session: today's fresh breakouts on the researched stocks, with plans,
           Time Machine odds and small-account sizes -> web/src/data/stocks-today.json
 score     after the close: replay every published pick on the real bars -> stocks-track.json
+scan      every US stock: today's chart setups (Day Trader rules), two-year base rates per setup,
+          each match enriched from its own OHLCV chart -> stocks-scan.json
 
 None of these places an order. Orders go through the local desk, one explicit approval each.
 """
@@ -177,6 +179,19 @@ def cmd_score(a) -> int:
     return 0
 
 
+def cmd_scan(a) -> int:
+    from . import scan
+    doc = scan.run(min_price=a.min_price, min_volume=a.min_volume, rng=a.range, enrich_max=a.enrich)
+    _write(WEB / "stocks-scan.json", doc)
+    br = doc.get("base_rates", {}).get("setups", {})
+    print(f"{len(doc['hits'])} matches on {doc['as_of']} ({doc['counts']})")
+    for k, row in br.items():
+        c = row["horizons"]["5"]["all"]
+        print(f"  {k:<16} 5-day: n={c.get('n')} excess={c.get('excess_bps')} bp t={c.get('t')} "
+              f"held={row['horizons']['5']['held']}")
+    return 0
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="python -m latlab.stocks", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -195,9 +210,14 @@ def main(argv=None) -> int:
     t.add_argument("--replays", type=int, default=10000)
     t.add_argument("--now", help="UTC ISO time, for tests")
     sub.add_parser("score")
+    s_ = sub.add_parser("scan")
+    s_.add_argument("--min-price", type=float, default=5.0)
+    s_.add_argument("--min-volume", type=float, default=1_000_000)
+    s_.add_argument("--range", default="2y")
+    s_.add_argument("--enrich", type=int, default=600, help="matches to enrich from their own OHLCV chart")
     a = p.parse_args(argv)
     t0 = time.time()
-    rc = {"research": cmd_research, "today": cmd_today, "score": cmd_score}[a.cmd](a)
+    rc = {"research": cmd_research, "today": cmd_today, "score": cmd_score, "scan": cmd_scan}[a.cmd](a)
     print(f"done in {time.time() - t0:.0f}s")
     return rc
 

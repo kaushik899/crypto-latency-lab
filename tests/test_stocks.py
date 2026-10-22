@@ -1,6 +1,8 @@
 """Stock lab: the walk-forward engine, sizing, Alpaca order bodies, and the desk's approval flow."""
 
 import asyncio
+
+import numpy as np
 import datetime as dt
 from pathlib import Path
 
@@ -153,3 +155,73 @@ def test_desk_ticket_flow(tmp_path, monkeypatch):
 def test_ticket_rejects_weekend():
     c = sdesk.check_ticket("AAPL", 1, 50, 49, 52, 1000, 1, 200, dt.datetime(2026, 10, 24, 11, 0))
     assert not next(x for x in c if x["check"].startswith("market open"))["ok"]
+
+
+# ---------------------------------------------------------------- the daily scan
+from latlab.stocks import scan as sscan
+from latlab.stocks.toolkit import scanner as _scanner
+
+
+def _walks(n_sym=60, T=500, seed=3, drift_after_breakout=0.0):
+    rng = np.random.default_rng(seed)
+    dates = [f"d{i:04d}" for i in range(T)]
+    out = {}
+    for k in range(n_sym):
+        r = rng.normal(0.0004, 0.02, T)
+        c = 100 * np.exp(np.cumsum(r))
+        if drift_after_breakout:
+            m = sscan.setup_matrix(c)["breakout_20d"]
+            for i in np.where(m)[0]:
+                if i + 2 < T:
+                    c[i + 2:] *= 1 + drift_after_breakout        # move after the entry at i+1
+        out[f"S{k}"] = (dates, c)
+    return out
+
+
+def test_setup_matrix_matches_toolkit():
+    sc = _scanner()
+    rng = np.random.default_rng(7)
+    for _ in range(5):
+        c = 50 * np.exp(np.cumsum(rng.normal(0, 0.025, 200)))
+        m = sscan.setup_matrix(c)
+        for i in range(29, 200):
+            tags, _ = sc.find_setups(list(c[:i + 1]))
+            assert sorted(tags) == sorted(k for k in sscan.SETUPS if m[k][i])
+
+
+def test_base_rates_find_nothing_in_noise():
+    data = _walks()
+    br = sscan.base_rates(data, set(data))
+    for k, row in br["setups"].items():
+        for h, cell in row["horizons"].items():
+            assert not cell["held"], (k, h, cell)
+
+
+def test_base_rates_find_a_planted_edge():
+    data = _walks(drift_after_breakout=0.01)
+    cell = sscan.base_rates(data, set(data))["setups"]["breakout_20d"]["horizons"]["1"]
+    assert cell["held"] and cell["all"]["excess_bps"] > 50
+
+
+def test_enrich_from_daily_chart(monkeypatch):
+    import json as _json
+    sc = _scanner()
+    day0 = dt.datetime(2025, 10, 20, 13, 30)
+    ts, o, h, l, c, v = [], [], [], [], [], []
+    px = 100.0
+    d = day0
+    while len(ts) < 260:
+        d += dt.timedelta(days=1)
+        if d.weekday() >= 5:
+            continue
+        ts.append(int((d - dt.datetime(1970, 1, 1)).total_seconds()))
+        o.append(px); h.append(px * 1.01); l.append(px * 0.99); c.append(px); v.append(1_000_000)
+        px *= 1.001
+    v[-1] = 3_000_000
+    h[-1] = max(h) * 1.02
+    doc = {"chart": {"result": [{"meta": {"symbol": "ABC"}, "timestamp": ts, "indicators": {"quote": [
+        {"open": o, "high": h, "low": l, "close": c, "volume": v}]}}], "error": None}}
+    monkeypatch.setattr(sc, "yahoo_get", lambda path: _json.dumps(doc))
+    e = sscan.enrich("ABC", sc, dt.datetime(2026, 12, 1))
+    assert e["rel_volume"] == 3.0 and e["breakout_intraday_high"] is True
+    assert 1.9 < e["atr_pct"] < 2.6 and len(e["spark"]) == 60 and e["vs_ma50"] > 0
