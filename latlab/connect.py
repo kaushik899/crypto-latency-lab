@@ -260,6 +260,8 @@ def wizard():
 
 
 def main(argv=None):
+    from .certs import use_certifi
+    use_certifi()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--remove", metavar="EXCHANGE:MODE")

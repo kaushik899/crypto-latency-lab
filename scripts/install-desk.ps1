@@ -13,6 +13,6 @@ Set-Location $Dir
 if (-not (Test-Path ".venv")) { & $Py -m venv .venv }
 $VPy = Join-Path $Dir ".venv\Scripts\python.exe"
 & $VPy -m pip install -q --upgrade pip
-& $VPy -m pip install -q -r requirements.txt keyring
+& $VPy -m pip install -q -r requirements.txt keyring certifi
 Write-Host "Starting the desk. Your browser opens Likely Profits already paired."
 & $VPy -m latlab.desk @args

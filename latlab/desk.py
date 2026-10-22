@@ -476,6 +476,8 @@ async def serve(a):
 
 
 def main(argv=None):
+    from .certs import use_certifi
+    use_certifi()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--live", action="store_true", help="trade real money (default: Binance Spot Testnet)")
     ap.add_argument("--max-order", type=float, default=50.0, help="largest single order in USDT (default 50)")

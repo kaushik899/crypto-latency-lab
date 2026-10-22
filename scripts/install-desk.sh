@@ -18,6 +18,8 @@ fi
 cd "$DIR"
 [ -d .venv ] || "$PY" -m venv .venv
 .venv/bin/python -m pip install -q --upgrade pip
-.venv/bin/python -m pip install -q -r requirements.txt keyring
+.venv/bin/python -m pip install -q -r requirements.txt keyring certifi
+# python.org Python on macOS has no root certificates: use certifi's, or every exchange call fails
+export SSL_CERT_FILE="$(.venv/bin/python -c 'import certifi; print(certifi.where())')"
 echo "Starting the desk. Your browser opens Likely Profits already paired."
 exec .venv/bin/python -m latlab.desk "$@"

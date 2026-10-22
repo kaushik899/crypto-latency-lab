@@ -5,3 +5,4 @@ websockets>=13
 aiohttp>=3.10
 pytest>=8
 ccxt>=4.4
+certifi>=2024.2
