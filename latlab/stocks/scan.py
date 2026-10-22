@@ -200,21 +200,27 @@ def base_rates(closes: dict[str, tuple[list[str], np.ndarray]], liquid: set[str]
     return out
 
 
-HOLD_DAYS = (1, 5, 10, 21, 63, 126, 252)
+HOLD_DAYS = (1, 5, 10, 21, 63, 126, 252)            # trading days (stocks, funds)
+CRYPTO_HOLD_DAYS = (1, 7, 14, 30, 91, 182, 365)     # calendar days: crypto trades every day
+BENCHMARKS = {  # symbol -> (kind, round-trip cost in bp)
+    "SPY": ("fund", 2.0), "QQQ": ("fund", 2.0),
+    "BTC-USD": ("crypto", 20.0), "ETH-USD": ("crypto", 20.0), "SOL-USD": ("crypto", 20.0),
+}
 
 
-def index_stats(dates: list[str], c: np.ndarray) -> dict:
-    """Buy-and-hold an index fund: every holding period from every start day, plus drawdown."""
-    out = {"first_date": dates[0], "last_date": dates[-1], "periods": {}}
-    for h in HOLD_DAYS:
+def index_stats(dates: list[str], c: np.ndarray, kind: str = "fund", cost_bps: float = 2.0) -> dict:
+    """Buy and hold: every holding period from every start day, after costs, plus the worst drop.
+    Crypto uses calendar days (its market never closes) and Binance's 0.10 % taker fee each way."""
+    out = {"first_date": dates[0], "last_date": dates[-1], "kind": kind, "cost_bps": cost_bps, "periods": {}}
+    for h in (CRYPTO_HOLD_DAYS if kind == "crypto" else HOLD_DAYS):
         if len(c) <= h + 1:
             continue
-        r = c[h:] / c[:-h] - 1 - 2 / 1e4          # 2 bp round trip on SPY
+        r = c[h:] / c[:-h] - 1 - cost_bps / 1e4
         out["periods"][str(h)] = {"n": int(len(r)), "mean_bps": round(float(r.mean()) * 1e4, 1),
                                   "win": round(float((r > 0).mean()), 3), "q_bps": quantiles_bps(r)}
     peak = np.maximum.accumulate(c)
     out["max_drawdown_pct"] = round(float((c / peak - 1).min()) * 100, 1)
-    yrs = len(c) / 252
+    yrs = len(c) / (365 if kind == "crypto" else 252)
     out["total_pct"] = round(float(c[-1] / c[0] - 1) * 100, 1)
     out["cagr_pct"] = round(float((c[-1] / c[0]) ** (1 / yrs) - 1) * 100, 1) if yrs > 0 else None
     out["spark"] = [round(float(x), 2) for x in c[:: max(1, len(c) // 120)]]
@@ -311,11 +317,20 @@ def run(now_utc: dt.datetime | None = None, min_price: float = 5.0, min_volume: 
     rates = base_rates(closes, liquid)
     index = {}
     try:
-        idx_data, _ = sc.fetch_spark(["SPY", "QQQ"], rng, "1d", pause)
+        idx_data, _ = sc.fetch_spark(list(BENCHMARKS), rng, "1d", pause)
         for sym, s_ in idx_data.items():
-            bars = sc.daily_closes(s_, now_utc)
+            kind, cost = BENCHMARKS.get(sym, ("fund", 2.0))
+            if kind == "crypto":   # every calendar day; the toolkit's daily_closes keeps NYSE days only
+                pts = {}
+                for t, c_ in zip(s_["t"], s_["c"]):
+                    if c_ is not None:
+                        pts[dt.datetime.utcfromtimestamp(t).date().isoformat()] = float(c_)
+                today = now_utc.date().isoformat()
+                bars = sorted((d, v) for d, v in pts.items() if d < today)
+            else:
+                bars = [(b[0].isoformat(), b[1]) for b in sc.daily_closes(s_, now_utc)]
             if len(bars) > 260:
-                index[sym] = index_stats([b[0].isoformat() for b in bars], np.array([b[1] for b in bars], float))
+                index[sym] = index_stats([b[0] for b in bars], np.array([b[1] for b in bars], float), kind, cost)
     except Exception as exc:  # noqa: BLE001
         log(f"  index funds unavailable: {exc}")
     log(f"enriching up to {enrich_max} matches from their own daily OHLCV charts...")

@@ -56,7 +56,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add web/src/data/stocks-*.json data/stocks/picks
+          git add web/src/data/stocks-*.json web/public/data data/stocks/picks
           git diff --cached --quiet && exit 0
           git commit -m "Stocks ${{ steps.task.outputs.task }} $(date -u +%Y-%m-%dT%H:%MZ)"
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

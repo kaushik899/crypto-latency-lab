@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { Menu, NextRoom, TopBar } from "./components/Chrome";
 import { AutoTrader } from "./components/AutoTrader";
 import { Board } from "./components/Board";
@@ -7,12 +7,16 @@ import { LeadLag } from "./components/LeadLag";
 import { PredictSim } from "./components/Live";
 import { Method } from "./components/Method";
 import { RealLive } from "./components/RealLive";
-import { Research } from "./components/Research";
 import { Room } from "./components/Room";
-import { Stocks } from "./components/Stocks";
 import { TradeDrawer } from "./components/TradeDrawer";
 import { CREDITS } from "./lib/rooms";
+
+// Below-the-fold rooms load in their own chunks, so the first screen paints sooner.
+const Stocks = lazy(() => import("./components/Stocks").then((m) => ({ default: m.Stocks })));
+const Research = lazy(() => import("./components/Research").then((m) => ({ default: m.Research })));
+const Loading = () => <div className="block loading" aria-busy="true"><span className="shimmer" /></div>;
 import { scrollToId, startScroll } from "./lib/scroll";
+import { lockScroll, startReveal, startSmooth } from "./lib/smooth";
 
 export default function App() {
   const [trade, setTrade] = useState(false);
@@ -20,9 +24,10 @@ export default function App() {
   const openTrade = useCallback(() => setTrade(true), []);
   const closeTrade = useCallback(() => setTrade(false), []);
   const closeMenu = useCallback(() => setMenu(false), []);
-  useEffect(() => { startScroll(); }, []);
+  useEffect(() => { startSmooth(); startScroll(); startReveal(); }, []);
   useEffect(() => {
     document.body.style.overflow = trade || menu ? "hidden" : "";
+    lockScroll(trade || menu);
   }, [trade, menu]);
 
   return (
@@ -64,14 +69,14 @@ export default function App() {
           real costs, today&rsquo;s breakouts are posted with a plan and a size for a small account, and every order waits
           for your own approval through the desk.
         </p>}>
-          <Stocks onConnect={openTrade} />
+          <Suspense fallback={<Loading />}><Stocks onConnect={openTrade} /></Suspense>
         </Room>
 
         <Room id="research" focus="60% 60%" lede={<p>
           The Python backtester replays 612 simulated prediction markets per scenario across four random days. In a slow,
           fee-free market almost any bot profits. Add the taker fee and fast rivals, and only near-instant orders survive.
         </p>}>
-          <Research />
+          <Suspense fallback={<Loading />}><Research /></Suspense>
         </Room>
 
         <Room id="method" focus="70% 40%" lede={<p>

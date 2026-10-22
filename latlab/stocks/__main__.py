@@ -182,7 +182,8 @@ def cmd_score(a) -> int:
 def cmd_scan(a) -> int:
     from . import scan
     doc = scan.run(min_price=a.min_price, min_volume=a.min_volume, rng=a.range, enrich_max=a.enrich)
-    _write(WEB / "stocks-scan.json", doc)
+    # served as a static file (fetched by the page), not bundled into the JavaScript
+    _write(ROOT / "web" / "public" / "data" / "stocks-scan.json", doc)
     br = doc.get("base_rates", {}).get("setups", {})
     print(f"{len(doc['hits'])} matches on {doc['as_of']} ({doc['counts']})")
     for k, row in br.items():

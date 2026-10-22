@@ -3,6 +3,7 @@ import edgeBundled from "../data/stocks-edge.json";
 import todayBundled from "../data/stocks-today.json";
 import trackBundled from "../data/stocks-track.json";
 import { desk, deskCall, onDesk } from "../lib/trade";
+import { Planner } from "./Planner";
 import { Scan } from "./Scan";
 
 type AnyRec = Record<string, any>;
@@ -187,6 +188,22 @@ function Setup({ s, account, riskPct, budget, paired, refresh }:
         <div><dt>Max loss</dt><dd className="num">{usd(size.maxLoss)}</dd></div>
       </dl>
       <Odds tm={s.time_machine} />
+      {size.shares > 0 && (() => {
+        const sh = size.shares, slip = 0.0004;                       // 2 bp each way, as in the research
+        const win = sh * (s.target * (1 - slip) - s.entry * (1 + slip));
+        const loss = sh * (s.stop * (1 - slip) - s.entry * (1 + slip));
+        const avgR = s.time_machine?.avg_R;
+        const exp = avgR == null ? null : avgR * sh * (s.entry - s.stop);
+        const pnl = (x: number) => `${x >= 0 ? "+" : "−"}${usd(Math.abs(x))}`;
+        return (
+          <dl className="setup-pnl" aria-label="Profit and loss for your size">
+            <div><dt>If the target hits</dt><dd className="num pos">{pnl(win)}</dd></div>
+            <div><dt>If the stop hits</dt><dd className="num neg">{pnl(loss)}</dd></div>
+            <div><dt>Average of 10,000 replays</dt><dd className={`num ${(exp ?? 0) >= 0 ? "pos" : "neg"}`}>{exp == null ? "—" : pnl(exp)}</dd></div>
+            <div><dt>Money tied up</dt><dd className="num">until 15:55 New York at most</dd></div>
+          </dl>
+        );
+      })()}
       {size.fractional && <p className="fine">Fractional shares: a market buy plus a separate stop; close the rest yourself.</p>}
       {!validated && <p className="fine">This rule has not passed the out-of-sample test. Study it; do not fund it.</p>}
       {validated && paired && <Ticket s={s} size={size} onDone={refresh} />}
@@ -289,6 +306,8 @@ export function Stocks({ onConnect }: { onConnect: () => void }) {
           10,000-replay odds and a size for a small account. You approve every order yourself.
         </p>
       </header>
+
+      <Planner />
 
       <div className="stk-grid">
         <section className="stk-today" aria-labelledby="stk-today-h">

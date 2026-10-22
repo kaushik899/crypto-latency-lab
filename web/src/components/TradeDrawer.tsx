@@ -78,7 +78,7 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
   return (
     <div className={`drawer-wrap ${open ? "open" : ""}`} aria-hidden={!open}>
       <div className="drawer-scrim" onClick={onClose} />
-      <div ref={panel} className="drawer" role="dialog" aria-modal="true" aria-labelledby="trade-title">
+      <div ref={panel} className="drawer" data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="trade-title">
         <header className="drawer-head">
           <h2 id="trade-title">Trade now</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Close trading panel">×</button>

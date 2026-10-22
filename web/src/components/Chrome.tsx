@@ -52,7 +52,7 @@ export function Menu({ open, onClose, onTrade }: { open: boolean; onClose: () =>
   }, [open, onClose]);
   const go = (id: string) => { onClose(); setTimeout(() => scrollToId(id), 50); };
   return (
-    <div className={`menu ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Rooms" aria-hidden={!open}>
+    <div className={`menu ${open ? "open" : ""}`} data-lenis-prevent role="dialog" aria-modal="true" aria-label="Rooms" aria-hidden={!open}>
       <div className="menu-head">
         <Logo />
         <button className="pill" onClick={onClose}>Close</button>

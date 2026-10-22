@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import scanBundled from "../data/stocks-scan.json";
+import { useMemo, useState } from "react";
+import { useScanData } from "../lib/scanData";
 
 type AnyRec = Record<string, any>;
-const RAW = "https://raw.githubusercontent.com/kaushik899/crypto-latency-lab/main/web/src/data/stocks-scan.json";
 const SETUPS = ["breakout_20d", "bull_flag", "reclaim_ma20", "oversold", "oversold_bounce"] as const;
 const SHORT: Record<string, string> = {
   breakout_20d: "20-day high", bull_flag: "Bull flag", reclaim_ma20: "Above 20-day avg",
@@ -26,18 +25,7 @@ const sgn = (x: number | null | undefined, dp = 1) => (x == null ? "—" : `${x 
 const bp = (x: number | null | undefined, plus = false) => (x == null ? "—" : `${x > 0 && plus ? "+" : x < 0 ? "−" : ""}${Math.abs(x / 100).toFixed(2)}%`);
 const money = (x?: number) => (x == null ? "—" : x >= 1e9 ? `$${(x / 1e9).toFixed(1)}B` : x >= 1e6 ? `$${(x / 1e6).toFixed(0)}M` : `$${(x / 1e3).toFixed(0)}K`);
 
-function useScan(): AnyRec {
-  const [doc, setDoc] = useState<AnyRec>(scanBundled as AnyRec);
-  useEffect(() => {
-    let alive = true;
-    fetch(`${RAW}?t=${Date.now()}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => { if (alive && j && !j.pending && j.hits) setDoc(j); })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, []);
-  return doc;
-}
+export const useScan = useScanData;
 
 function Spark({ v, up }: { v?: number[]; up: boolean }) {
   if (!v || v.length < 2) return <span className="muted">—</span>;

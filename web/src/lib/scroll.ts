@@ -1,3 +1,4 @@
+import { smoothTo } from "./smooth";
 // One rAF-driven scroll loop for the whole page. Rooms get --p (0→1 progress through the room)
 // and --shade (how much the painting is dimmed behind the content); listeners learn which room
 // is current. Everything is CSS-variable driven so the paintings never re-render React.
@@ -57,5 +58,6 @@ export function onRoomChange(f: Listener) {
 }
 
 export function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
+  const el = document.getElementById(id);
+  if (el) smoothTo(el);
 }
