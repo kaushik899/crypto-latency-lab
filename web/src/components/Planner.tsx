@@ -115,9 +115,10 @@ export function Planner() {
         const setupCell = ch.kind === "setup" ? doc.base_rates.setups[ch.key].horizons[hh] : null;
         rows.push({
           // per calendar day the money is tied up: 5 trading days ~ 7 calendar days
-          // reward per unit of risk, on a one-year scale: average result / spread between the bad and
-          // good 1-in-10 outcomes, scaled by sqrt(time) so short and long holds compare fairly
-          ch, hold: hh, score: (cc.mean_bps / Math.max(1, cc.q_bps[QI.p90] - cc.q_bps[QI.p10]))
+          // reward per unit of risk, on a one-year scale: the TYPICAL (median) result / spread between the
+          // bad and good 1-in-10 outcomes, scaled by sqrt(time). The median, not the mean, so one huge run
+          // (SOL from $1 in 2020) cannot buy the top spot.
+          ch, hold: hh, score: (cc.q_bps[QI.p50] / Math.max(1, cc.q_bps[QI.p90] - cc.q_bps[QI.p10]))
             * Math.sqrt(365 / (ch.market === "crypto" ? Number(hh) : Number(hh) * 7 / 5)),
           median: cc.q_bps[QI.p50], win: cc.win, bad: cc.q_bps[QI.p10],
           verdict: ch.kind === "index" ? (ch.market === "crypto" ? "Crypto market" : "Stock market") : ch.kind === "any" ? "Benchmark"
@@ -280,8 +281,8 @@ export function Planner() {
           </table>
         </div>
         <p className="fine">
-          Ranked by average result after costs divided by how widely results swung (bad 1-in-10 to good 1-in-10),
-          put on a one-year scale. A high average that came with huge swings ranks lower than a steadier one. Funds
+          Ranked by the typical (median) result after costs divided by how widely results swung (bad 1-in-10 to good 1-in-10),
+          put on a one-year scale. A big result that came with huge swings, or from one lucky run, ranks lower than a steadier one. Funds
           and crypto use ten years of history, stock setups two. Fund figures are price only, without dividends. Click a row
           to load it above. These are past results of rules, not forecasts and not personal advice: a strong market
           flatters every “buy” rule, and the next two years can look nothing like the last two.
