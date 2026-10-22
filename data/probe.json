@@ -1,0 +1,18 @@
+{
+ "rest": {
+  "binance": "451 119ms '{\\n  \"code\": 0,\\n  \"msg\": \"Service unavailable from a restrict'",
+  "binance_vision": "200 449ms '{\"serverTime\":1792628194971}'",
+  "coinbase": "200 141ms '{\"iso\":\"2026-10-22T00:16:34.681Z\",\"epoch\":1792628194.681}'",
+  "kraken": "200 208ms '{\"error\":[],\"result\":{\"unixtime\":1792628194,\"rfc1123\":\"Thu, '",
+  "okx": "200 260ms '{\"code\":\"0\",\"data\":[{\"ts\":\"1792628194780\"}],\"msg\":\"\"}'",
+  "bybit": "403 56ms '{\\n    error:The Amazon CloudFront distribution is configured'"
+ },
+ "ws": {
+  "binance": "ERR InvalidStatus server rejected WebSocket connection: HTTP 451",
+  "binance_vision": "OK {\"u\":101754465224,\"s\":\"BTCUSDT\",\"b\":\"84246.94000000\",\"B\":\"0.",
+  "coinbase": "OK {\"type\":\"subscriptions\",\"channels\":[{\"name\":\"ticker\",\"produc",
+  "kraken": "OK {\"method\":\"subscribe\",\"result\":{\"channel\":\"ticker\",\"event_tr",
+  "okx": "OK {\"event\":\"subscribe\",\"arg\":{\"channel\":\"bbo-tbt\",\"instId\":\"BT",
+  "bybit": "OK {\"topic\":\"orderbook.1.BTCUSDT\",\"ts\":1792628195779,\"type\":\"sn"
+ }
+}
