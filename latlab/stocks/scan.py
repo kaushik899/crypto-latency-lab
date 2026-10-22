@@ -224,6 +224,15 @@ def index_stats(dates: list[str], c: np.ndarray, kind: str = "fund", cost_bps: f
     out["total_pct"] = round(float(c[-1] / c[0] - 1) * 100, 1)
     out["cagr_pct"] = round(float((c[-1] / c[0]) ** (1 / yrs) - 1) * 100, 1) if yrs > 0 else None
     out["spark"] = [round(float(x), 2) for x in c[:: max(1, len(c) // 120)]]
+    # worst calendar year, so the "chance of profit" is read next to what a bad year looked like
+    years: dict[str, list[float]] = {}
+    for d, x in zip(dates, c):
+        years.setdefault(d[:4], []).append(float(x))
+    yr = {y: v[-1] / v[0] - 1 for y, v in years.items() if len(v) > 200}
+    if yr:
+        worst = min(yr, key=yr.get)
+        out["worst_year"] = {"year": worst, "pct": round(yr[worst] * 100, 1)}
+        out["years"] = {y: round(v * 100, 1) for y, v in sorted(yr.items())}
     return out
 
 
@@ -316,23 +325,29 @@ def run(now_utc: dt.datetime | None = None, min_price: float = 5.0, min_volume: 
     log(f"{len(hits)} matches on {last}; base rates over {len(liquid)} liquid stocks...")
     rates = base_rates(closes, liquid)
     index = {}
-    try:
-        idx_data, _ = sc.fetch_spark(list(BENCHMARKS), rng, "1d", pause)
-        for sym, s_ in idx_data.items():
-            kind, cost = BENCHMARKS.get(sym, ("fund", 2.0))
+    # ten years from each benchmark's own daily chart (one v8 request each), so long holds include
+    # bad years (2018, 2020, 2022), not just the recent run; spark does not serve crypto reliably
+    for sym, (kind, cost) in BENCHMARKS.items():
+        try:
+            s_ = sc.parse_chart(sc.yahoo_get(sc.chart_path(sym, "10y", "1d")), sym)
             if kind == "crypto":   # every calendar day; the toolkit's daily_closes keeps NYSE days only
                 pts = {}
                 for t, c_ in zip(s_["t"], s_["c"]):
                     if c_ is not None:
-                        pts[dt.datetime.utcfromtimestamp(t).date().isoformat()] = float(c_)
+                        pts[dt.datetime.fromtimestamp(t, dt.timezone.utc).date().isoformat()] = float(c_)
                 today = now_utc.date().isoformat()
                 bars = sorted((d, v) for d, v in pts.items() if d < today)
             else:
                 bars = [(b[0].isoformat(), b[1]) for b in sc.daily_closes(s_, now_utc)]
             if len(bars) > 260:
                 index[sym] = index_stats([b[0] for b in bars], np.array([b[1] for b in bars], float), kind, cost)
-    except Exception as exc:  # noqa: BLE001
-        log(f"  index funds unavailable: {exc}")
+                log(f"  {sym}: {len(bars)} days from {bars[0][0]}")
+            else:
+                log(f"  {sym}: only {len(bars)} days")
+        except Exception as exc:  # noqa: BLE001
+            log(f"  {sym} unavailable: {exc}")
+        if pause:
+            time.sleep(pause)
     log(f"enriching up to {enrich_max} matches from their own daily OHLCV charts...")
     ok = 0
     for i, h in enumerate(hits[:enrich_max]):

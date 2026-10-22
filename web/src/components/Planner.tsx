@@ -148,7 +148,9 @@ export function Planner() {
     <section className="plan" aria-labelledby="plan-h">
       <div className="auto-head">
         <h4 id="plan-h">What could I make?</h4>
-        <span className="muted">from {doc.base_rates.first_date} to {doc.base_rates.last_date}</span>
+        <span className="muted">{choice.kind === "index" && doc.index?.[choice.sym!]
+          ? `${doc.index[choice.sym!].first_date} to ${doc.index[choice.sym!].last_date}`
+          : `${doc.base_rates.first_date} to ${doc.base_rates.last_date}`}</span>
       </div>
       <p className="auto-meta">
         Nobody can tell you what one trade will make. What history can tell you is the spread of results the same move
@@ -188,7 +190,7 @@ export function Planner() {
         <div className="po">
           <span>Chance of a profit</span>
           <b><Count value={c.win * 100} fmt={(x) => `${Math.round(x)}%`} /></b>
-          <em>{c.n?.toLocaleString()} past cases</em>
+          <em>{c.n?.toLocaleString()} past {choice.kind === "index" ? "start days" : "cases"}</em>
         </div>
         <div className="po">
           <span>Bad case, 1 in 10</span>
@@ -218,12 +220,34 @@ export function Planner() {
         {choice.key !== refSym && spy && <> · lower bar: {refSym === "SPY" ? "SPY" : "Bitcoin"} held for the same time</>}
       </p>
 
+      {choice.kind === "index" && doc.index?.[choice.sym!]?.years && (() => {
+        const ix = doc.index[choice.sym!];
+        const ys = Object.entries(ix.years as Record<string, number>);
+        const m = Math.max(...ys.map(([, v]) => Math.abs(v)), 1);
+        return (
+          <figure className="years">
+            <figcaption>Each full calendar year since {ys[0]?.[0]}: what {usd(amount)} held from January to December became</figcaption>
+            <div className="years-bars">
+              {ys.map(([y, v], i) => (
+                <div key={y} className={`yb ${v >= 0 ? "up" : "down"}`} style={{ ["--h" as any]: `${(Math.abs(v) / m) * 100}%`, ["--i" as any]: i }}>
+                  <span className="yb-v">{signed((v / 100) * amount)}</span>
+                  <span className="yb-bar" />
+                  <span className="yb-y">{y.slice(2)}</span>
+                </div>
+              ))}
+            </div>
+          </figure>
+        );
+      })()}
+
       <dl className="plan-rules">
         <div><dt>When to put money in</dt><dd>{when}</dd></div>
         <div><dt>When to take it out</dt><dd>On the planned day, win or lose. The results above assume exactly that; holding a loser “until it comes back” is a different, untested strategy.</dd></div>
         <div><dt>Where</dt><dd>{where}</dd></div>
         {choice.kind === "index" && doc.index?.[choice.sym!] && (
-          <div><dt>Worst drop in this history</dt><dd>{doc.index[choice.sym!].max_drawdown_pct}% from a peak, on the way to {doc.index[choice.sym!].total_pct > 0 ? "+" : ""}{doc.index[choice.sym!].total_pct}% over the period.</dd></div>
+          <div><dt>Worst drop since {doc.index[choice.sym!].first_date.slice(0, 4)}</dt><dd>{doc.index[choice.sym!].max_drawdown_pct}% from a peak
+            {doc.index[choice.sym!].worst_year ? `; worst calendar year ${doc.index[choice.sym!].worst_year.year} (${doc.index[choice.sym!].worst_year.pct}%)` : ""}.
+            Over the whole period: {doc.index[choice.sym!].total_pct > 0 ? "+" : ""}{doc.index[choice.sym!].total_pct}%, about {doc.index[choice.sym!].cagr_pct}% a year.</dd></div>
         )}
       </dl>
 
