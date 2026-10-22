@@ -5,8 +5,9 @@
 3. Base rates: the same rules, computed vectorised on every past day of every liquid stock, then
    the return after the signal — entry at the NEXT session's close (no look-ahead), held 1, 5 or
    10 sessions, minus 10 bp round-trip costs — compared with the average liquid stock on the same
-   days (so a rising market does not flatter a setup). t-statistics are clustered by day, and the
-   first two thirds of the history are checked against the last third.
+   days (so a rising market does not flatter a setup). Results are averaged per day first, the
+   t-statistic uses a Newey-West variance for overlapping holds, and the first two thirds of the
+   history are checked against the last third.
 4. Every match is then enriched from its own daily OHLCV chart: relative volume, ATR, 50/200-day
    trend, distance to the 52-week high, and whether the breakout also cleared the intraday highs.
 
@@ -91,25 +92,37 @@ def setup_matrix(c: np.ndarray) -> dict[str, np.ndarray]:
 
 
 # ----------------------------------------------------------------------------- base rates
-def _clustered(values: np.ndarray, days: np.ndarray) -> tuple[float | None, int]:
-    if len(values) < 2:
-        return None, len(set(days.tolist()))
+def _day_means(values: np.ndarray, days: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     uniq, inv = np.unique(days, return_inverse=True)
-    sums = np.bincount(inv, weights=values)
-    cnt = np.bincount(inv)
-    means = sums / cnt
-    if len(means) < 2 or means.std(ddof=1) == 0:
-        return None, len(uniq)
-    return float(means.mean() / (means.std(ddof=1) / math.sqrt(len(means)))), len(uniq)
+    return uniq, np.bincount(inv, weights=values) / np.bincount(inv)
 
 
-def summarize(ret: np.ndarray, excess: np.ndarray, days: np.ndarray) -> dict:
+def nw_t(series: np.ndarray, lag: int) -> float | None:
+    """t-statistic of the mean with a Newey-West (Bartlett) variance: overlapping h-day holds on
+    neighbouring days are correlated, so a plain t would be too confident."""
+    n = len(series)
+    if n < max(10, 2 * lag + 2):
+        return None
+    x = series - series.mean()
+    var = (x @ x) / n
+    for k in range(1, lag + 1):
+        var += 2 * (1 - k / (lag + 1)) * (x[k:] @ x[:-k]) / n
+    if var <= 0:
+        return None
+    return float(series.mean() / math.sqrt(var / n))
+
+
+def summarize(ret: np.ndarray, excess: np.ndarray, days: np.ndarray, lag: int = 0) -> dict:
+    """Averages per day first (a crash day with 300 oversold stocks counts once), then over days."""
     if len(ret) == 0:
         return {"n": 0}
-    t, nd = _clustered(excess, days)
-    return {"n": int(len(ret)), "days": nd, "mean_bps": round(float(ret.mean()) * 1e4, 1),
-            "excess_bps": round(float(excess.mean()) * 1e4, 1), "win": round(float((ret > 0).mean()), 3),
-            "t": round(t, 2) if t is not None else None}
+    _, r_day = _day_means(ret, days)
+    _, e_day = _day_means(excess, days)
+    t = nw_t(e_day, lag)
+    return {"n": int(len(ret)), "days": int(len(e_day)), "mean_bps": round(float(r_day.mean()) * 1e4, 1),
+            "excess_bps": round(float(e_day.mean()) * 1e4, 1),
+            "pooled_excess_bps": round(float(excess.mean()) * 1e4, 1),
+            "win": round(float((ret > 0).mean()), 3), "t": round(t, 2) if t is not None else None}
 
 
 def base_rates(closes: dict[str, tuple[list[str], np.ndarray]], liquid: set[str]) -> dict:
@@ -162,10 +175,10 @@ def base_rates(closes: dict[str, tuple[list[str], np.ndarray]], liquid: set[str]
                 continue
             R, E, D = np.concatenate(rets), np.concatenate(exs), np.concatenate(days)
             ins, oos = D < cut, D >= cut
-            a, b = summarize(R[ins], E[ins], D[ins]), summarize(R[oos], E[oos], D[oos])
+            a, b = summarize(R[ins], E[ins], D[ins], h), summarize(R[oos], E[oos], D[oos], h)
             held = bool(a.get("t") is not None and a["t"] >= SELECT_T and a["excess_bps"] > 0
                         and b.get("n", 0) > 0 and b["excess_bps"] > 0)
-            row["horizons"][str(h)] = {"all": summarize(R, E, D), "in_sample": a, "out_of_sample": b, "held": held}
+            row["horizons"][str(h)] = {"all": summarize(R, E, D, h), "in_sample": a, "out_of_sample": b, "held": held}
         out["setups"][k] = row
     return out
 

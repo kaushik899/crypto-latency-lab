@@ -84,7 +84,7 @@ function Rates({ br, setup }: { br: AnyRec; setup: string }) {
         {held.length
           ? `Beat the average stock with t ≥ ${br.select_t} on the first two thirds and stayed ahead on the last third (from ${br.split}) when held ${held.join(" and ")} day(s). History is not a promise.`
           : `No holding period beat the average stock convincingly (t ≥ ${br.select_t} on the first two thirds and still ahead after ${br.split}). Treat these matches as a watchlist, not an edge.`}{" "}
-        Costs: {br.cost_bps} bp round trip. t is clustered by day.
+        Costs: {br.cost_bps} bp round trip. Averages are per day first (a crash day with hundreds of signals counts once); t allows for overlapping holds.
       </p>
     </div>
   );
