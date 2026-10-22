@@ -37,7 +37,14 @@ def fetch(sym: str, sc=None) -> tuple[list[str], np.ndarray]:
     """Dividend-adjusted daily closes, as far back as Yahoo serves."""
     sc = sc or scanner()
     import json
-    doc = json.loads(sc.yahoo_get(sc.chart_path(sym, "max", "1d")))
+    # range=max silently returns MONTHLY bars; an explicit date range keeps daily bars for the whole history
+    now = int(time.time())
+    path = (f"/v8/finance/chart/{sc.to_yahoo(sym)}?period1=725846400&period2={now}&interval=1d"
+            "&includeAdjustedClose=true&events=div%7Csplit")
+    doc = json.loads(sc.yahoo_get(path))
+    gran = ((doc.get("chart") or {}).get("result") or [{}])[0].get("meta", {}).get("dataGranularity")
+    if gran and gran != "1d":
+        raise RuntimeError(f"Yahoo returned {gran} bars, not daily")
     res = (doc.get("chart") or {}).get("result") or []
     if not res:
         raise RuntimeError(f"no chart for {sym}")
