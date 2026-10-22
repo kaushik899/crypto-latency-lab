@@ -18,7 +18,21 @@ const WORKS = [
     title: "Landscape with the Fall of Icarus", artist: "after Pieter Bruegel the Elder", year: "c. 1560", where: "Royal Museums of Fine Arts, Brussels" },
   { id: "astronomer", file: "Johannes Vermeer - The Astronomer - 1668.jpg",
     title: "The Astronomer", artist: "Johannes Vermeer", year: "1668", where: "Musée du Louvre, Paris" },
+  { id: "exchange", search: "Degas Portraits at the Stock Exchange Orsay",
+    title: "Portraits at the Stock Exchange", artist: "Edgar Degas", year: "1878–79", where: "Musée d'Orsay, Paris" },
 ];
+
+// Works given by a search phrase: the first bitmap file Commons returns for it.
+async function find(phrase) {
+  const u = new URL("https://commons.wikimedia.org/w/api.php");
+  u.search = new URLSearchParams({ action: "query", format: "json", list: "search", srnamespace: "6",
+    srlimit: "10", srsearch: phrase }).toString();
+  const j = await (await fetch(u, { headers: { "User-Agent": UA } })).json();
+  const hit = j.query.search.map((x) => x.title).find((t) => /\.(jpe?g|png|tiff?)$/i.test(t));
+  if (!hit) throw new Error(`nothing on Commons for: ${phrase}`);
+  console.log(`search "${phrase}" -> ${hit}`);
+  return hit.replace(/^File:/, "");
+}
 
 async function info(file, width) {
   const u = new URL("https://commons.wikimedia.org/w/api.php");
@@ -38,6 +52,8 @@ for (const w of WORKS) {
     try { credits.push(JSON.parse(await (await import("node:fs/promises")).readFile(new URL("credits.json", OUT), "utf8")).find((c) => c.id === w.id)); } catch {}
     continue;
   }
+  if (!w.file) w.file = await find(w.search);
+  delete w.search;
   for (const [suffix, width] of [["", 2400], ["-sm", 1100]]) {
     const ii = await info(w.file, width);
     const r = await fetch(ii.thumburl, { headers: { "User-Agent": UA } });
