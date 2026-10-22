@@ -1,0 +1,46 @@
+name: Research
+# Records live quotes from five exchanges, measures who follows Binance, runs every auto-trader
+# strategy on the recording in paper mode, and publishes the session to the website.
+on:
+  schedule:
+    - cron: "23 */4 * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: minutes to record
+        default: "15"
+permissions:
+  contents: write
+concurrency:
+  group: research
+  cancel-in-progress: false
+jobs:
+  session:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # binance.com is restricted from US data centres; its public market-data mirror is not
+      LATLAB_BINANCE_WS: wss://data-stream.binance.vision
+      LATLAB_BINANCE_REST: https://data-api.binance.vision
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Record
+        run: python -m latlab.leadlag record --minutes "${{ inputs.minutes || '15' }}" --top 30 --out rec
+      - name: Analyse
+        run: |
+          python -m latlab.leadlag analyze rec > /dev/null
+          python -m latlab.bot replay rec --out rec/bot.json
+          python scripts/update_history.py rec "GitHub Actions (US East)"
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add web/src/data/live-history.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Research session $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

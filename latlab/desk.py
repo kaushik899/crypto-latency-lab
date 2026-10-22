@@ -1,4 +1,4 @@
-"""Trade desk: a small local server that lets the website place Binance spot market orders in one click.
+"""Trade desk: a small local server that lets the website place orders in one click and run the auto-trader.
 
     # practice with Binance's free Spot Testnet (default, fake money)
     export BINANCE_TESTNET_KEY=...  BINANCE_TESTNET_SECRET=...
@@ -7,6 +7,10 @@
     # real money — only with an API key that has Spot trading enabled and withdrawals DISABLED
     export BINANCE_API_KEY=...  BINANCE_API_SECRET=...
     python -m latlab.desk --live --max-order 25
+
+Easiest: connect accounts once with ``python -m latlab.connect`` (keys are tested and stored privately),
+then just run ``python -m latlab.desk``. Add ``--auto`` with ``--live`` to let the website's Auto-trader
+use real money (it still only trades strategies whose paper record has opened the performance gate).
 
 The desk prints a six-digit pairing code. Open the site, click "Trade now", choose "My Binance"
 and enter the code. Why a local program and not the website itself: Binance refuses signed
@@ -118,9 +122,13 @@ class Binance:
 
 
 class Desk:
-    def __init__(self, client: Binance, mode: str, max_order: float, code: str, log_dir: Path,
-                 extra_origins: set[str] | None = None):
+    def __init__(self, client: Binance | None, mode: str, max_order: float, code: str, log_dir: Path,
+                 extra_origins: set[str] | None = None, auto_live: bool = False, bot_factory=None):
         self.client, self.mode, self.max_order, self.code = client, mode, max_order, code
+        self.auto_live = auto_live
+        self.bot = None
+        self.bot_brokers: dict = {}
+        self.bot_factory = bot_factory  # (mode) -> (runner, brokers); injectable for tests
         self.log_dir = log_dir
         self.origins = ALLOWED_ORIGINS | (extra_origins or set())
         self.last_order = 0.0
@@ -158,12 +166,15 @@ class Desk:
     async def status(self, req):
         if (bad := self.guard(req)):
             return self.cors(req, bad)
+        if self.client is None:
+            return self.cors(req, web.json_response({"mode": self.mode, "maxOrder": self.max_order, "assets": ASSETS,
+                                                     "balances": {}, "manual": False}))
         try:
             bal = await self.client.balances(ASSETS)
         except Exception as e:  # noqa: BLE001 — surface Binance's message to the user
             return self.cors(req, web.json_response({"error": f"Binance rejected the key: {e}"}, status=502))
         return self.cors(req, web.json_response({"mode": self.mode, "maxOrder": self.max_order, "assets": ASSETS,
-                                                 "balances": bal}))
+                                                 "balances": bal, "manual": True}))
 
     async def order(self, req):
         if (bad := self.guard(req)):
@@ -175,6 +186,9 @@ class Desk:
             order_params(asset, side, quote, 0)  # validate before touching the exchange
         except (KeyError, ValueError, TypeError, json.JSONDecodeError) as e:
             return self.cors(req, web.json_response({"error": f"Bad order: {e}"}, status=400))
+        if self.client is None:
+            return self.cors(req, web.json_response(
+                {"error": "No Binance account connected. Run: python -m latlab.connect"}, status=400))
         if quote > self.max_order:
             return self.cors(req, web.json_response(
                 {"error": f"Order is above this desk's limit of {self.max_order:g} USDT. Restart with --max-order to change it."},
@@ -207,29 +221,108 @@ class Desk:
             w.writerow([time.strftime("%Y-%m-%dT%H:%M:%S"), self.mode, asset, side, quote, r["ok"], r.get("status"),
                         r.get("qty"), r.get("avgPrice"), r["timing"]["exchange_ms"], r.get("error", "")])
 
+    # --- auto-trader -------------------------------------------------------------------
+    def bot_info(self) -> dict:
+        snap = self.bot.snapshot() if self.bot else {"running": False}
+        from .bot.risk import KILL_FILE
+        snap.update(deskMode=self.mode, autoLive=self.auto_live, killSwitch=KILL_FILE.exists(),
+                    realAllowed=self.mode == "testnet" or self.auto_live)
+        return snap
+
+    async def bot_get(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        return self.cors(req, web.json_response(self.bot_info(), dumps=lambda o: json.dumps(o, default=float)))
+
+    async def bot_start(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        body = await req.json() if req.can_read_body else {}
+        real = bool(body.get("real"))
+        if real and self.mode == "live" and not self.auto_live:
+            return self.cors(req, web.json_response({"error": "This desk was started without --auto, so the "
+                             "bot may not trade real money. Restart with: python -m latlab.desk --live --auto"}, status=400))
+        if self.bot and self.bot.running:
+            await self.bot.stop()
+        mode = self.mode if real else "paper"
+        try:
+            self.bot, self.bot_brokers = await self.bot_factory(mode, body)
+        except Exception as e:  # noqa: BLE001
+            return self.cors(req, web.json_response({"error": f"Could not start: {e}"}, status=400))
+        if real and not self.bot_brokers:
+            return self.cors(req, web.json_response({"error": f"No {mode} account connected. Run: python -m latlab.connect"},
+                                                    status=400))
+        return self.cors(req, web.json_response(self.bot_info(), dumps=lambda o: json.dumps(o, default=float)))
+
+    async def bot_stop(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        if self.bot:
+            await self.bot.stop()
+        return self.cors(req, web.json_response(self.bot_info(), dumps=lambda o: json.dumps(o, default=float)))
+
+    async def bot_kill(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        from .bot.risk import KILL_FILE
+        KILL_FILE.parent.mkdir(parents=True, exist_ok=True)
+        KILL_FILE.write_text(time.strftime("%Y-%m-%dT%H:%M:%S"))
+        if self.bot:
+            self.bot.kill()
+            await self.bot.stop()
+        return self.cors(req, web.json_response(self.bot_info(), dumps=lambda o: json.dumps(o, default=float)))
+
+    async def bot_resume(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        from .bot.risk import KILL_FILE
+        KILL_FILE.unlink(missing_ok=True)
+        return self.cors(req, web.json_response(self.bot_info(), dumps=lambda o: json.dumps(o, default=float)))
+
     def app(self) -> web.Application:
         a = web.Application()
         a.router.add_route("OPTIONS", "/{tail:.*}", self.options)
         a.router.add_get("/status", self.status)
         a.router.add_post("/order", self.order)
+        a.router.add_get("/bot", self.bot_get)
+        a.router.add_post("/bot/start", self.bot_start)
+        a.router.add_post("/bot/stop", self.bot_stop)
+        a.router.add_post("/bot/kill", self.bot_kill)
+        a.router.add_post("/bot/resume", self.bot_resume)
         return a
 
 
+async def make_bot(mode: str, body: dict):
+    from .bot.__main__ import real_brokers
+    from .bot.risk import RiskLimits
+    from .bot.runner import BotRunner
+    limits = RiskLimits(order_usdt=float(body.get("order", 20)), max_daily_loss_usdt=float(body.get("maxDailyLoss", 10)),
+                        max_open=int(body.get("maxOpen", 3)))
+    r = BotRunner(mode, int(body.get("top", 30)), limits=limits)
+    brokers = await real_brokers(mode, r.venues) if mode != "paper" else {}
+    if mode == "paper" or brokers:
+        await r.start(brokers)
+    return r, brokers
+
+
 async def serve(a):
+    from . import connect
     live = a.live
-    key = os.environ.get("BINANCE_API_KEY" if live else "BINANCE_TESTNET_KEY")
-    secret = os.environ.get("BINANCE_API_SECRET" if live else "BINANCE_TESTNET_SECRET")
-    if not key or not secret:
-        names = "BINANCE_API_KEY / BINANCE_API_SECRET" if live else "BINANCE_TESTNET_KEY / BINANCE_TESTNET_SECRET"
-        raise SystemExit(f"Set {names} first. Testnet keys: https://testnet.binance.vision (log in with GitHub).")
     mode = "live" if live else "testnet"
+    creds = connect.load("binance", mode)
     if live:
-        print("\n  LIVE MODE — orders spend real money on your Binance account.")
-        print(f"  Every order is capped at {a.max_order:g} USDT. Use a key with withdrawals disabled.\n")
-    client = Binance(key, secret, LIVE_URL if live else TESTNET_URL)
-    await client.start()
+        print("\n  LIVE MODE — orders spend real money on your account.")
+        print(f"  Manual orders are capped at {a.max_order:g} USDT. Use keys with withdrawals disabled.")
+        print("  Auto-trader may use real money: " + ("YES (--auto); only gated strategies trade" if a.auto else
+                                                       "no (add --auto to allow)") + "\n")
+    client = None
+    if creds:
+        client = Binance(creds["key"], creds["secret"], LIVE_URL if live else TESTNET_URL)
+        await client.start()
+    else:
+        print(f"  No Binance {mode} key found — manual Binance orders are off. Connect one with: python -m latlab.connect")
     code = f"{secrets.randbelow(10**6):06d}"
-    desk = Desk(client, mode, a.max_order, code, ROOT / "data/trades")
+    desk = Desk(client, mode, a.max_order, code, ROOT / "data/trades", auto_live=a.auto, bot_factory=make_bot)
     runner = web.AppRunner(desk.app())
     await runner.setup()
     await web.TCPSite(runner, "127.0.0.1", a.port).start()
@@ -238,9 +331,15 @@ async def serve(a):
     try:
         while True:
             await asyncio.sleep(300)
-            await client.sync_clock()
+            if client:
+                await client.sync_clock()
     finally:
-        await client.close()
+        if desk.bot:
+            await desk.bot.stop()
+        for b in desk.bot_brokers.values():
+            await b.close()
+        if client:
+            await client.close()
         await runner.cleanup()
 
 
@@ -248,6 +347,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--live", action="store_true", help="trade real money (default: Binance Spot Testnet)")
     ap.add_argument("--max-order", type=float, default=50.0, help="largest single order in USDT (default 50)")
+    ap.add_argument("--auto", action="store_true", help="with --live: let the website's Auto-trader use real money")
     ap.add_argument("--port", type=int, default=PORT)
     a = ap.parse_args(argv)
     try:

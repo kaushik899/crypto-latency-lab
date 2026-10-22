@@ -34,20 +34,31 @@ VENUES = list(TAKER_BPS)
 
 
 # ---------------------------------------------------------------------------------- record
-async def _record(folder: Path, minutes: float):
+async def _record(folder: Path, minutes: float, top: int = 6, throttle_s: float = 0.05):
+    from .feeds.exchanges import VENUES as ALL_VENUES
+    from .universe import top_assets
+
     folder.mkdir(parents=True, exist_ok=True)
+    binance_assets = await top_assets(top) if top > len(ASSETS) else list(ASSETS)
+    (folder / "markets.json").write_text(json.dumps({"binance": binance_assets, "others": ASSETS}))
     f = open(folder / "quotes.csv", "w", newline="")
     w = csv.writer(f)
-    w.writerow(["recv_ts", "exch_ts", "venue", "asset", "bid", "ask"])
+    w.writerow(["recv_ts", "exch_ts", "venue", "asset", "bid", "ask", "bid_qty", "ask_qty"])
     n = 0
+    last: dict = {}
 
     async def pump(v):
         nonlocal n
-        async for q in stream(v):
-            w.writerow([f"{q.recv_ts:.4f}", f"{q.exch_ts:.4f}" if q.exch_ts else "", q.venue, q.asset, q.bid, q.ask])
+        async for q in stream(v, binance_assets if v == "binance" else ASSETS):
+            k = (q.venue, q.asset)
+            if q.recv_ts - last.get(k, 0) < throttle_s:   # at most one quote per market per 50 ms
+                continue
+            last[k] = q.recv_ts
+            w.writerow([f"{q.recv_ts:.4f}", f"{q.exch_ts:.4f}" if q.exch_ts else "", q.venue, q.asset, q.bid, q.ask,
+                        q.bid_qty if q.bid_qty is not None else "", q.ask_qty if q.ask_qty is not None else ""])
             n += 1
 
-    tasks = [asyncio.create_task(pump(v)) for v in VENUES]
+    tasks = [asyncio.create_task(pump(v)) for v in ALL_VENUES]
     t_end = time.time() + minutes * 60
     try:
         while time.time() < t_end:
@@ -57,6 +68,7 @@ async def _record(folder: Path, minutes: float):
     finally:
         for t in tasks:
             t.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
         f.close()
     print(f"\nsaved {folder / 'quotes.csv'}")
 
@@ -198,13 +210,15 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("record")
     r.add_argument("--minutes", type=float, default=30)
+    r.add_argument("--top", type=int, default=6, help="Binance markets to record (top by volume)")
+    r.add_argument("--out", help="folder to write (default: data/recordings/leadlag-<time>)")
     z = sub.add_parser("analyze")
     z.add_argument("folder")
     z.add_argument("--latency-ms", type=float, default=100)
     a = ap.parse_args(argv)
     if a.cmd == "record":
-        folder = ROOT / "data/recordings" / time.strftime("leadlag-%Y%m%d-%H%M%S")
-        asyncio.run(_record(folder, a.minutes))
+        folder = Path(a.out) if a.out else ROOT / "data/recordings" / time.strftime("leadlag-%Y%m%d-%H%M%S")
+        asyncio.run(_record(folder, a.minutes, a.top))
         print(f"next: python -m latlab.leadlag analyze {folder}")
     else:
         print(json.dumps(analyze(Path(a.folder), a.latency_ms), indent=1))

@@ -122,3 +122,51 @@ def test_preflight_allows_private_network(tmp_path):
         assert "X-Desk-Code" in r.headers["Access-Control-Allow-Headers"]
         await c.close()
     run(go())
+
+
+class FakeRunner:
+    def __init__(self, mode):
+        self.mode, self.running, self.killed = mode, True, False
+
+    def snapshot(self):
+        return {"running": self.running, "mode": self.mode}
+
+    async def stop(self):
+        self.running = False
+
+    def kill(self):
+        self.killed = True
+
+
+def test_bot_endpoints_paper_and_real_rules(tmp_path, monkeypatch):
+    import latlab.bot.risk as risk
+    monkeypatch.setattr(risk, "KILL_FILE", tmp_path / "STOP")
+
+    async def factory(mode, body):
+        return FakeRunner(mode), ({"binance": object()} if mode != "paper" else {})
+
+    async def go():
+        h = {"Origin": SITE, "X-Desk-Code": "123456"}
+        live = Desk(FakeBinance(), "live", 50, "123456", tmp_path, auto_live=False, bot_factory=factory)
+        c = TestClient(TestServer(live.app()))
+        await c.start_server()
+        r = await c.post("/bot/start", json={"real": False}, headers=h)
+        assert r.status == 200 and (await r.json())["mode"] == "paper"
+        r = await c.post("/bot/start", json={"real": True}, headers=h)
+        assert r.status == 400 and "--auto" in (await r.json())["error"]       # live desk without --auto
+        r = await c.post("/bot/kill", headers=h)
+        body = await r.json()
+        assert body["killSwitch"] and not body["running"]
+        r = await c.post("/bot/resume", headers=h)
+        assert not (await r.json())["killSwitch"]
+        r = await c.get("/bot", headers={"Origin": "https://evil.example", "X-Desk-Code": "123456"})
+        assert r.status == 403
+        await c.close()
+
+        auto = Desk(FakeBinance(), "live", 50, "123456", tmp_path, auto_live=True, bot_factory=factory)
+        c = TestClient(TestServer(auto.app()))
+        await c.start_server()
+        r = await c.post("/bot/start", json={"real": True}, headers=h)
+        assert r.status == 200 and (await r.json())["mode"] == "live"
+        await c.close()
+    run(go())
