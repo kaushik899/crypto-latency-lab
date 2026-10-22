@@ -35,7 +35,8 @@ export function StartDesk() {
       <p className="sd-step"><b>2</b> Your browser reopens this page, already paired. No code to type.</p>
       <p className="fine">
         It installs into a folder in your home directory and runs only on your computer. Run the same line again any
-        time to update and restart. Add <code>{os === "win" ? "-- --live" : "-s -- --live"}</code> only when you want real money.
+        time to update and restart. For real money, only when you are ready:{" "}
+        <code>{os === "win" ? "& $HOME\\likely-profits\\.venv\\Scripts\\python.exe -m latlab.desk --live" : "… | bash -s -- --live"}</code>
       </p>
     </div>
   );
