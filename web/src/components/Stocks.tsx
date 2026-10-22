@@ -225,9 +225,8 @@ function Account({ refreshKey }: { refreshKey: number }) {
     return (
       <div className="stk-acct">
         <h4>Your Alpaca account</h4>
-        <p className="muted">The desk is paired but has no Alpaca key. A paper account is free from any country.</p>
-        <pre className="cmd">{`python -m latlab.connect      # choose Alpaca, then Practice
-python -m latlab.desk         # restart, pair again`}</pre>
+        <p className="muted">The desk is paired but has no Alpaca key yet. A paper account is free from any country:
+          open <i>Trade now → My accounts → Connect accounts → Alpaca</i>.</p>
       </div>
     );
   }
@@ -363,9 +362,7 @@ export function Stocks({ onConnect }: { onConnect: () => void }) {
                 Orders go from your own trade desk to Alpaca, with a stop and a target attached. The desk re-checks every
                 ticket against your live account; nothing is sent until you press <i>Place this order</i>.
               </p>
-              <pre className="cmd">{`python -m latlab.connect      # Alpaca → Practice (free)
-python -m latlab.desk         # then pair it here`}</pre>
-              <button className="btn gold" onClick={onConnect}>Pair my desk</button>
+              <button className="btn gold" onClick={onConnect}>Connect my accounts</button>
             </div>
           )}
 

@@ -16,15 +16,26 @@ const Stocks = lazy(() => import("./components/Stocks").then((m) => ({ default: 
 const Research = lazy(() => import("./components/Research").then((m) => ({ default: m.Research })));
 const Loading = () => <div className="block loading" aria-busy="true"><span className="shimmer" /></div>;
 import { scrollToId, startScroll } from "./lib/scroll";
+import { deskStatus, setDesk } from "./lib/trade";
 import { lockScroll, startReveal, startSmooth } from "./lib/smooth";
 
 export default function App() {
   const [trade, setTrade] = useState(false);
+  const [tab, setTab] = useState<"practice" | "binance" | undefined>(undefined);
   const [menu, setMenu] = useState(false);
-  const openTrade = useCallback(() => setTrade(true), []);
+  const openTrade = useCallback(() => { setTab(undefined); setTrade(true); }, []);
+  const openConnect = useCallback(() => { setTab("binance"); setTrade(true); }, []);
   const closeTrade = useCallback(() => setTrade(false), []);
   const closeMenu = useCallback(() => setMenu(false), []);
   useEffect(() => { startSmooth(); startScroll(); startReveal(); }, []);
+  // The desk opens this page as …#pair=123456: pair at once and show the accounts, then drop the code
+  // from the address bar (a URL fragment is never sent to any server).
+  useEffect(() => {
+    const m = location.hash.match(/pair=(\d{6})/);
+    if (!m) return;
+    history.replaceState(null, "", location.pathname + location.search);
+    deskStatus(m[1]).then((st) => { setDesk(m[1], st); setTab("binance"); setTrade(true); }).catch(() => { setTab("binance"); setTrade(true); });
+  }, []);
   useEffect(() => {
     document.body.style.overflow = trade || menu ? "hidden" : "";
     lockScroll(trade || menu);
@@ -59,7 +70,7 @@ export default function App() {
             <button className="btn ghost" onClick={() => scrollToId("auto")}>See the auto-trader</button>
           </div>
         </>}>
-          <AutoTrader onConnect={openTrade} />
+          <AutoTrader onConnect={openConnect} />
           <PredictSim />
           <Board />
         </Room>
@@ -69,7 +80,7 @@ export default function App() {
           real costs, today&rsquo;s breakouts are posted with a plan and a size for a small account, and every order waits
           for your own approval through the desk.
         </p>}>
-          <Suspense fallback={<Loading />}><Stocks onConnect={openTrade} /></Suspense>
+          <Suspense fallback={<Loading />}><Stocks onConnect={openConnect} /></Suspense>
         </Room>
 
         <Room id="research" focus="60% 60%" lede={<p>
@@ -105,7 +116,7 @@ export default function App() {
 
       <NextRoom />
       <Menu open={menu} onClose={closeMenu} onTrade={openTrade} />
-      <TradeDrawer open={trade} onClose={closeTrade} />
+      <TradeDrawer open={trade} onClose={closeTrade} tab={tab} />
     </>
   );
 }

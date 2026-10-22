@@ -203,7 +203,7 @@ async def verify_alpaca(mode: str, creds: dict) -> tuple[bool, str, dict]:
 
 # ---------------------------------------------------------------------------- CLI
 def wizard():
-    print("\nConnect an exchange account to Crypto Latency Lab\n")
+    print("\nConnect an exchange or broker account to Likely Profits\n")
     names = list(EXCHANGES)
     for i, k in enumerate(names, 1):
         print(f"  {i}. {EXCHANGES[k]['name']}")

@@ -1,4 +1,4 @@
-"""Crypto Latency Lab auto-trader.
+"""Likely Profits auto-trader.
 
     python -m latlab.bot run                       # paper trading on live data, top 30 markets (no keys)
     python -m latlab.bot run --mode testnet        # real orders on exchange testnets (fake money)

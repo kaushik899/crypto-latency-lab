@@ -1,4 +1,7 @@
-# Crypto Latency Lab
+# Likely Profits
+
+*Formerly Crypto Latency Lab.* The odds of every trade, measured on real data — crypto and US stocks.
+
 
 Viral posts claim bots get rich because crypto prices move on Binance first and everywhere else a
 moment later. This project measures that claim on **real, live data**: it streams order books from
@@ -20,6 +23,22 @@ Turner's *Rain, Steam and Speed* for latency, Bruegel's *Tower of Babel* for fiv
 Matsys' *Moneylender and his Wife* for the trade desk, Degas' *Portraits at the Stock Exchange* for the stock lab, *The Fall of Icarus* for the backtest, Vermeer's
 *Astronomer* for the method — and scrolling dollies the camera from Hubert Robert's Grande Galerie of the
 Louvre into the first frame.
+
+## Connect your accounts (one line, then point and click)
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/kaushik899/crypto-latency-lab/main/scripts/install-desk.sh | bash
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/kaushik899/crypto-latency-lab/main/scripts/install-desk.ps1 | iex
+```
+
+That installs (or updates) the private trade desk on your computer, starts it, and opens the site already
+paired. In **Trade now → My accounts → Connect accounts**, pick Binance, OKX, Bybit, Kraken, Coinbase or
+Alpaca, open its API-key page from the link, and paste the key: it goes from the page to the desk on
+127.0.0.1 only, is checked with the venue (keys that can withdraw are refused) and saved in your system
+keychain. Then trade crypto or US stocks from the same drawer: crypto in one click, stocks as a day order
+with a stop and target that your desk re-checks before you press *Place this order*.
 
 ## Trade now (one click, your own Binance account)
 

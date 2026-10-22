@@ -44,7 +44,18 @@ LIVE_URL = "https://api.binance.com"
 TESTNET_URL = "https://testnet.binance.vision"
 ASSETS = ["BTC", "ETH", "SOL", "XRP", "BNB", "DOGE"]
 ALLOWED_ORIGINS = {"https://kaushik899.github.io"}
+SITE_URL = "https://kaushik899.github.io/crypto-latency-lab/"
 PORT = 8765
+
+# Where each venue issues API keys, for the site's connect flow (opened in a new tab by the user).
+KEY_PAGES = {
+    "binance": ("https://www.binance.com/en/my/settings/api-management", "https://testnet.binance.vision/"),
+    "okx": ("https://www.okx.com/account/my-api", "https://www.okx.com/demo-trading"),
+    "bybit": ("https://www.bybit.com/app/user/api-management", "https://testnet.bybit.com/app/user/api-management"),
+    "kraken": ("https://pro.kraken.com/app/settings/api", None),
+    "coinbase": ("https://www.coinbase.com/settings/api", None),
+    "alpaca": ("https://app.alpaca.markets/brokerage/dashboard/overview", "https://app.alpaca.markets/paper/dashboard/overview"),
+}
 
 
 def sign(secret: str, query: str) -> str:
@@ -157,7 +168,7 @@ class Desk:
 
     def guard(self, req: web.Request) -> web.Response | None:
         if not self.origin_ok(req.headers.get("Origin")):
-            return web.json_response({"error": "This desk only answers the Crypto Latency Lab site."}, status=403)
+            return web.json_response({"error": "This desk only answers the Likely Profits site."}, status=403)
         if not secrets.compare_digest(req.headers.get("X-Desk-Code", ""), self.code):
             return web.json_response({"error": "Wrong pairing code. It is printed in the desk's terminal."}, status=401)
         return None
@@ -223,6 +234,91 @@ class Desk:
                             "exchange_ms", "error"])
             w.writerow([time.strftime("%Y-%m-%dT%H:%M:%S"), self.mode, asset, side, quote, r["ok"], r.get("status"),
                         r.get("qty"), r.get("avgPrice"), r["timing"]["exchange_ms"], r.get("error", "")])
+
+    # --- accounts: connect any exchange or broker from the site ---------------------------
+    def accounts_info(self) -> dict:
+        from . import connect
+        have = set(k.split(" ")[0] for k in connect.connected())
+        out = []
+        for ex, info in connect.EXCHANGES.items():
+            live_url, test_url = KEY_PAGES.get(ex, (None, None))
+            out.append({
+                "id": ex, "name": info["name"], "market": "stocks" if ex == "alpaca" else "crypto",
+                "practice": bool(info.get("testnet")), "passphrase": bool(info.get("password")),
+                "help": info.get("help"), "practiceHelp": info.get("testnet_help"),
+                "keyUrl": live_url, "practiceUrl": test_url,
+                "connected": {"testnet": f"{ex}:testnet" in have, "live": f"{ex}:live" in have},
+            })
+        return {"deskMode": self.mode, "accounts": out}
+
+    async def accounts_get(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        return self.cors(req, web.json_response(self.accounts_info()))
+
+    async def accounts_connect(self, req):
+        """The key travels browser -> 127.0.0.1 only. It is checked with the venue (keys that can
+        withdraw are refused), saved on this computer, and put to use without a restart."""
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        from . import connect
+        try:
+            b = await req.json()
+            ex, mode = str(b["exchange"]).lower(), str(b["mode"]).lower()
+            key, sec = str(b["key"]).strip(), str(b["secret"]).strip()
+            pw = (str(b.get("passphrase") or "").strip() or None)
+        except (KeyError, ValueError, TypeError, json.JSONDecodeError) as e:
+            return self.cors(req, web.json_response({"error": f"Missing field: {e}"}, status=400))
+        info = connect.EXCHANGES.get(ex)
+        if not info or mode not in ("testnet", "live") or (mode == "testnet" and not info.get("testnet")):
+            return self.cors(req, web.json_response({"error": "Unknown account type."}, status=400))
+        if not key or not sec or len(key) > 512 or len(sec) > 1024 or (info.get("password") and not pw):
+            return self.cors(req, web.json_response({"error": "Paste the key and the secret" +
+                                                     (" and the passphrase" if info.get("password") else "") + "."}, status=400))
+        ok, msg, bal = await connect.verify(ex, mode, {"key": key, "secret": sec, "password": pw})
+        if not ok:
+            return self.cors(req, web.json_response({"ok": False, "error": msg}, status=400))
+        where = connect.save(ex, mode, key, sec, pw)
+        attached = await self.attach(ex, mode, key, sec)
+        top = dict(sorted(bal.items(), key=lambda kv: -abs(kv[1]))[:6])
+        return self.cors(req, web.json_response({"ok": True, "message": msg, "savedIn": where, "balances": top,
+                                                 "attached": attached, "accounts": self.accounts_info()}))
+
+    async def attach(self, ex: str, mode: str, key: str, sec: str) -> bool:
+        """Use a freshly connected key at once when it matches this desk's mode."""
+        if mode != self.mode:
+            return False
+        if ex == "binance":
+            old = self.client
+            self.client = Binance(key, sec, LIVE_URL if mode == "live" else TESTNET_URL)
+            await self.client.start()
+            if old:
+                await old.close()
+            return True
+        if ex == "alpaca":
+            from .stocks.alpaca import Alpaca
+            old = self.stocks.client
+            self.stocks.client = Alpaca(key, sec, live=mode == "live")
+            await self.stocks.client.start()
+            if old:
+                await old.close()
+            return True
+        return True   # the auto-trader loads other venues' keys when it starts
+
+    async def accounts_remove(self, req):
+        if (bad := self.guard(req)):
+            return self.cors(req, bad)
+        from . import connect
+        b = await req.json()
+        name = f"{str(b.get('exchange', '')).lower()}:{str(b.get('mode', '')).lower()}"
+        removed = connect.remove(name)
+        if removed and name == f"binance:{self.mode}" and self.client:
+            await self.client.close()
+            self.client = None
+        if removed and name == f"alpaca:{self.mode}" and self.stocks.client:
+            await self.stocks.client.close()
+            self.stocks.client = None
+        return self.cors(req, web.json_response({"ok": removed, "accounts": self.accounts_info()}))
 
     # --- auto-trader -------------------------------------------------------------------
     def bot_info(self) -> dict:
@@ -292,6 +388,9 @@ class Desk:
         a.router.add_post("/bot/stop", self.bot_stop)
         a.router.add_post("/bot/kill", self.bot_kill)
         a.router.add_post("/bot/resume", self.bot_resume)
+        a.router.add_get("/accounts", self.accounts_get)
+        a.router.add_post("/accounts/connect", self.accounts_connect)
+        a.router.add_post("/accounts/remove", self.accounts_remove)
         self.stocks.routes(a)
         return a
 
@@ -342,6 +441,15 @@ async def serve(a):
     await web.TCPSite(runner, "127.0.0.1", a.port).start()
     print(f"  Trade desk ready on http://127.0.0.1:{a.port}  ({mode})")
     print(f"  Pairing code: {code}\n  Leave this window open while you trade. Ctrl-C to stop.")
+    if not a.no_browser:
+        # open the site already paired: the code rides in the URL fragment, which never leaves the browser
+        import webbrowser
+        url = f"{SITE_URL}#pair={code}" + (f"&port={a.port}" if a.port != PORT else "")
+        try:
+            webbrowser.open(url)
+            print(f"  Opened {SITE_URL} in your browser, already paired.")
+        except Exception:  # noqa: BLE001
+            pass
     try:
         while True:
             await asyncio.sleep(300)
@@ -367,6 +475,7 @@ def main(argv=None):
     ap.add_argument("--max-stock-order", type=float, default=200.0, help="largest stock order in $ (default 200)")
     ap.add_argument("--stock-risk-pct", type=float, default=1.0, help="max loss per stock trade, %% of equity")
     ap.add_argument("--port", type=int, default=PORT)
+    ap.add_argument("--no-browser", action="store_true", help="do not open the site automatically")
     a = ap.parse_args(argv)
     try:
         asyncio.run(serve(a))

@@ -12,7 +12,7 @@ export function TopBar({ onTrade, onMenu }: { onTrade: () => void; onMenu: () =>
   return (
     <header className="topbar">
       <a className="brand" href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-        aria-label="Crypto Latency Lab, back to the entrance">
+        aria-label="Likely Profits, back to the entrance">
         <Logo />
       </a>
       <p className="topbar-room" aria-live="polite">

@@ -156,9 +156,7 @@ function MyBot({ onConnect }: { onConnect: () => void }) {
           The bot runs inside your trade desk, on your computer, so your keys never leave it. Connect the desk once and
           start, stop or kill it from here.
         </p>
-        <pre className="cmd">{`python -m latlab.connect      # once per account
-python -m latlab.desk         # then enter its code here`}</pre>
-        <button className="btn gold" onClick={onConnect}>Connect my desk</button>
+        <button className="btn gold" onClick={onConnect}>Connect my accounts</button>
       </div>
     );
   }

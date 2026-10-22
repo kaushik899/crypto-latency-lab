@@ -14,6 +14,7 @@ import aiohttp
 
 PAPER_URL = "https://paper-api.alpaca.markets"
 LIVE_URL = "https://api.alpaca.markets"
+DATA_URL = "https://data.alpaca.markets"     # market data; the free IEX feed works with paper and live keys
 SYMBOL = re.compile(r"^[A-Z]{1,5}([.-][A-Z])?$")
 
 
@@ -69,6 +70,20 @@ class Alpaca:
             except Exception:  # noqa: BLE001
                 data = {"message": (await r.text())[:300]}
             return r.status, data
+
+    async def quote(self, symbol: str) -> dict:
+        """Latest IEX bid/ask and last trade. IEX is a slice of US volume: fine for a ticket, not for tape reading."""
+        if not SYMBOL.match(symbol):
+            raise ValueError("bad symbol")
+        async with self.http.get(f"{DATA_URL}/v2/stocks/{symbol}/quotes/latest?feed=iex") as r:
+            q = (await r.json(content_type=None)) if r.status == 200 else {}
+        async with self.http.get(f"{DATA_URL}/v2/stocks/{symbol}/trades/latest?feed=iex") as r:
+            t = (await r.json(content_type=None)) if r.status == 200 else {}
+        qq, tt = q.get("quote") or {}, t.get("trade") or {}
+        if not qq and not tt:
+            raise RuntimeError(f"no quote for {symbol}")
+        return {"symbol": symbol, "bid": qq.get("bp"), "ask": qq.get("ap"), "last": tt.get("p"),
+                "time": tt.get("t") or qq.get("t"), "feed": "iex"}
 
     async def account(self) -> dict:
         st, a = await self.call("GET", "/v2/account")

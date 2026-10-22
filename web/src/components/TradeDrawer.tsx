@@ -2,13 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { ASSETS, fmtPrice, fmtUsd, type AssetKey } from "../lib/assets";
 import { desk as shared, deskOrder, deskStatus, onDesk, practiceOrder, setDesk as share, type DeskStatus, type Receipt, type Side } from "../lib/trade";
 import { useReal } from "../lib/useReal";
+import { Accounts, StartDesk } from "./Accounts";
+import { StockTicket } from "./StockTicket";
 
 type Account = "practice" | "binance";
 const AMOUNTS = [10, 25, 50, 100];
 
-export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function TradeDrawer({ open, onClose, tab }: { open: boolean; onClose: () => void; tab?: Account }) {
   const real = useReal(400);
-  const [account, setAccount] = useState<Account>("practice");
+  const [account, setAccount] = useState<Account>(tab ?? "practice");
+  useEffect(() => { if (open && tab) setAccount(tab); }, [open, tab]);
+  const [showAccounts, setShowAccounts] = useState(false);
+  const [market, setMarket] = useState<"crypto" | "stocks">("crypto");
   const [asset, setAsset] = useState<AssetKey>("BTC");
   const [amount, setAmount] = useState(25);
   const [code, setCode] = useState(shared.code);
@@ -86,7 +91,7 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
 
         <div className="seg wide" role="radiogroup" aria-label="Account">
           <button role="radio" aria-checked={account === "practice"} onClick={() => setAccount("practice")}>Practice</button>
-          <button role="radio" aria-checked={account === "binance"} onClick={() => setAccount("binance")}>My account</button>
+          <button role="radio" aria-checked={account === "binance"} onClick={() => setAccount("binance")}>My accounts</button>
         </div>
 
         {account === "practice" ? (
@@ -96,14 +101,11 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
         ) : !desk ? (
           <div className="desk-setup">
             <p className="drawer-note">
-              Your Binance key never touches this website. A small trade desk runs on your computer, keeps the key, and
-              places the order the moment you click.
+              Connect Binance, OKX, Bybit, Kraken, Coinbase or Alpaca in under a minute. Your keys never touch this
+              website: a small private desk on your computer keeps them and places each order the moment you click.
             </p>
-            <ol className="setup-steps">
-              <li>Connect your account once: <code>python -m latlab.connect</code>. It tests the key and refuses keys that can withdraw. Start with the free <a href="https://testnet.binance.vision" target="_blank" rel="noreferrer">Binance Testnet</a>.</li>
-              <li>Start the desk: <code>python -m latlab.desk</code> (add <code>--live</code> for real money).</li>
-              <li>Enter the six-digit pairing code it prints.</li>
-            </ol>
+            <StartDesk />
+            <p className="fine">Started it from a terminal instead? Enter the six-digit code it printed:</p>
             <div className="code-row">
               <label className="sr" htmlFor="desk-code">Pairing code</label>
               <input id="desk-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="Pairing code"
@@ -121,11 +123,21 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
             <span className="muted">
               {fmtUsd(desk.balances.USDT ?? 0, 2)} USDT · up to {fmtUsd(desk.maxOrder)} per order
             </span>
+            <button className="link" onClick={() => setShowAccounts((v) => !v)}>{showAccounts ? "Hide accounts" : "Connect accounts"}</button>
             <button className="link" onClick={() => setDesk(null)}>Disconnect</button>
           </div>
         )}
+        {account === "binance" && desk && (showAccounts || (!desk.manual && !desk.balances?.USDT)) && <Accounts />}
 
-        {ready && (
+        {account === "binance" && desk && (
+          <div className="seg wide" role="radiogroup" aria-label="Market">
+            <button role="radio" aria-checked={market === "crypto"} onClick={() => setMarket("crypto")}>Crypto</button>
+            <button role="radio" aria-checked={market === "stocks"} onClick={() => setMarket("stocks")}>US stocks</button>
+          </div>
+        )}
+        {account === "binance" && desk && market === "stocks" && <StockTicket />}
+
+        {ready && !(account === "binance" && market === "stocks") && (
           <>
             <div className="coin-grid" role="radiogroup" aria-label="Coin">
               {ASSETS.map((a) => {

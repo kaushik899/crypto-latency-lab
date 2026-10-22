@@ -1,3 +1,4 @@
+import { LogoMark } from "./Logo";
 import { useEffect, useRef } from "react";
 import { CREDITS, paint } from "../lib/rooms";
 import { reducedMotion, scrollToId } from "../lib/scroll";
@@ -97,8 +98,8 @@ export function Hero({ onTrade }: { onTrade: () => void }) {
         <div className="hg-full-shade" />
 
         <div className="hg-intro">
-          <p className="hg-kicker">A museum of market timing</p>
-          <p className="hg-big">Crypto<br />Latency Lab</p>
+          <p className="hg-kicker">The odds of every trade, measured · Crypto &amp; US stocks</p>
+          <p className="hg-big"><LogoMark size={84} id="hero" /><span className="hg-word">Likely<br />Profits</span></p>
           <p className="hg-scroll">Scroll to enter the gallery</p>
           <p className="hg-plate">{g.artist}, <i>{g.title}</i>, {g.year}</p>
         </div>

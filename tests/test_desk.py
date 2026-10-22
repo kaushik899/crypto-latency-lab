@@ -170,3 +170,57 @@ def test_bot_endpoints_paper_and_real_rules(tmp_path, monkeypatch):
         assert r.status == 200 and (await r.json())["mode"] == "live"
         await c.close()
     run(go())
+
+
+def test_accounts_connect_flow(tmp_path, monkeypatch):
+    import os, stat
+    from latlab import connect
+    monkeypatch.setattr(connect, "HOME", tmp_path)
+    monkeypatch.setattr(connect, "STORE", tmp_path / "credentials.json")
+    monkeypatch.setattr(connect, "_keyring", lambda: None)
+    seen = []
+
+    async def fake_verify(ex, mode, creds):
+        seen.append((ex, mode))
+        if creds["key"] == "withdraw":
+            return False, "This key can WITHDRAW funds.", {}
+        return True, "Verified.", {"USDT": 100.0, "BTC": 0.01}
+    monkeypatch.setattr(connect, "verify", fake_verify)
+
+    async def go():
+        desk = Desk(None, "testnet", 50, "123456", tmp_path)
+        attached = []
+
+        async def fake_attach(ex, mode, key, sec):
+            attached.append((ex, mode))
+            return mode == desk.mode
+        desk.attach = fake_attach
+        c = TestClient(TestServer(desk.app()))
+        await c.start_server()
+        h = {"Origin": SITE, "X-Desk-Code": "123456"}
+        try:
+            r = await c.get("/accounts", headers=h)
+            names = {a["id"]: a for a in (await r.json())["accounts"]}
+            assert {"binance", "okx", "bybit", "kraken", "coinbase", "alpaca"} <= set(names)
+            assert names["alpaca"]["market"] == "stocks" and names["okx"]["passphrase"]
+            r = await c.post("/accounts/connect", json={"exchange": "binance", "mode": "testnet", "key": "withdraw",
+                                                        "secret": "s"}, headers=h)
+            assert r.status == 400 and not (tmp_path / "credentials.json").exists()
+            r = await c.post("/accounts/connect", json={"exchange": "okx", "mode": "live", "key": "k", "secret": "s"},
+                             headers=h)
+            assert r.status == 400 and "passphrase" in (await r.json())["error"]        # OKX needs one
+            r = await c.post("/accounts/connect", json={"exchange": "alpaca", "mode": "testnet", "key": "k", "secret": "s"},
+                             headers=h)
+            j = await r.json()
+            assert r.status == 200 and j["ok"] and j["attached"] and attached == [("alpaca", "testnet")]
+            assert stat.S_IMODE(os.stat(tmp_path / "credentials.json").st_mode) == 0o600
+            assert next(a for a in j["accounts"]["accounts"] if a["id"] == "alpaca")["connected"]["testnet"]
+            r = await c.post("/accounts/connect", json={"exchange": "binance", "mode": "testnet", "key": "k", "secret": "s"},
+                             headers={"Origin": "https://evil.example", "X-Desk-Code": "123456"})
+            assert r.status == 403
+            r = await c.post("/accounts/remove", json={"exchange": "alpaca", "mode": "testnet"}, headers=h)
+            assert (await r.json())["ok"]
+        finally:
+            await c.close()
+
+    run(go())
