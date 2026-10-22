@@ -40,6 +40,7 @@ class BotRunner:
         self.limits = limits or RiskLimits()
         self.ledger = Ledger(ledger_path or ROOT / "data/bot/ledger.sqlite")
         self.state_path = state_path or ROOT / "data/bot/state.json"
+        self.models_local = self.state_path.parent / "models-local.json"
         self.engine: Engine | None = None
         self.tasks: list[asyncio.Task] = []
         self.assets: list[str] = []
@@ -54,6 +55,13 @@ class BotRunner:
             return
         self.assets = await top_assets(self.top)
         e = Engine(fees_bps=load_fees(), limits=self.limits, ledger=self.ledger)
+        # start from what the bot has already learned: this machine's models, else the published ones
+        for src in (self.models_local, ROOT / "data/bot/models.json"):
+            try:
+                log.info("loaded %d calibrated models from %s", e.import_models(json.loads(src.read_text())), src.name)
+                break
+            except (OSError, ValueError):
+                continue
         e.trade_venues = set(self.trade_venues) if self.trade_venues else None
         if self.mode in ("testnet", "live"):
             e.real_brokers = dict(brokers or {})
@@ -76,6 +84,7 @@ class BotRunner:
         await asyncio.gather(*self.tasks, return_exceptions=True)
         self.tasks = []
         self._write()
+        self._save_models()
 
     def kill(self):
         KILL_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -93,9 +102,20 @@ class BotRunner:
             self.engine.tick(time.time())
 
     async def _writer(self):
+        k = 0
         while True:
             await asyncio.sleep(1.0)
             self._write()
+            k += 1
+            if k % 60 == 0:
+                self._save_models()
+
+    def _save_models(self):
+        if self.engine:
+            try:
+                self.models_local.write_text(json.dumps(self.engine.export_models()))
+            except OSError:
+                pass
 
     def snapshot(self) -> dict:
         if not self.engine:

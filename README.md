@@ -77,6 +77,51 @@ the rest: once rivals react in tens of milliseconds, the orders that still fill 
 was right about. These numbers come from a simulator whose assumptions are explicit parameters
 (`latlab/sim.py`); they show which assumptions the profit depends on, not what anyone would earn.
 
+## Auto-trader
+
+```bash
+python -m latlab.connect                          # connect Binance / OKX / Bybit / Kraken / Coinbase (once)
+python -m latlab.bot run                          # paper trading on live data, top 30 markets, no keys
+python -m latlab.bot run --mode testnet           # real orders on exchange testnets (fake money)
+python -m latlab.bot run --mode live --i-understand-real-money
+python -m latlab.bot status | kill | resume
+```
+
+Or run `python -m latlab.desk` (add `--live --auto` for real money) and control it from the website's
+**Auto-trader** panel: start, stop, kill switch, order size, daily loss cap.
+
+How it decides, in order:
+
+1. **Three strategies** produce a signal per market: *lead-lag* (Binance moved, a slower exchange hasn't),
+   *order-book imbalance* (much more size on the bid than the ask), *dip reversion* (sharp drop below the
+   5-minute average). All long-only, because spot accounts can't short.
+2. **Online calibration.** Every signal is checked against what the price actually did over the
+   strategy's horizon, measured from when an order would really have arrived. Per strategy and coin it
+   fits `future move = beta x signal` with exponential forgetting; a model may predict only once beta is
+   positive with t >= 3.
+3. **Cost filter.** It trades only if the prediction *minus two standard errors* beats two taker fees,
+   the bid-ask spread and a buffer.
+4. **Risk limits.** Order size, positions open at once, one position per coin, trades per hour, stale
+   price and wide spread guards, a daily loss cap (halts until the next UTC day) and a kill switch file.
+5. **Performance gate.** Real money is unlocked per strategy only after 100+ paper trades in the last
+   7 days are profitable after costs with t >= 2. Until then every signal is paper-traded, so the record
+   keeps building.
+
+Connecting an account tests the key and **refuses keys that can withdraw** (checked automatically on
+Binance, OKX, Bybit and Coinbase). Keys stay in `~/.latlab/credentials.json` (owner-only) or the system
+keychain.
+
+It does not promise profit. On a synthetic market with a real 0.6 s lag it finds the lag and profits
+(about 480 trades, t of 6 to 9) when costs are zero, and correctly stays out when 0.10% fees make the
+lag unprofitable.
+
+## Self-updating research
+
+`.github/workflows/research.yml` runs every four hours: it records 20 minutes of live quotes (30
+Binance markets via its public data mirror, plus Coinbase, Kraken, OKX and Bybit), measures who follows
+Binance, replays every auto-trader strategy on the recording in paper mode (continuing the calibration
+from previous sessions in `data/bot/models.json`) and commits the result, which redeploys the site.
+
 ## What's inside
 
 ```
@@ -85,7 +130,10 @@ latlab/
   fees.py        Polymarket taker fee model
   feeds/         five exchange websockets (exchanges.py) · Binance · Polymarket Gamma + CLOB order books
   leadlag.py     record real quotes from five exchanges; catch-up times, lead-lag, fee-aware gaps
-  desk.py        local Binance trade desk behind the site's Trade now button (testnet default)
+  desk.py        local trade desk behind Trade now and the Auto-trader panel (testnet default)
+  connect.py     one-command account connection with key and withdrawal-permission checks
+  universe.py    top Binance markets by volume, minus stablecoins and tokenised stocks
+  bot/           auto-trader: strategies, online models, risk, ledger + gate, paper/ccxt brokers, runner
   tape.py        time-aligned record of spot + books (from simulation or from a live recording)
   sim.py         correlated GBM + stochastic vol + jumps, oracle basis, lagging market maker, rival latency bots
   strategy.py    fee-aware signals, latency-delayed paper execution, Kelly sizing, global capital ledger
@@ -94,7 +142,7 @@ latlab/
   live.py        live monitor + paper trader + recorder (all six coins)
   tapes.py       recording → tape for the backtester
 web/             React + TypeScript gallery site: live rooms, Trade now drawer, research charts, method
-tests/           31 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
+tests/           43 tests (pricing, fees, order books, simulator invariants, capital limits, P&L accounting)
 ```
 
 ## Assets

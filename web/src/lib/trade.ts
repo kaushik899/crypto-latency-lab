@@ -44,14 +44,37 @@ export async function practiceOrder(asset: AssetKey, side: Side, quote: number):
     timing: { clickToSendMs: 0, exchangeMs: PRACTICE_LATENCY_MS, totalMs: total } };
 }
 
-export type DeskStatus = { mode: DeskMode; maxOrder: number; balances: Record<string, number> };
+export type DeskStatus = { mode: DeskMode; maxOrder: number; balances: Record<string, number>; manual?: boolean };
 
-async function deskFetch(path: string, code: string, init?: RequestInit) {
+// One pairing per page: the Trade drawer and the Auto-trader share it.
+type DeskSession = { code: string; status: DeskStatus | null };
+export const desk: DeskSession = { code: "", status: null };
+const deskListeners = new Set<() => void>();
+export function setDesk(code: string, status: DeskStatus | null) {
+  desk.code = code;
+  desk.status = status;
+  deskListeners.forEach((f) => f());
+}
+export function onDesk(f: () => void) {
+  deskListeners.add(f);
+  return () => { deskListeners.delete(f); };
+}
+
+export async function deskCall<T = any>(path: string, body?: unknown): Promise<T> {
+  try {
+    return await deskFetch(path, desk.code, body === undefined ? undefined : { method: "POST", body: JSON.stringify(body) });
+  } catch (e) {
+    if (e instanceof TypeError) throw new Error("The trade desk stopped answering. Is it still running?");
+    throw e;
+  }
+}
+
+async function deskFetch(path: string, code: string, init?: RequestInit): Promise<any> {
   const r = await fetch(DESK_URL + path, {
     ...init,
     headers: { "Content-Type": "application/json", "X-Desk-Code": code, ...(init?.headers ?? {}) },
-    // Chrome's Private Network Access: lets an https page talk to 127.0.0.1
-    ...({ targetAddressSpace: "local" } as RequestInit),
+    // Chrome Local Network Access: the desk lives on the loopback address (127.0.0.1)
+    ...({ targetAddressSpace: "loopback" } as RequestInit),
   });
   const body = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(body.error ?? `Desk answered ${r.status}`);

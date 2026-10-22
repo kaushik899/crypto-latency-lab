@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ASSETS, fmtPrice, fmtUsd, type AssetKey } from "../lib/assets";
-import { deskOrder, deskStatus, practiceOrder, type DeskStatus, type Receipt, type Side } from "../lib/trade";
+import { desk as shared, deskOrder, deskStatus, onDesk, practiceOrder, setDesk as share, type DeskStatus, type Receipt, type Side } from "../lib/trade";
 import { useReal } from "../lib/useReal";
 
 type Account = "practice" | "binance";
@@ -11,8 +11,10 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
   const [account, setAccount] = useState<Account>("practice");
   const [asset, setAsset] = useState<AssetKey>("BTC");
   const [amount, setAmount] = useState(25);
-  const [code, setCode] = useState("");
-  const [desk, setDesk] = useState<DeskStatus | null>(null);
+  const [code, setCode] = useState(shared.code);
+  const [desk, setDeskLocal] = useState<DeskStatus | null>(shared.status);
+  useEffect(() => onDesk(() => { setCode(shared.code); setDeskLocal(shared.status); }), []);
+  const setDesk = (d: DeskStatus | null) => share(code.trim(), d);
   const [deskErr, setDeskErr] = useState("");
   const [connecting, setConnecting] = useState(false);
   const [askFirst, setAskFirst] = useState(true);
@@ -84,7 +86,7 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
 
         <div className="seg wide" role="radiogroup" aria-label="Account">
           <button role="radio" aria-checked={account === "practice"} onClick={() => setAccount("practice")}>Practice</button>
-          <button role="radio" aria-checked={account === "binance"} onClick={() => setAccount("binance")}>My Binance</button>
+          <button role="radio" aria-checked={account === "binance"} onClick={() => setAccount("binance")}>My account</button>
         </div>
 
         {account === "practice" ? (
@@ -98,8 +100,8 @@ export function TradeDrawer({ open, onClose }: { open: boolean; onClose: () => v
               places the order the moment you click.
             </p>
             <ol className="setup-steps">
-              <li>Create an API key with <b>Spot trading on</b> and <b>withdrawals off</b>. Start on the free <a href="https://testnet.binance.vision" target="_blank" rel="noreferrer">Binance Testnet</a>.</li>
-              <li>In the project folder run <code>python -m latlab.desk</code> (add <code>--live</code> for real money).</li>
+              <li>Connect your account once: <code>python -m latlab.connect</code>. It tests the key and refuses keys that can withdraw. Start with the free <a href="https://testnet.binance.vision" target="_blank" rel="noreferrer">Binance Testnet</a>.</li>
+              <li>Start the desk: <code>python -m latlab.desk</code> (add <code>--live</code> for real money).</li>
               <li>Enter the six-digit pairing code it prints.</li>
             </ol>
             <div className="code-row">

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Menu, NextRoom, TopBar } from "./components/Chrome";
+import { AutoTrader } from "./components/AutoTrader";
 import { Board } from "./components/Board";
 import { Hero } from "./components/Hero";
 import { LeadLag } from "./components/LeadLag";
@@ -43,11 +44,16 @@ export default function App() {
 
         <Room id="desk" focus="50% 40%" lede={<>
           <p>
-            Pick a coin, pick an amount, press buy. Practise on live prices, or connect your own Binance account through a
-            trade desk that runs on your computer, so your key never leaves it.
+            Trade in one click, or let the auto-trader watch every market for you. Both run through a trade desk on your
+            own computer, so your exchange keys never leave it, and real money is only ever risked by strategies whose
+            paper record has proved they beat the fees.
           </p>
-          <button className="btn gold" onClick={openTrade}>Trade now</button>
+          <div className="hg-actions">
+            <button className="btn gold" onClick={openTrade}>Trade now</button>
+            <button className="btn ghost" onClick={() => scrollToId("auto")}>See the auto-trader</button>
+          </div>
         </>}>
+          <AutoTrader onConnect={openTrade} />
           <PredictSim />
           <Board />
         </Room>

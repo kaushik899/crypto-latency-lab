@@ -54,6 +54,8 @@ class RiskManager:
         self._roll_day(t)
         if live and KILL_FILE.exists():
             self.halted = f"Kill switch file present ({KILL_FILE}). Delete it to resume."
+        elif self.halted.startswith("Kill switch file") and not KILL_FILE.exists():
+            self.halted = ""   # resumed
         if self.halted:
             return self.halted
         L = self.limits

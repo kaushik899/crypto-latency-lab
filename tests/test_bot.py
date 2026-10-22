@@ -94,7 +94,9 @@ def test_paper_broker_waits_for_latency_and_uses_book_size():
     assert f.fee_usdt == pytest.approx(0.05 * 101 * 0.001)
 
 
-def test_risk_limits():
+def test_risk_limits(tmp_path, monkeypatch):
+    import latlab.bot.risk as risk
+    monkeypatch.setattr(risk, "KILL_FILE", tmp_path / "STOP")      # never depend on this machine's kill switch
     rm = RiskManager(RiskLimits(max_open=1, max_daily_loss_usdt=5, max_spread_bps=10))
     q = Quote("binance", "BTC", 100, 100.05, None, T0, 1, 1)
     assert rm.check(T0, "BTC", [], q, live=False) is None
@@ -108,7 +110,12 @@ def test_risk_limits():
     rm.record_close(T0, -6)
     assert "Daily loss" in rm.check(T0, "BTC", [], q, live=True)
     rm.record_close(T0 + 86400, 0)              # next UTC day resets
-    assert rm.check(T0 + 86400, "BTC", [], Quote("binance", "BTC", 100, 100.05, None, T0 + 86400, 1, 1), live=True) is None
+    fresh = Quote("binance", "BTC", 100, 100.05, None, T0 + 86400, 1, 1)
+    assert rm.check(T0 + 86400, "BTC", [], fresh, live=True) is None
+    (tmp_path / "STOP").write_text("x")          # kill switch blocks real orders only
+    assert "Kill switch" in rm.check(T0 + 86400, "BTC", [], fresh, live=True)
+    (tmp_path / "STOP").unlink()                 # resume
+    assert rm.check(T0 + 86400, "BTC", [], fresh, live=True) is None
 
 
 def test_gate_opens_only_on_a_clear_paper_record():
@@ -135,6 +142,7 @@ def test_universe_pick_filters_stables_and_leveraged():
     got = pick(rows, 8)
     assert got[:6] == ["BTC", "ETH", "SOL", "XRP", "BNB", "DOGE"]
     assert got[6:] == ["PEPE", "SUI"]
+    assert pick([{"symbol": "CRCLBUSDT", "quoteVolume": "9e9", "lastPrice": "100"}, {"symbol": "ARBUSDT", "quoteVolume": "1e9", "lastPrice": "0.5"}], 8)[6:] == ["ARB"]
 
 
 def test_parsers_keep_book_sizes():
@@ -165,3 +173,12 @@ def test_realistic_fees_keep_the_bot_out_and_the_gate_shut():
         total += e.ledger.stats("paper", "leadlag")["n"]
         assert not e.gate.status("leadlag", time.time())["open"]
     assert total <= 6
+
+
+def test_learning_carries_over_between_sessions():
+    e = run_engine(lagging_market(seconds=900), {"binance": 0, "okx": 0})
+    saved = e.export_models()
+    fresh = Engine(fees_bps={"binance": 0, "okx": 0}, ledger=Ledger())
+    fresh.import_models(saved)
+    a, b = e.models[("leadlag", "okx", "BTC")], fresh.models[("leadlag", "okx", "BTC")]
+    assert b.ready and b.beta == pytest.approx(a.beta) and b.count == a.count

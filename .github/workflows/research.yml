@@ -8,7 +8,7 @@ on:
     inputs:
       minutes:
         description: minutes to record
-        default: "15"
+        default: "20"
 permissions:
   contents: write
 concurrency:
@@ -30,17 +30,17 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: Record
-        run: python -m latlab.leadlag record --minutes "${{ inputs.minutes || '15' }}" --top 30 --out rec
+        run: python -m latlab.leadlag record --minutes "${{ inputs.minutes || '20' }}" --top 30 --out rec
       - name: Analyse
         run: |
           python -m latlab.leadlag analyze rec > /dev/null
-          python -m latlab.bot replay rec --out rec/bot.json
+          python -m latlab.bot replay rec --out rec/bot.json --models data/bot/models.json
           python scripts/update_history.py rec "GitHub Actions (US East)"
       - name: Publish
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add web/src/data/live-history.json
+          git add web/src/data/live-history.json data/bot/models.json
           git diff --cached --quiet && exit 0
           git commit -m "Research session $(date -u +%Y-%m-%dT%H:%MZ)"
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

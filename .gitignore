@@ -9,3 +9,5 @@ data/recordings/*
 .env
 *.key
 data/trades/
+data/bot/*
+!data/bot/models.json

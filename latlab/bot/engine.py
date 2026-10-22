@@ -223,6 +223,18 @@ class Engine:
         self.log(f.at, "close", f"{p.strategy}: sold {p.asset} on {p.venue} ({p.broker}, {p.exit_reason}) "
                                 f"{'+' if pnl >= 0 else '−'}{abs(pnl):.3f} USDT ({bps:+.1f} bp)")
 
+    # ------------------------------------------------------------------ persistence (learning carries over)
+    def export_models(self) -> dict:
+        keep = ("sxx", "sxy", "syy", "n", "count")
+        return {"|".join(k): {f: getattr(m, f) for f in keep} for k, m in self.models.items() if m.count}
+
+    def import_models(self, d: dict) -> int:
+        for k, v in d.items():
+            m = self.model(*k.split("|"))
+            for f, x in v.items():
+                setattr(m, f, x)
+        return len(d)
+
     # ------------------------------------------------------------------ reporting
     def snapshot(self, t: float | None = None, top_models: int = 8) -> dict:
         t = t or self.state.now or time.time()

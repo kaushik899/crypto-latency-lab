@@ -7,7 +7,7 @@ import aiohttp
 from .feeds.exchanges import ASSETS, BINANCE_REST
 
 STABLE = {"USDC", "FDUSD", "TUSD", "DAI", "USDP", "BUSD", "EUR", "EURI", "AEUR", "USD1", "XUSD", "PYUSD", "USDE",
-          "RLUSD", "BFUSD", "USDS", "GBP", "TRY", "BRL"}
+          "RLUSD", "BFUSD", "USDS", "GBP", "TRY", "BRL", "U", "USD"}
 LEVERAGED = ("UP", "DOWN", "BULL", "BEAR")
 
 
@@ -20,6 +20,8 @@ def pick(tickers: list[dict], n: int) -> list[str]:
             continue
         base = s[:-4]
         if base in STABLE or (base.endswith(LEVERAGED) and len(base) > 4):
+            continue
+        if len(base) >= 5 and base.endswith("B"):   # tokenised stocks and ETFs (e.g. CRCLB, SOXLB), not crypto
             continue
         try:
             vol = float(t.get("quoteVolume") or 0)

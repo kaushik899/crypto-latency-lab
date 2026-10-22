@@ -73,12 +73,14 @@ async def run(a):
             await b.close()
 
 
-def replay(folder: Path, out: Path | None, latency_ms: float) -> dict:
+def replay(folder: Path, out: Path | None, latency_ms: float, models: Path | None = None) -> dict:
     import pandas as pd
 
     df = pd.read_csv(folder / "quotes.csv").sort_values("recv_ts")
     allow(df.asset.unique())
     e = Engine(fees_bps=load_fees(), ledger=Ledger(), paper_latency_s=latency_ms / 1000)
+    if models and models.exists():
+        print(f"continuing from {e.import_models(json.loads(models.read_text()))} calibrated models")
     has_qty = "bid_qty" in df.columns
     for row in df.itertuples(index=False):
         exch = getattr(row, "exch_ts", None)
@@ -96,6 +98,9 @@ def replay(folder: Path, out: Path | None, latency_ms: float) -> dict:
     snap["latency_ms"] = latency_ms
     if out:
         out.write_text(json.dumps(snap, indent=1, default=float))
+    if models:
+        models.parent.mkdir(parents=True, exist_ok=True)
+        models.write_text(json.dumps(e.export_models()))
     return snap
 
 
@@ -128,6 +133,7 @@ def main(argv=None):
     p.add_argument("folder")
     p.add_argument("--latency-ms", type=float, default=150)
     p.add_argument("--out")
+    p.add_argument("--models", help="JSON file to load calibration from and save it back to (learning across sessions)")
     sub.add_parser("status")
     sub.add_parser("kill")
     sub.add_parser("resume")
@@ -142,7 +148,7 @@ def main(argv=None):
             pass
     elif a.cmd == "replay":
         f = Path(a.folder)
-        s = replay(f, Path(a.out) if a.out else f / "bot.json", a.latency_ms)
+        s = replay(f, Path(a.out) if a.out else f / "bot.json", a.latency_ms, Path(a.models) if a.models else None)
         for x in s["strategies"]:
             print(f"{x['name']:10s} {x['ready']}/{x['markets']} calibrated · paper {x['paper']['n']} trades, "
                   f"{x['paper']['pnl']:+.3f} USDT, mean {x['paper']['mean_bps']} bp")

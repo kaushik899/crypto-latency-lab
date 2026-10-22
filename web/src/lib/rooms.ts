@@ -19,7 +19,7 @@ export type RoomMeta = {
 export const ROOMS: RoomMeta[] = [
   { id: "live", painting: "speed", short: "Speed", title: "Watch the lag, live." },
   { id: "leadlag", painting: "babel", short: "Babel", title: "Five exchanges, one price, different clocks." },
-  { id: "desk", painting: "moneylender", short: "The desk", title: "Weigh it, then trade it." },
+  { id: "desk", painting: "moneylender", short: "The desk", title: "Weigh every trade before you make it." },
   { id: "research", painting: "icarus", short: "Icarus", title: "Faster than the fee is not fast enough." },
   { id: "method", painting: "astronomer", short: "Method", title: "How every number here is measured." },
 ];
