@@ -112,7 +112,14 @@ def nw_t(series: np.ndarray, lag: int) -> float | None:
     return float(series.mean() / math.sqrt(var / n))
 
 
-def summarize(ret: np.ndarray, excess: np.ndarray, days: np.ndarray, lag: int = 0) -> dict:
+QS = (5, 10, 25, 50, 75, 90, 95)
+
+
+def quantiles_bps(x: np.ndarray) -> list[float]:
+    return [round(float(v) * 1e4, 1) for v in np.percentile(x, QS)]
+
+
+def summarize(ret: np.ndarray, excess: np.ndarray, days: np.ndarray, lag: int = 0, dist: bool = False) -> dict:
     """Averages per day first (a crash day with 300 oversold stocks counts once), then over days."""
     if len(ret) == 0:
         return {"n": 0}
@@ -122,7 +129,8 @@ def summarize(ret: np.ndarray, excess: np.ndarray, days: np.ndarray, lag: int = 
     return {"n": int(len(ret)), "days": int(len(e_day)), "mean_bps": round(float(r_day.mean()) * 1e4, 1),
             "excess_bps": round(float(e_day.mean()) * 1e4, 1),
             "pooled_excess_bps": round(float(excess.mean()) * 1e4, 1),
-            "win": round(float((ret > 0).mean()), 3), "t": round(t, 2) if t is not None else None}
+            "win": round(float((ret > 0).mean()), 3), "t": round(t, 2) if t is not None else None,
+            **({"q_bps": quantiles_bps(ret)} if dist else {})}
 
 
 def base_rates(closes: dict[str, tuple[list[str], np.ndarray]], liquid: set[str]) -> dict:
@@ -178,8 +186,38 @@ def base_rates(closes: dict[str, tuple[list[str], np.ndarray]], liquid: set[str]
             a, b = summarize(R[ins], E[ins], D[ins], h), summarize(R[oos], E[oos], D[oos], h)
             held = bool(a.get("t") is not None and a["t"] >= SELECT_T and a["excess_bps"] > 0
                         and b.get("n", 0) > 0 and b["excess_bps"] > 0)
-            row["horizons"][str(h)] = {"all": summarize(R, E, D, h), "in_sample": a, "out_of_sample": b, "held": held}
+            row["horizons"][str(h)] = {"all": summarize(R, E, D, h, dist=True), "in_sample": a, "out_of_sample": b, "held": held}
         out["setups"][k] = row
+    # the benchmark itself: buying a random liquid stock on a random day (same entry, same costs)
+    mk = {}
+    for h in HORIZONS:
+        rets = np.concatenate([r[~np.isnan(r)] for _, r in fwd[h]]) - COST_BPS / 1e4
+        days = np.concatenate([idx[~np.isnan(r)] for idx, r in fwd[h]])
+        _, r_day = _day_means(rets, days)
+        mk[str(h)] = {"n": int(len(rets)), "mean_bps": round(float(r_day.mean()) * 1e4, 1),
+                      "win": round(float((rets > 0).mean()), 3), "q_bps": quantiles_bps(rets)}
+    out["any_stock"] = mk
+    return out
+
+
+HOLD_DAYS = (1, 5, 10, 21, 63, 126, 252)
+
+
+def index_stats(dates: list[str], c: np.ndarray) -> dict:
+    """Buy-and-hold an index fund: every holding period from every start day, plus drawdown."""
+    out = {"first_date": dates[0], "last_date": dates[-1], "periods": {}}
+    for h in HOLD_DAYS:
+        if len(c) <= h + 1:
+            continue
+        r = c[h:] / c[:-h] - 1 - 2 / 1e4          # 2 bp round trip on SPY
+        out["periods"][str(h)] = {"n": int(len(r)), "mean_bps": round(float(r.mean()) * 1e4, 1),
+                                  "win": round(float((r > 0).mean()), 3), "q_bps": quantiles_bps(r)}
+    peak = np.maximum.accumulate(c)
+    out["max_drawdown_pct"] = round(float((c / peak - 1).min()) * 100, 1)
+    yrs = len(c) / 252
+    out["total_pct"] = round(float(c[-1] / c[0] - 1) * 100, 1)
+    out["cagr_pct"] = round(float((c[-1] / c[0]) ** (1 / yrs) - 1) * 100, 1) if yrs > 0 else None
+    out["spark"] = [round(float(x), 2) for x in c[:: max(1, len(c) // 120)]]
     return out
 
 
@@ -271,6 +309,15 @@ def run(now_utc: dt.datetime | None = None, min_price: float = 5.0, min_volume: 
     hits.sort(key=lambda x: -x["dollar_volume"])
     log(f"{len(hits)} matches on {last}; base rates over {len(liquid)} liquid stocks...")
     rates = base_rates(closes, liquid)
+    index = {}
+    try:
+        idx_data, _ = sc.fetch_spark(["SPY", "QQQ"], rng, "1d", pause)
+        for sym, s_ in idx_data.items():
+            bars = sc.daily_closes(s_, now_utc)
+            if len(bars) > 260:
+                index[sym] = index_stats([b[0].isoformat() for b in bars], np.array([b[1] for b in bars], float))
+    except Exception as exc:  # noqa: BLE001
+        log(f"  index funds unavailable: {exc}")
     log(f"enriching up to {enrich_max} matches from their own daily OHLCV charts...")
     ok = 0
     for i, h in enumerate(hits[:enrich_max]):
@@ -291,4 +338,4 @@ def run(now_utc: dt.datetime | None = None, min_price: float = 5.0, min_volume: 
     by = {k: sum(k in h["setups"] for h in hits) for k in SETUPS}
     return {"generated": now_utc.isoformat(timespec="seconds") + "Z", "as_of": last, "counts": counts,
             "min_price": min_price, "min_volume": min_volume, "by_setup": by, "labels": LABELS,
-            "base_rates": rates, "hits": hits}
+            "base_rates": rates, "index": index, "hits": hits}
