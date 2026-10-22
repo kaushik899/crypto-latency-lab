@@ -85,6 +85,23 @@ class Alpaca:
         return {"symbol": symbol, "bid": qq.get("bp"), "ask": qq.get("ap"), "last": tt.get("p"),
                 "time": tt.get("t") or qq.get("t"), "feed": "iex"}
 
+    async def snapshots(self, symbols: list[str]) -> dict:
+        """Latest trade, quote and today's bar for up to 100 symbols in one request (IEX feed)."""
+        syms = [x for x in symbols if SYMBOL.match(x)][:100]
+        if not syms:
+            return {}
+        async with self.http.get(f"{DATA_URL}/v2/stocks/snapshots?symbols={','.join(syms)}&feed=iex") as r:
+            j = (await r.json(content_type=None)) if r.status == 200 else {}
+        out = {}
+        for s, v in (j or {}).items():
+            v = v or {}
+            t, d, p = v.get("latestTrade") or {}, v.get("dailyBar") or {}, v.get("prevDailyBar") or {}
+            last = t.get("p") or d.get("c")
+            prev = p.get("c")
+            out[s] = {"last": last, "time": t.get("t"), "open": d.get("o"), "high": d.get("h"), "low": d.get("l"),
+                      "prev_close": prev, "chg_pct": round((last / prev - 1) * 100, 2) if last and prev else None}
+        return out
+
     async def account(self) -> dict:
         st, a = await self.call("GET", "/v2/account")
         if st != 200:

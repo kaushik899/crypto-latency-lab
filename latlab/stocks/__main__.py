@@ -113,6 +113,15 @@ def cmd_today(a) -> int:
         _write(WEB / "stocks-today.json", out)
         print("market closed today")
         return 0
+    if out["market"] != "open" and not a.now:
+        prev = _load(WEB / "stocks-today.json", {})
+        if prev.get("date") == d:          # keep the session's last setups on the page after the close
+            prev.update(market="closed", now_et=out["now_et"])
+            _write(WEB / "stocks-today.json", prev)
+        else:
+            _write(WEB / "stocks-today.json", out)
+        print(f"{d} {out['now_et']} ET: market not open, nothing to scan")
+        return 0
     eligible = edge_doc.get("eligible", {})
     watch_rule = edge_doc.get("watch_rule")
     syms = [s["symbol"] for s in edge_doc["symbols"]][: a.top]
@@ -193,6 +202,18 @@ def cmd_scan(a) -> int:
     return 0
 
 
+def cmd_strategies(a) -> int:
+    from . import strategies
+    doc = strategies.run()
+    _write(ROOT / "web" / "public" / "data" / "strategies.json", doc)
+    for r in doc["rules"]:
+        st, hs = r["stats"], r["hold_stats"]
+        print(f"  {r['name']:<42} {st['from']}  CAGR {st['cagr_pct']}% vs {hs['cagr_pct']}%  "
+              f"maxDD {st['max_dd_pct']}% vs {hs['max_dd_pct']}%  Sharpe {st['sharpe']} vs {hs['sharpe']}  "
+              f"-> {r['verdict']}; now {r['signal']['hold'] or 'cash'} since {r['signal']['since']}")
+    return 0
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="python -m latlab.stocks", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -211,6 +232,7 @@ def main(argv=None) -> int:
     t.add_argument("--replays", type=int, default=10000)
     t.add_argument("--now", help="UTC ISO time, for tests")
     sub.add_parser("score")
+    sub.add_parser("strategies")
     s_ = sub.add_parser("scan")
     s_.add_argument("--min-price", type=float, default=5.0)
     s_.add_argument("--min-volume", type=float, default=1_000_000)
@@ -218,7 +240,8 @@ def main(argv=None) -> int:
     s_.add_argument("--enrich", type=int, default=600, help="matches to enrich from their own OHLCV chart")
     a = p.parse_args(argv)
     t0 = time.time()
-    rc = {"research": cmd_research, "today": cmd_today, "score": cmd_score, "scan": cmd_scan}[a.cmd](a)
+    rc = {"research": cmd_research, "today": cmd_today, "score": cmd_score, "scan": cmd_scan,
+     "strategies": cmd_strategies}[a.cmd](a)
     print(f"done in {time.time() - t0:.0f}s")
     return rc
 

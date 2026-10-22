@@ -225,3 +225,39 @@ def test_enrich_from_daily_chart(monkeypatch):
     e = sscan.enrich("ABC", sc, dt.datetime(2026, 12, 1))
     assert e["rel_volume"] == 3.0 and e["breakout_intraday_high"] is True
     assert 1.9 < e["atr_pct"] < 2.6 and len(e["spark"]) == 60 and e["vs_ma50"] > 0
+
+
+# ---------------------------------------------------------------- long-horizon rules
+from latlab.stocks import strategies as strat
+
+
+def _cal(n):
+    d0 = dt.date(2010, 1, 4)
+    out, d = [], d0
+    while len(out) < n:
+        if d.weekday() < 5:
+            out.append(d.isoformat())
+        d += dt.timedelta(days=1)
+    return out
+
+
+def test_no_lookahead_execution_next_close():
+    cal = _cal(6)
+    px = {"A": np.array([100, 100, 100, 110, 121, 121.0])}
+    w = [None, {"A": 1.0}, None, None, None, None]        # decided at close of day 1
+    eq = strat.run_positions(cal, px, w, 0.0)
+    # executed at day 2's close, so day 2's move is not earned; days 3 and 4 are
+    assert eq[2] == 1.0 and abs(eq[4] - 1.21) < 1e-12
+
+
+def test_trend_filter_cuts_a_crash():
+    n = 1500
+    cal = _cal(n)
+    up = np.linspace(0, 0.6, 700)
+    down = 0.6 + np.linspace(0, -0.9, 300)
+    rec = -0.3 + np.linspace(0, 0.8, 500)
+    px = {"SPY": 100 * np.exp(np.concatenate([up, down, rec])), "BIL": 100 * np.exp(np.linspace(0, 0.06, n))}
+    w = strat.sma_filter(cal, px, "SPY", "BIL")
+    e = strat.evaluate("t", cal, px, w, "SPY", 5.0, 252, "", "")
+    assert e["stats"]["max_dd_pct"] > e["hold_stats"]["max_dd_pct"] + 15      # far shallower drawdown
+    assert e["signal"]["hold"] == {"SPY": 1.0}

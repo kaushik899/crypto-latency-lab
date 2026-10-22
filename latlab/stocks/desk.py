@@ -99,6 +99,15 @@ class StockDesk:
             return self._j(req, {"error": f"No quote: {e}"}, 400)
         return self._j(req, q)
 
+    async def live(self, req):
+        if (bad := self._need(req)):
+            return bad
+        syms = [x.strip().upper() for x in req.query.get("symbols", "").split(",") if x.strip()]
+        try:
+            return self._j(req, await self.client.snapshots(syms))
+        except Exception as e:  # noqa: BLE001
+            return self._j(req, {"error": f"No prices: {e}"}, 400)
+
     async def preview(self, req):
         if (bad := self._need(req)):
             return bad
@@ -187,6 +196,7 @@ class StockDesk:
     def routes(self, app: web.Application):
         app.router.add_get("/stocks/status", self.status)
         app.router.add_get("/stocks/quote", self.quote)
+        app.router.add_get("/stocks/live", self.live)
         app.router.add_post("/stocks/preview", self.preview)
         app.router.add_post("/stocks/order", self.order)
         app.router.add_post("/stocks/close", self.close)
