@@ -468,7 +468,7 @@ html:not([data-plate]) .next-card { opacity: 0; transform: translateY(-8px); poi
 }
 
 /* ---------- Stock lab ---------- */
-.stk { display: grid; gap: 26px; }
+.stk { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; }
 .stk h4 { margin: 0; font: 400 28px/1 var(--serif); }
 .stk-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 22px; align-items: start; }
 .stk-today, .stk-side, .stk-acct, .stk-track, .stk-edge { min-width: 0; display: grid; gap: 14px; align-content: start; }
@@ -631,3 +631,4 @@ html.lenis-stopped { overflow: hidden; }
 
 /* nothing may widen the page sideways (paintings scale inside their rooms); clip keeps sticky working */
 html, body { overflow-x: clip; }
+.plan, .stk-scan, .stk-edge { min-width: 0; }
