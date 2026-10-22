@@ -115,13 +115,17 @@ export function Planner() {
         const setupCell = ch.kind === "setup" ? doc.base_rates.setups[ch.key].horizons[hh] : null;
         rows.push({
           // per calendar day the money is tied up: 5 trading days ~ 7 calendar days
-          ch, hold: hh, perDay: cc.mean_bps / (ch.market === "crypto" ? Number(hh) : Number(hh) * 7 / 5), median: cc.q_bps[QI.p50], win: cc.win, bad: cc.q_bps[QI.p10],
-          verdict: ch.kind === "index" ? "Market" : ch.kind === "any" ? "Benchmark"
+          // reward per unit of risk, on a one-year scale: average result / spread between the bad and
+          // good 1-in-10 outcomes, scaled by sqrt(time) so short and long holds compare fairly
+          ch, hold: hh, score: (cc.mean_bps / Math.max(1, cc.q_bps[QI.p90] - cc.q_bps[QI.p10]))
+            * Math.sqrt(365 / (ch.market === "crypto" ? Number(hh) : Number(hh) * 7 / 5)),
+          median: cc.q_bps[QI.p50], win: cc.win, bad: cc.q_bps[QI.p10],
+          verdict: ch.kind === "index" ? (ch.market === "crypto" ? "Crypto market" : "Stock market") : ch.kind === "any" ? "Benchmark"
             : setupCell?.held ? "Beat the average stock" : (setupCell?.out_of_sample?.excess_bps ?? 0) > 0 ? "Recently ahead, not proven" : "Did not beat the average stock",
         });
       }
     }
-    return rows.sort((a, b) => b.perDay - a.perDay);
+    return rows.sort((a, b) => b.score - a.score);
   }, [doc, ready]);
 
   if (!ready || !c) {
@@ -252,12 +256,12 @@ export function Planner() {
       </dl>
 
       <div className="rank">
-        <h5>Ranked by evidence: what each choice returned per day held</h5>
+        <h5>Ranked by evidence: reward for the risk taken</h5>
         <div className="table-wrap">
           <table className="auto-table">
             <thead><tr><th scope="col">#</th><th scope="col">Strategy</th><th scope="col">Hold</th>
               <th scope="col" className="r">Typical on {usd(amount)}</th><th scope="col" className="r">Chance of profit</th>
-              <th scope="col" className="r">Bad 1 in 10</th><th scope="col">Verdict</th></tr></thead>
+              <th scope="col" className="r">Bad 1 in 10</th><th scope="col" className="r">Reward ÷ risk</th><th scope="col">Verdict</th></tr></thead>
             <tbody>
               {ranked.slice(0, 12).map((r, i) => (
                 <tr key={r.ch.key + r.hold} className={r.ch.key === choice.key && r.hold === h ? "sel" : ""}
@@ -268,6 +272,7 @@ export function Planner() {
                   <td className={`num r ${r.median >= 0 ? "pos" : "neg"}`}>{signed(at(r.median))}</td>
                   <td className="num r">{Math.round(r.win * 100)}%</td>
                   <td className="num r neg">{signed(at(r.bad))}</td>
+                  <td className="num r">{r.score.toFixed(2).replace("-", "−")}</td>
                   <td>{r.verdict === "Beat the average stock" ? <span className="gate open">{r.verdict}</span> : <span className="muted">{r.verdict}</span>}</td>
                 </tr>
               ))}
@@ -275,8 +280,9 @@ export function Planner() {
           </table>
         </div>
         <p className="fine">
-          Ranked by average result per calendar day the money was invested, after costs, over this two-year history.
-          Crypto swings far more than stocks: compare the bad cases, not just the typical ones. Click a row
+          Ranked by average result after costs divided by how widely results swung (bad 1-in-10 to good 1-in-10),
+          put on a one-year scale. A high average that came with huge swings ranks lower than a steadier one. Funds
+          and crypto use ten years of history, stock setups two. Fund figures are price only, without dividends. Click a row
           to load it above. These are past results of rules, not forecasts and not personal advice: a strong market
           flatters every “buy” rule, and the next two years can look nothing like the last two.
         </p>
