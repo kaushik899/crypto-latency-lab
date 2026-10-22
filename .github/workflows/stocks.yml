@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: research, today, score, or all
+        description: research, today, score, scan, or all
         default: all
 permissions:
   contents: write
@@ -43,6 +43,13 @@ jobs:
       - name: Research
         if: steps.task.outputs.task == 'research' || steps.task.outputs.task == 'all'
         run: python -m latlab.stocks research --top 150
+      - name: Daily chart scan (Day Trader scanner, every US stock)
+        if: steps.task.outputs.task == 'research' || steps.task.outputs.task == 'scan' || steps.task.outputs.task == 'all'
+        run: |
+          S=vendor/day-trader-skill/trader-scanner/scan.py
+          python $S universe
+          python $S daily --show 40 || true
+          [ -f trader/watchlist.json ] && cp trader/watchlist.json web/src/data/stocks-scan.json
       - name: Today
         if: steps.task.outputs.task == 'today' || steps.task.outputs.task == 'all'
         run: python -m latlab.stocks today --top 150 --account 500 --risk-pct 1 --replays 4000
