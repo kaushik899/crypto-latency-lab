@@ -3,6 +3,7 @@ import edgeBundled from "../data/stocks-edge.json";
 import todayBundled from "../data/stocks-today.json";
 import trackBundled from "../data/stocks-track.json";
 import { desk, deskCall, onDesk } from "../lib/trade";
+import { Scan } from "./Scan";
 
 type AnyRec = Record<string, any>;
 const RAW = "https://raw.githubusercontent.com/kaushik899/crypto-latency-lab/main/web/src/data/";
@@ -368,6 +369,8 @@ python -m latlab.desk         # then pair it here`}</pre>
           </div>
         </aside>
       </div>
+
+      <Scan />
 
       <section className="stk-edge" aria-labelledby="stk-edge-h">
         <div className="auto-head">
