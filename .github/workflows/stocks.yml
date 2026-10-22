@@ -1,0 +1,59 @@
+name: Stocks
+# US stocks, three times a day on trading days:
+#   before the open  - rank the most liquid stocks, walk-forward test the ORB rules (research)
+#   during the day   - today's fresh breakouts with plans, odds and small-account sizes (today)
+#   after the close  - replay every published pick on the real bars (score)
+# Publishes JSON to the website. Never places an order.
+on:
+  schedule:
+    - cron: "17 12 * * 1-5"                  # research, ~8:17 ET
+    - cron: "4,34 14-19 * * 1-5"             # today, every 30 min while the market is open
+    - cron: "41 21 * * 1-5"                  # score, after the close
+  workflow_dispatch:
+    inputs:
+      task:
+        description: research, today, score, or all
+        default: all
+permissions:
+  contents: write
+concurrency:
+  group: stocks
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Pick the task
+        id: task
+        run: |
+          case "${{ github.event.schedule }}" in
+            "17 12 * * 1-5") t=research ;;
+            "41 21 * * 1-5") t=score ;;
+            "") t="${{ inputs.task || 'all' }}" ;;
+            *) t=today ;;
+          esac
+          echo "task=$t" >> "$GITHUB_OUTPUT"
+      - name: Research
+        if: steps.task.outputs.task == 'research' || steps.task.outputs.task == 'all'
+        run: python -m latlab.stocks research --top 150
+      - name: Today
+        if: steps.task.outputs.task == 'today' || steps.task.outputs.task == 'all'
+        run: python -m latlab.stocks today --top 150 --account 500 --risk-pct 1 --replays 4000
+      - name: Score
+        if: steps.task.outputs.task == 'score' || steps.task.outputs.task == 'all'
+        run: python -m latlab.stocks score
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add web/src/data/stocks-*.json data/stocks/picks
+          git diff --cached --quiet && exit 0
+          git commit -m "Stocks ${{ steps.task.outputs.task }} $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

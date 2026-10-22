@@ -13,6 +13,8 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: pytest -q
+      - name: Vendored Day Trader toolkit tests
+        run: cd vendor/day-trader-skill && python -m unittest discover -s tests -q
   web:
     runs-on: ubuntu-latest
     defaults:

@@ -11,3 +11,4 @@ data/recordings/*
 data/trades/
 data/bot/*
 !data/bot/models.json
+data/stocks/cache/

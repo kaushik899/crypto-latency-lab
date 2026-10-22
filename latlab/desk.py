@@ -123,7 +123,8 @@ class Binance:
 
 class Desk:
     def __init__(self, client: Binance | None, mode: str, max_order: float, code: str, log_dir: Path,
-                 extra_origins: set[str] | None = None, auto_live: bool = False, bot_factory=None):
+                 extra_origins: set[str] | None = None, auto_live: bool = False, bot_factory=None,
+                 stocks_client=None, max_stock_order: float = 200.0, stock_risk_pct: float = 1.0):
         self.client, self.mode, self.max_order, self.code = client, mode, max_order, code
         self.auto_live = auto_live
         self.bot = None
@@ -133,6 +134,8 @@ class Desk:
         self.origins = ALLOWED_ORIGINS | (extra_origins or set())
         self.last_order = 0.0
         self.lock = asyncio.Lock()
+        from .stocks.desk import StockDesk
+        self.stocks = StockDesk(self, stocks_client, max_stock_order, stock_risk_pct, log_dir)
 
     # --- HTTP plumbing -------------------------------------------------------------------
     def origin_ok(self, origin: str | None) -> bool:
@@ -289,6 +292,7 @@ class Desk:
         a.router.add_post("/bot/stop", self.bot_stop)
         a.router.add_post("/bot/kill", self.bot_kill)
         a.router.add_post("/bot/resume", self.bot_resume)
+        self.stocks.routes(a)
         return a
 
 
@@ -321,8 +325,18 @@ async def serve(a):
         await client.start()
     else:
         print(f"  No Binance {mode} key found — manual Binance orders are off. Connect one with: python -m latlab.connect")
+    stocks = None
+    if (sc := connect.load("alpaca", mode)):
+        from .stocks.alpaca import Alpaca
+        stocks = Alpaca(sc["key"], sc["secret"], live=live)
+        await stocks.start()
+        print(f"  Alpaca {'LIVE' if live else 'paper'} account connected: stock tickets capped at "
+              f"${a.max_stock_order:g}, {a.stock_risk_pct:g}% max loss, one approval per order.")
+    else:
+        print(f"  No Alpaca {'live' if live else 'paper'} key — stock orders are off. Connect: python -m latlab.connect")
     code = f"{secrets.randbelow(10**6):06d}"
-    desk = Desk(client, mode, a.max_order, code, ROOT / "data/trades", auto_live=a.auto, bot_factory=make_bot)
+    desk = Desk(client, mode, a.max_order, code, ROOT / "data/trades", auto_live=a.auto, bot_factory=make_bot,
+                stocks_client=stocks, max_stock_order=a.max_stock_order, stock_risk_pct=a.stock_risk_pct)
     runner = web.AppRunner(desk.app())
     await runner.setup()
     await web.TCPSite(runner, "127.0.0.1", a.port).start()
@@ -340,6 +354,8 @@ async def serve(a):
             await b.close()
         if client:
             await client.close()
+        if stocks:
+            await stocks.close()
         await runner.cleanup()
 
 
@@ -348,6 +364,8 @@ def main(argv=None):
     ap.add_argument("--live", action="store_true", help="trade real money (default: Binance Spot Testnet)")
     ap.add_argument("--max-order", type=float, default=50.0, help="largest single order in USDT (default 50)")
     ap.add_argument("--auto", action="store_true", help="with --live: let the website's Auto-trader use real money")
+    ap.add_argument("--max-stock-order", type=float, default=200.0, help="largest stock order in $ (default 200)")
+    ap.add_argument("--stock-risk-pct", type=float, default=1.0, help="max loss per stock trade, %% of equity")
     ap.add_argument("--port", type=int, default=PORT)
     a = ap.parse_args(argv)
     try:

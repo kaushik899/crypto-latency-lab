@@ -38,11 +38,17 @@ EXCHANGES = {
                "help": "kraken.com → Settings → API. Allow Query Funds + Create & Modify Orders only."},
     "coinbase": {"name": "Coinbase Advanced", "testnet": False, "password": False,
                  "help": "coinbase.com/settings/api → New key with View + Trade (no Transfer)."},
+    "alpaca": {"name": "Alpaca (US stocks)", "testnet": True, "password": False,
+               "help": "app.alpaca.markets → switch to your Live account → API Keys → Generate. Trading-API "
+                       "keys cannot withdraw money.",
+               "testnet_help": "app.alpaca.markets → Paper Trading (free, any country) → API Keys → Generate."},
 }
 
 ENV = {  # environment variables still work and take precedence
     ("binance", "live"): ("BINANCE_API_KEY", "BINANCE_API_SECRET", None),
     ("binance", "testnet"): ("BINANCE_TESTNET_KEY", "BINANCE_TESTNET_SECRET", None),
+    ("alpaca", "live"): ("APCA_LIVE_KEY_ID", "APCA_LIVE_SECRET_KEY", None),
+    ("alpaca", "testnet"): ("APCA_API_KEY_ID", "APCA_API_SECRET_KEY", None),
 }
 
 
@@ -126,6 +132,8 @@ def remove(name: str) -> bool:
 # ---------------------------------------------------------------------------- verification
 async def verify(exchange: str, mode: str, creds: dict) -> tuple[bool, str, dict]:
     """(ok, message, balances). Refuses keys that can withdraw, where the exchange tells us."""
+    if exchange == "alpaca":
+        return await verify_alpaca(mode, creds)
     import ccxt.async_support as ccxt
 
     ex = getattr(ccxt, exchange)({"apiKey": creds["key"], "secret": creds["secret"], "password": creds.get("password"),
@@ -173,6 +181,26 @@ async def verify(exchange: str, mode: str, creds: dict) -> tuple[bool, str, dict
         await ex.close()
 
 
+async def verify_alpaca(mode: str, creds: dict) -> tuple[bool, str, dict]:
+    from .stocks.alpaca import Alpaca
+    c = Alpaca(creds["key"], creds["secret"], live=mode == "live")
+    await c.start()
+    try:
+        a = await c.account()
+    except Exception as e:  # noqa: BLE001
+        return False, f"Alpaca rejected this key: {e}", {}
+    finally:
+        await c.close()
+    if a.get("trading_blocked") or a.get("account_blocked"):
+        return False, "Alpaca says this account is blocked from trading.", {}
+    note = (f"Verified {'live' if mode == 'live' else 'paper'} account ({a.get('status')}). Trading-API keys "
+            "cannot withdraw. Equity ${:,.2f}.".format(float(a.get("equity") or 0)))
+    if mode == "live" and float(a.get("equity") or 0) < 25000:
+        note += (" Under $25,000 in a margin account, US rules allow at most 3 day trades in 5 business days "
+                 "(pattern-day-trader rule); a cash account avoids it but must wait for settlement.")
+    return True, note, {"USD": float(a.get("cash") or 0)}
+
+
 # ---------------------------------------------------------------------------- CLI
 def wizard():
     print("\nConnect an exchange account to Crypto Latency Lab\n")
@@ -201,7 +229,8 @@ def wizard():
     print(f"  Balance: {shown}")
     where = save(ex, mode, key, secret, password)
     print(f"\nSaved {info['name']} ({mode}) to {where}.")
-    print("Next: python -m latlab.desk" + (" --live" if mode == "live" else "") + "   then open the site → Trade now / Auto-trader.\n")
+    print("Next: python -m latlab.desk" + (" --live" if mode == "live" else "") +
+          "   then open the site → Trade now / Auto-trader" + (" / Stocks" if ex == "alpaca" else "") + ".\n")
     return 0
 
 
