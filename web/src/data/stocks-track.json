@@ -1,5 +1,18 @@
 {
- "rows": [],
+ "rows": [
+  {
+   "date": "2026-10-22",
+   "symbol": "COST",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 1009.1018,
+   "exit": 1014.8406,
+   "outcome": "target",
+   "R": 0.9611,
+   "net_bps": 56.59,
+   "pnl_per_share": 5.7388
+  }
+ ],
  "summary": {
   "VALIDATED": {
    "n": 0,
@@ -13,16 +26,16 @@
    "total_R": 0.0
   },
   "WATCH": {
-   "n": 0,
-   "days": 0,
-   "mean_R": null,
+   "n": 1,
+   "days": 1,
+   "mean_R": 0.9611,
    "t": null,
-   "win": null,
+   "win": 1.0,
    "pf": null,
-   "max_dd_R": null,
-   "mean_bps": null,
-   "total_R": 0.0
+   "max_dd_R": 0.0,
+   "mean_bps": 56.59,
+   "total_R": 0.96
   }
  },
- "generated": "2026-10-22T08:27:12Z"
+ "generated": "2026-10-23T00:11:34Z"
 }
