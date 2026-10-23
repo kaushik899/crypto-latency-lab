@@ -1,0 +1,79 @@
+[
+ {
+  "date": "2026-10-23",
+  "symbol": "LRCX",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 11,
+  "published": "10:42",
+  "entry": 232.09,
+  "stop": 225.79,
+  "target": 238.39
+ },
+ {
+  "date": "2026-10-23",
+  "symbol": "GE",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 12,
+  "published": "10:42",
+  "entry": 286.47,
+  "stop": 279.32,
+  "target": 293.62
+ },
+ {
+  "date": "2026-10-23",
+  "symbol": "MPWR",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 13,
+  "published": "10:42",
+  "entry": 1161.31,
+  "stop": 1140.05,
+  "target": 1182.57
+ },
+ {
+  "date": "2026-10-23",
+  "symbol": "VRT",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 13,
+  "published": "10:42",
+  "entry": 193.9,
+  "stop": 188.77,
+  "target": 199.03
+ },
+ {
+  "date": "2026-10-23",
+  "symbol": "CRDO",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 13,
+  "published": "10:42",
+  "entry": 153.25,
+  "stop": 145.61,
+  "target": 160.89
+ },
+ {
+  "date": "2026-10-23",
+  "symbol": "SMCI",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 13,
+  "published": "10:42",
+  "entry": 34.02,
+  "stop": 33.45,
+  "target": 34.59
+ },
+ {
+  "date": "2026-10-23",
+  "symbol": "ETN",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 13,
+  "published": "10:42",
+  "entry": 367.28,
+  "stop": 360.26,
+  "target": 374.3
+ }
+]
