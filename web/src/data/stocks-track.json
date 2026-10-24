@@ -11,6 +11,90 @@
    "R": 0.9611,
    "net_bps": 56.59,
    "pnl_per_share": 5.7388
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "CRDO",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 153.2156,
+   "exit": 147.1206,
+   "outcome": "close",
+   "R": -0.8019,
+   "net_bps": -398.09,
+   "pnl_per_share": -6.095
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "ETN",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 367.3585,
+   "exit": 366.3317,
+   "outcome": "close",
+   "R": -0.1461,
+   "net_bps": -28.23,
+   "pnl_per_share": -1.0268
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "GE",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 286.1572,
+   "exit": 285.3779,
+   "outcome": "close",
+   "R": -0.1152,
+   "net_bps": -27.52,
+   "pnl_per_share": -0.7793
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "LRCX",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 229.1682,
+   "exit": 232.5,
+   "outcome": "target",
+   "R": 0.9843,
+   "net_bps": 145.09,
+   "pnl_per_share": 3.3318
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "MPWR",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 1160.7471,
+   "exit": 1139.822,
+   "outcome": "stop",
+   "R": -1.0126,
+   "net_bps": -180.55,
+   "pnl_per_share": -20.9251
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "SMCI",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 34.0268,
+   "exit": 33.4433,
+   "outcome": "stop",
+   "R": -1.0135,
+   "net_bps": -171.8,
+   "pnl_per_share": -0.5835
+  },
+  {
+   "date": "2026-10-23",
+   "symbol": "VRT",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 194.0388,
+   "exit": 194.981,
+   "outcome": "close",
+   "R": 0.1778,
+   "net_bps": 48.27,
+   "pnl_per_share": 0.9422
   }
  ],
  "summary": {
@@ -26,16 +110,16 @@
    "total_R": 0.0
   },
   "WATCH": {
-   "n": 1,
-   "days": 1,
-   "mean_R": 0.9611,
-   "t": null,
-   "win": 1.0,
-   "pf": null,
-   "max_dd_R": 0.0,
-   "mean_bps": 56.59,
-   "total_R": 0.96
+   "n": 8,
+   "days": 2,
+   "mean_R": -0.1208,
+   "t": 0.55,
+   "win": 0.375,
+   "pf": 0.69,
+   "max_dd_R": -1.93,
+   "mean_bps": -69.53,
+   "total_R": -0.97
   }
  },
- "generated": "2026-10-23T00:11:34Z"
+ "generated": "2026-10-24T00:03:16Z"
 }
