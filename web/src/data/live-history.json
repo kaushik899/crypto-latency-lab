@@ -3744,7 +3744,216 @@
     "signals": 0,
     "below_cost": 24029
    }
+  },
+  {
+   "id": "20261024T1852",
+   "recordedAt": "2026-10-24T18:52:18.091500044+00:00",
+   "minutes": 20.0,
+   "where": "GitHub Actions (US East)",
+   "quotes": 175999,
+   "markets": {
+    "binance": 30,
+    "bybit": 6,
+    "coinbase": 6,
+    "kraken": 6,
+    "okx": 6
+   },
+   "binanceMarkets": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "XRP",
+    "BNB",
+    "DOGE",
+    "ZEC",
+    "NEAR",
+    "WLD",
+    "AI",
+    "PEPE",
+    "BMT",
+    "SUI",
+    "ENA",
+    "UNI",
+    "ERA",
+    "XAUT",
+    "LINK",
+    "HYPE",
+    "TAO",
+    "ADA",
+    "TREE",
+    "GRAM",
+    "PUMP",
+    "TRX",
+    "AAVE",
+    "LTC",
+    "AVAX",
+    "ARB",
+    "KAT"
+   ],
+   "feedDelayMs": {
+    "coinbase": 20.8,
+    "kraken": 67.4,
+    "okx": 80.1,
+    "bybit": 116.4
+   },
+   "catchupMs": {
+    "coinbase": {
+     "median": 146,
+     "n": 42
+    },
+    "kraken": {
+     "median": 236,
+     "n": 46
+    },
+    "okx": {
+     "median": 10,
+     "n": 47
+    },
+    "bybit": {
+     "median": 60,
+     "n": 47
+    }
+   },
+   "gaps": {
+    "signals": 0,
+    "fills": 0,
+    "pnl": 0.0
+   },
+   "bot": [
+    {
+     "name": "leadlag",
+     "markets": 24,
+     "ready": 18,
+     "observations": 939170,
+     "paper": {
+      "n": 0,
+      "pnl": 0.0,
+      "mean_bps": null,
+      "t": null,
+      "win_rate": null
+     },
+     "best": [
+      {
+       "venue": "coinbase",
+       "asset": "SOL",
+       "beta": 0.355,
+       "t": 14.09,
+       "n": 4313,
+       "count": 24444,
+       "ready": true
+      },
+      {
+       "venue": "coinbase",
+       "asset": "XRP",
+       "beta": 0.3109,
+       "t": 13.13,
+       "n": 4289,
+       "count": 20297,
+       "ready": true
+      },
+      {
+       "venue": "coinbase",
+       "asset": "ETH",
+       "beta": 0.328,
+       "t": 12.07,
+       "n": 4328,
+       "count": 37219,
+       "ready": true
+      }
+     ]
+    },
+    {
+     "name": "imbalance",
+     "markets": 43,
+     "ready": 31,
+     "observations": 420617,
+     "paper": {
+      "n": 0,
+      "pnl": 0.0,
+      "mean_bps": null,
+      "t": null,
+      "win_rate": null
+     },
+     "best": [
+      {
+       "venue": "binance",
+       "asset": "PEPE",
+       "beta": 0.4371,
+       "t": 25.05,
+       "n": 4161,
+       "count": 14065,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "DOT",
+       "beta": 0.3371,
+       "t": 18.23,
+       "n": 2951,
+       "count": 4954,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "SOL",
+       "beta": 1.3654,
+       "t": 14.57,
+       "n": 4242,
+       "count": 16935,
+       "ready": true
+      }
+     ]
+    },
+    {
+     "name": "reversion",
+     "markets": 43,
+     "ready": 15,
+     "observations": 119213,
+     "paper": {
+      "n": 0,
+      "pnl": 0.0,
+      "mean_bps": null,
+      "t": null,
+      "win_rate": null
+     },
+     "best": [
+      {
+       "venue": "binance",
+       "asset": "GRAM",
+       "beta": 0.1871,
+       "t": 6.32,
+       "n": 691,
+       "count": 753,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "XAUT",
+       "beta": 0.0633,
+       "t": 6.28,
+       "n": 2447,
+       "count": 3606,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "ERA",
+       "beta": 0.1353,
+       "t": 6.1,
+       "n": 707,
+       "count": 772,
+       "ready": true
+      }
+     ]
+    }
+   ],
+   "botCounts": {
+    "observations": 77079,
+    "labels": 76483,
+    "signals": 0,
+    "below_cost": 27581
+   }
   }
  ],
- "updated": "2026-10-24T12:47:45.427400112+00:00"
+ "updated": "2026-10-24T18:52:18.091500044+00:00"
 }
