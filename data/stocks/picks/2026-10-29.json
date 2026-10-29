@@ -1,0 +1,24 @@
+[
+ {
+  "date": "2026-10-29",
+  "symbol": "COST",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 61,
+  "published": "14:47",
+  "entry": 993.6,
+  "stop": 990.11,
+  "target": 997.09
+ },
+ {
+  "date": "2026-10-29",
+  "symbol": "HD",
+  "rule": "ORB5-low-1R",
+  "status": "WATCH",
+  "breakout_slot": 62,
+  "published": "14:47",
+  "entry": 326.6,
+  "stop": 322.67,
+  "target": 330.53
+ }
+]
