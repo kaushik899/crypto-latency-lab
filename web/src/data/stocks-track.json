@@ -95,6 +95,30 @@
    "R": 0.1778,
    "net_bps": 48.27,
    "pnl_per_share": 0.9422
+  },
+  {
+   "date": "2026-10-28",
+   "symbol": "NBIS",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 176.4753,
+   "exit": 181.8386,
+   "outcome": "close",
+   "R": 0.8552,
+   "net_bps": 303.62,
+   "pnl_per_share": 5.3633
+  },
+  {
+   "date": "2026-10-28",
+   "symbol": "ORCL",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 138.9578,
+   "exit": 148.3059,
+   "outcome": "target",
+   "R": 0.9964,
+   "net_bps": 672.42,
+   "pnl_per_share": 9.3481
   }
  ],
  "summary": {
@@ -110,16 +134,16 @@
    "total_R": 0.0
   },
   "WATCH": {
-   "n": 8,
-   "days": 2,
-   "mean_R": -0.1208,
-   "t": 0.55,
-   "win": 0.375,
-   "pf": 0.69,
+   "n": 10,
+   "days": 3,
+   "mean_R": 0.0885,
+   "t": 1.32,
+   "win": 0.5,
+   "pf": 1.29,
    "max_dd_R": -1.93,
-   "mean_bps": -69.53,
-   "total_R": -0.97
+   "mean_bps": 41.98,
+   "total_R": 0.89
   }
  },
- "generated": "2026-10-28T00:46:18Z"
+ "generated": "2026-10-29T01:15:43Z"
 }
