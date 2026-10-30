@@ -119,6 +119,30 @@
    "R": 0.9964,
    "net_bps": 672.42,
    "pnl_per_share": 9.3481
+  },
+  {
+   "date": "2026-10-29",
+   "symbol": "COST",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 993.8362,
+   "exit": 994.606,
+   "outcome": "close",
+   "R": 0.1991,
+   "net_bps": 7.47,
+   "pnl_per_share": 0.7698
+  },
+  {
+   "date": "2026-10-29",
+   "symbol": "HD",
+   "rule": "ORB5-low-1R",
+   "status": "WATCH",
+   "entry": 326.6753,
+   "exit": 327.6295,
+   "outcome": "close",
+   "R": 0.2359,
+   "net_bps": 28.92,
+   "pnl_per_share": 0.9542
   }
  ],
  "summary": {
@@ -134,16 +158,16 @@
    "total_R": 0.0
   },
   "WATCH": {
-   "n": 10,
-   "days": 3,
-   "mean_R": 0.0885,
-   "t": 1.32,
-   "win": 0.5,
-   "pf": 1.29,
+   "n": 12,
+   "days": 4,
+   "mean_R": 0.11,
+   "t": 1.53,
+   "win": 0.583,
+   "pf": 1.43,
    "max_dd_R": -1.93,
-   "mean_bps": 41.98,
-   "total_R": 0.89
+   "mean_bps": 38.02,
+   "total_R": 1.32
   }
  },
- "generated": "2026-10-29T01:15:43Z"
+ "generated": "2026-10-30T01:22:57Z"
 }
