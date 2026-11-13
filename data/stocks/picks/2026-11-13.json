@@ -1,0 +1,24 @@
+[
+ {
+  "date": "2026-11-13",
+  "symbol": "MRK",
+  "rule": "ORB5-low-close",
+  "status": "WATCH",
+  "breakout_slot": 68,
+  "published": "15:16",
+  "entry": 147.87,
+  "stop": 146.41,
+  "target": 150.79
+ },
+ {
+  "date": "2026-11-13",
+  "symbol": "DHR",
+  "rule": "ORB5-low-close",
+  "status": "WATCH",
+  "breakout_slot": 66,
+  "published": "15:16",
+  "entry": 233.09,
+  "stop": 232.16,
+  "target": 234.95
+ }
+]
