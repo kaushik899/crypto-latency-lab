@@ -143,6 +143,30 @@
    "R": 0.2359,
    "net_bps": 28.92,
    "pnl_per_share": 0.9542
+  },
+  {
+   "date": "2026-11-13",
+   "symbol": "DHR",
+   "rule": "ORB5-low-close",
+   "status": "WATCH",
+   "entry": 233.3267,
+   "exit": 233.1234,
+   "outcome": "close",
+   "R": -0.1799,
+   "net_bps": -9.0,
+   "pnl_per_share": -0.2033
+  },
+  {
+   "date": "2026-11-13",
+   "symbol": "MRK",
+   "rule": "ORB5-low-close",
+   "status": "WATCH",
+   "entry": 147.9196,
+   "exit": 147.7204,
+   "outcome": "close",
+   "R": -0.1347,
+   "net_bps": -13.75,
+   "pnl_per_share": -0.1992
   }
  ],
  "summary": {
@@ -158,16 +182,16 @@
    "total_R": 0.0
   },
   "WATCH": {
-   "n": 12,
-   "days": 4,
-   "mean_R": 0.11,
-   "t": 1.53,
-   "win": 0.583,
-   "pf": 1.43,
+   "n": 14,
+   "days": 5,
+   "mean_R": 0.0718,
+   "t": 1.28,
+   "win": 0.5,
+   "pf": 1.3,
    "max_dd_R": -1.93,
-   "mean_bps": 38.02,
-   "total_R": 1.32
+   "mean_bps": 30.96,
+   "total_R": 1.01
   }
  },
- "generated": "2026-11-13T02:08:48Z"
+ "generated": "2026-11-14T01:47:20Z"
 }
