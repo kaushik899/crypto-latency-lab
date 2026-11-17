@@ -1,9 +1,9 @@
 {
- "generated": "2026-11-16T22:11:06Z",
- "universe": 5930,
- "researched": 149,
+ "generated": "2026-11-17T20:59:44Z",
+ "universe": 5929,
+ "researched": 150,
  "sessions": 59,
- "split": "2026-10-19",
+ "split": "2026-10-20",
  "costs": {
   "slippage_bps": 2.0,
   "commission": 0.0,
@@ -17,146 +17,26 @@
    "stop": "or_low",
    "target_r": 0.0,
    "in_sample": {
-    "n": 3501,
+    "n": 3525,
     "days": 39,
-    "mean_R": -0.0817,
-    "t": -2.33,
-    "win": 0.417,
-    "pf": 0.81,
-    "max_dd_R": -334.1,
-    "mean_bps": -8.27,
-    "total_R": -286.2
-   },
-   "out_of_sample": {
-    "n": 1971,
-    "days": 20,
-    "mean_R": -0.0553,
-    "t": -1.43,
-    "win": 0.437,
-    "pf": 0.86,
-    "max_dd_R": -184.75,
-    "mean_bps": -12.35,
-    "total_R": -108.93
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB30-low-1R",
-   "or_minutes": 30,
-   "stop": "or_low",
-   "target_r": 1.0,
-   "in_sample": {
-    "n": 2653,
-    "days": 39,
-    "mean_R": -0.0605,
-    "t": -2.37,
-    "win": 0.459,
-    "pf": 0.78,
-    "max_dd_R": -211.36,
-    "mean_bps": -6.03,
-    "total_R": -160.48
-   },
-   "out_of_sample": {
-    "n": 1534,
-    "days": 20,
-    "mean_R": -0.052,
-    "t": -1.78,
-    "win": 0.445,
-    "pf": 0.8,
-    "max_dd_R": -96.78,
-    "mean_bps": -16.1,
-    "total_R": -79.81
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB30-low-close",
-   "or_minutes": 30,
-   "stop": "or_low",
-   "target_r": 0.0,
-   "in_sample": {
-    "n": 2653,
-    "days": 39,
-    "mean_R": -0.0682,
-    "t": -2.38,
-    "win": 0.45,
-    "pf": 0.76,
-    "max_dd_R": -241.96,
-    "mean_bps": -6.76,
-    "total_R": -180.89
-   },
-   "out_of_sample": {
-    "n": 1534,
-    "days": 20,
-    "mean_R": -0.0736,
-    "t": -2.08,
-    "win": 0.437,
-    "pf": 0.72,
-    "max_dd_R": -115.17,
-    "mean_bps": -20.57,
-    "total_R": -112.87
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB30-mid-close",
-   "or_minutes": 30,
-   "stop": "or_mid",
-   "target_r": 0.0,
-   "in_sample": {
-    "n": 2653,
-    "days": 39,
-    "mean_R": -0.0966,
-    "t": -2.41,
-    "win": 0.412,
-    "pf": 0.79,
-    "max_dd_R": -369.0,
-    "mean_bps": -4.64,
-    "total_R": -256.39
-   },
-   "out_of_sample": {
-    "n": 1534,
-    "days": 20,
-    "mean_R": -0.1061,
-    "t": -2.19,
+    "mean_R": -0.0773,
+    "t": -2.13,
     "win": 0.41,
-    "pf": 0.76,
-    "max_dd_R": -170.94,
-    "mean_bps": -17.11,
-    "total_R": -162.76
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB30-low-2R",
-   "or_minutes": 30,
-   "stop": "or_low",
-   "target_r": 2.0,
-   "in_sample": {
-    "n": 2653,
-    "days": 39,
-    "mean_R": -0.0671,
-    "t": -2.41,
-    "win": 0.451,
-    "pf": 0.77,
-    "max_dd_R": -235.57,
-    "mean_bps": -6.75,
-    "total_R": -177.96
+    "pf": 0.82,
+    "max_dd_R": -280.71,
+    "mean_bps": -8.82,
+    "total_R": -272.34
    },
    "out_of_sample": {
-    "n": 1534,
+    "n": 1988,
     "days": 20,
-    "mean_R": -0.0727,
-    "t": -2.07,
-    "win": 0.437,
-    "pf": 0.73,
-    "max_dd_R": -116.11,
-    "mean_bps": -20.49,
-    "total_R": -111.52
+    "mean_R": -0.0626,
+    "t": -1.46,
+    "win": 0.43,
+    "pf": 0.85,
+    "max_dd_R": -167.71,
+    "mean_bps": -14.17,
+    "total_R": -124.43
    },
    "selected": false,
    "validated": false
@@ -167,26 +47,116 @@
    "stop": "or_low",
    "target_r": 2.0,
    "in_sample": {
-    "n": 3501,
+    "n": 3525,
     "days": 39,
-    "mean_R": -0.0771,
-    "t": -2.42,
-    "win": 0.422,
-    "pf": 0.82,
-    "max_dd_R": -303.58,
-    "mean_bps": -7.82,
-    "total_R": -270.09
+    "mean_R": -0.0734,
+    "t": -2.25,
+    "win": 0.417,
+    "pf": 0.83,
+    "max_dd_R": -264.22,
+    "mean_bps": -8.15,
+    "total_R": -258.71
    },
    "out_of_sample": {
-    "n": 1971,
+    "n": 1988,
     "days": 20,
-    "mean_R": -0.0281,
-    "t": -1.12,
-    "win": 0.443,
-    "pf": 0.93,
-    "max_dd_R": -142.86,
-    "mean_bps": -9.31,
-    "total_R": -55.39
+    "mean_R": -0.0398,
+    "t": -1.21,
+    "win": 0.436,
+    "pf": 0.9,
+    "max_dd_R": -145.7,
+    "mean_bps": -11.76,
+    "total_R": -79.11
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB30-low-2R",
+   "or_minutes": 30,
+   "stop": "or_low",
+   "target_r": 2.0,
+   "in_sample": {
+    "n": 2649,
+    "days": 39,
+    "mean_R": -0.063,
+    "t": -2.34,
+    "win": 0.453,
+    "pf": 0.78,
+    "max_dd_R": -209.69,
+    "mean_bps": -6.58,
+    "total_R": -166.84
+   },
+   "out_of_sample": {
+    "n": 1524,
+    "days": 20,
+    "mean_R": -0.067,
+    "t": -2.11,
+    "win": 0.437,
+    "pf": 0.75,
+    "max_dd_R": -117.9,
+    "mean_bps": -18.31,
+    "total_R": -102.06
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB30-low-close",
+   "or_minutes": 30,
+   "stop": "or_low",
+   "target_r": 0.0,
+   "in_sample": {
+    "n": 2649,
+    "days": 39,
+    "mean_R": -0.0651,
+    "t": -2.35,
+    "win": 0.451,
+    "pf": 0.78,
+    "max_dd_R": -217.36,
+    "mean_bps": -6.64,
+    "total_R": -172.33
+   },
+   "out_of_sample": {
+    "n": 1524,
+    "days": 20,
+    "mean_R": -0.0675,
+    "t": -2.11,
+    "win": 0.437,
+    "pf": 0.75,
+    "max_dd_R": -117.93,
+    "mean_bps": -18.29,
+    "total_R": -102.84
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB30-low-1R",
+   "or_minutes": 30,
+   "stop": "or_low",
+   "target_r": 1.0,
+   "in_sample": {
+    "n": 2649,
+    "days": 39,
+    "mean_R": -0.0599,
+    "t": -2.37,
+    "win": 0.46,
+    "pf": 0.79,
+    "max_dd_R": -193.2,
+    "mean_bps": -6.56,
+    "total_R": -158.67
+   },
+   "out_of_sample": {
+    "n": 1524,
+    "days": 20,
+    "mean_R": -0.0494,
+    "t": -1.87,
+    "win": 0.442,
+    "pf": 0.81,
+    "max_dd_R": -100.65,
+    "mean_bps": -14.33,
+    "total_R": -75.25
    },
    "selected": false,
    "validated": false
@@ -197,176 +167,56 @@
    "stop": "or_mid",
    "target_r": 2.0,
    "in_sample": {
-    "n": 2653,
+    "n": 2649,
     "days": 39,
-    "mean_R": -0.0919,
-    "t": -2.49,
-    "win": 0.416,
-    "pf": 0.8,
-    "max_dd_R": -353.81,
-    "mean_bps": -4.21,
-    "total_R": -243.74
-   },
-   "out_of_sample": {
-    "n": 1534,
-    "days": 20,
-    "mean_R": -0.0634,
-    "t": -1.72,
-    "win": 0.417,
-    "pf": 0.85,
-    "max_dd_R": -136.67,
-    "mean_bps": -12.83,
-    "total_R": -97.19
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB15-low-close",
-   "or_minutes": 15,
-   "stop": "or_low",
-   "target_r": 0.0,
-   "in_sample": {
-    "n": 3029,
-    "days": 39,
-    "mean_R": -0.0736,
-    "t": -2.5,
-    "win": 0.439,
-    "pf": 0.78,
-    "max_dd_R": -273.92,
-    "mean_bps": -7.74,
-    "total_R": -222.96
-   },
-   "out_of_sample": {
-    "n": 1760,
-    "days": 20,
-    "mean_R": -0.0772,
-    "t": -1.99,
-    "win": 0.44,
-    "pf": 0.76,
-    "max_dd_R": -148.44,
-    "mean_bps": -19.65,
-    "total_R": -135.88
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB15-low-1R",
-   "or_minutes": 15,
-   "stop": "or_low",
-   "target_r": 1.0,
-   "in_sample": {
-    "n": 3029,
-    "days": 39,
-    "mean_R": -0.059,
-    "t": -2.51,
-    "win": 0.461,
+    "mean_R": -0.0846,
+    "t": -2.39,
+    "win": 0.42,
     "pf": 0.82,
-    "max_dd_R": -219.92,
-    "mean_bps": -6.98,
-    "total_R": -178.84
+    "max_dd_R": -305.87,
+    "mean_bps": -4.24,
+    "total_R": -224.18
    },
    "out_of_sample": {
-    "n": 1760,
+    "n": 1524,
     "days": 20,
-    "mean_R": -0.037,
-    "t": -1.42,
-    "win": 0.462,
-    "pf": 0.88,
-    "max_dd_R": -101.87,
-    "mean_bps": -11.74,
-    "total_R": -65.13
+    "mean_R": -0.0585,
+    "t": -1.79,
+    "win": 0.415,
+    "pf": 0.87,
+    "max_dd_R": -140.08,
+    "mean_bps": -11.0,
+    "total_R": -89.11
    },
    "selected": false,
    "validated": false
   },
   {
-   "rule": "ORB15-low-2R",
-   "or_minutes": 15,
-   "stop": "or_low",
-   "target_r": 2.0,
-   "in_sample": {
-    "n": 3029,
-    "days": 39,
-    "mean_R": -0.0698,
-    "t": -2.51,
-    "win": 0.44,
-    "pf": 0.79,
-    "max_dd_R": -258.08,
-    "mean_bps": -7.53,
-    "total_R": -211.54
-   },
-   "out_of_sample": {
-    "n": 1760,
-    "days": 20,
-    "mean_R": -0.0698,
-    "t": -1.87,
-    "win": 0.441,
-    "pf": 0.78,
-    "max_dd_R": -139.58,
-    "mean_bps": -18.42,
-    "total_R": -122.81
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB30-mid-1R",
+   "rule": "ORB30-mid-close",
    "or_minutes": 30,
    "stop": "or_mid",
-   "target_r": 1.0,
+   "target_r": 0.0,
    "in_sample": {
-    "n": 2653,
+    "n": 2649,
     "days": 39,
-    "mean_R": -0.0736,
-    "t": -2.54,
-    "win": 0.467,
-    "pf": 0.83,
-    "max_dd_R": -283.92,
-    "mean_bps": -3.55,
-    "total_R": -195.27
+    "mean_R": -0.0931,
+    "t": -2.42,
+    "win": 0.414,
+    "pf": 0.8,
+    "max_dd_R": -336.03,
+    "mean_bps": -4.65,
+    "total_R": -246.52
    },
    "out_of_sample": {
-    "n": 1534,
+    "n": 1524,
     "days": 20,
-    "mean_R": -0.0309,
-    "t": -1.49,
-    "win": 0.475,
-    "pf": 0.92,
-    "max_dd_R": -98.74,
-    "mean_bps": -6.52,
-    "total_R": -47.33
-   },
-   "selected": false,
-   "validated": false
-  },
-  {
-   "rule": "ORB5-low-1R",
-   "or_minutes": 5,
-   "stop": "or_low",
-   "target_r": 1.0,
-   "in_sample": {
-    "n": 3501,
-    "days": 39,
-    "mean_R": -0.0632,
-    "t": -2.63,
-    "win": 0.464,
-    "pf": 0.84,
-    "max_dd_R": -248.42,
-    "mean_bps": -6.83,
-    "total_R": -221.3
-   },
-   "out_of_sample": {
-    "n": 1971,
-    "days": 20,
-    "mean_R": 0.0011,
-    "t": -0.72,
-    "win": 0.494,
-    "pf": 1.0,
-    "max_dd_R": -104.91,
-    "mean_bps": -3.1,
-    "total_R": 2.25
+    "mean_R": -0.0975,
+    "t": -2.18,
+    "win": 0.409,
+    "pf": 0.78,
+    "max_dd_R": -169.36,
+    "mean_bps": -14.93,
+    "total_R": -148.52
    },
    "selected": false,
    "validated": false
@@ -377,26 +227,116 @@
    "stop": "or_mid",
    "target_r": 0.0,
    "in_sample": {
-    "n": 3499,
+    "n": 3525,
     "days": 39,
-    "mean_R": -0.1225,
-    "t": -2.67,
-    "win": 0.336,
-    "pf": 0.8,
-    "max_dd_R": -528.23,
-    "mean_bps": -7.35,
-    "total_R": -428.5
+    "mean_R": -0.1155,
+    "t": -2.44,
+    "win": 0.329,
+    "pf": 0.82,
+    "max_dd_R": -436.2,
+    "mean_bps": -8.29,
+    "total_R": -407.09
    },
    "out_of_sample": {
-    "n": 1970,
+    "n": 1987,
     "days": 20,
-    "mean_R": -0.079,
-    "t": -1.43,
-    "win": 0.362,
-    "pf": 0.86,
-    "max_dd_R": -241.04,
-    "mean_bps": -9.8,
-    "total_R": -155.58
+    "mean_R": -0.0907,
+    "t": -1.47,
+    "win": 0.355,
+    "pf": 0.85,
+    "max_dd_R": -253.85,
+    "mean_bps": -11.01,
+    "total_R": -180.21
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB15-low-2R",
+   "or_minutes": 15,
+   "stop": "or_low",
+   "target_r": 2.0,
+   "in_sample": {
+    "n": 3051,
+    "days": 39,
+    "mean_R": -0.0711,
+    "t": -2.47,
+    "win": 0.437,
+    "pf": 0.79,
+    "max_dd_R": -241.29,
+    "mean_bps": -8.72,
+    "total_R": -216.98
+   },
+   "out_of_sample": {
+    "n": 1738,
+    "days": 20,
+    "mean_R": -0.0612,
+    "t": -1.88,
+    "win": 0.444,
+    "pf": 0.81,
+    "max_dd_R": -127.45,
+    "mean_bps": -17.47,
+    "total_R": -106.44
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB15-low-close",
+   "or_minutes": 15,
+   "stop": "or_low",
+   "target_r": 0.0,
+   "in_sample": {
+    "n": 3051,
+    "days": 39,
+    "mean_R": -0.0766,
+    "t": -2.52,
+    "win": 0.435,
+    "pf": 0.78,
+    "max_dd_R": -260.92,
+    "mean_bps": -9.04,
+    "total_R": -233.81
+   },
+   "out_of_sample": {
+    "n": 1738,
+    "days": 20,
+    "mean_R": -0.0689,
+    "t": -1.99,
+    "win": 0.442,
+    "pf": 0.78,
+    "max_dd_R": -134.78,
+    "mean_bps": -18.57,
+    "total_R": -119.74
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB15-low-1R",
+   "or_minutes": 15,
+   "stop": "or_low",
+   "target_r": 1.0,
+   "in_sample": {
+    "n": 3051,
+    "days": 39,
+    "mean_R": -0.0621,
+    "t": -2.54,
+    "win": 0.456,
+    "pf": 0.81,
+    "max_dd_R": -208.48,
+    "mean_bps": -8.7,
+    "total_R": -189.57
+   },
+   "out_of_sample": {
+    "n": 1738,
+    "days": 20,
+    "mean_R": -0.0311,
+    "t": -1.49,
+    "win": 0.463,
+    "pf": 0.9,
+    "max_dd_R": -100.78,
+    "mean_bps": -10.94,
+    "total_R": -53.98
    },
    "selected": false,
    "validated": false
@@ -407,26 +347,56 @@
    "stop": "or_mid",
    "target_r": 0.0,
    "in_sample": {
-    "n": 3029,
+    "n": 3051,
     "days": 39,
-    "mean_R": -0.1096,
-    "t": -2.67,
-    "win": 0.38,
-    "pf": 0.79,
-    "max_dd_R": -440.8,
-    "mean_bps": -6.32,
-    "total_R": -332.08
+    "mean_R": -0.12,
+    "t": -2.82,
+    "win": 0.375,
+    "pf": 0.78,
+    "max_dd_R": -436.4,
+    "mean_bps": -7.67,
+    "total_R": -366.06
    },
    "out_of_sample": {
-    "n": 1760,
+    "n": 1738,
     "days": 20,
-    "mean_R": -0.116,
-    "t": -2.07,
-    "win": 0.39,
-    "pf": 0.77,
-    "max_dd_R": -220.26,
-    "mean_bps": -16.66,
-    "total_R": -204.23
+    "mean_R": -0.103,
+    "t": -2.03,
+    "win": 0.392,
+    "pf": 0.8,
+    "max_dd_R": -205.31,
+    "mean_bps": -14.89,
+    "total_R": -179.05
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB30-mid-1R",
+   "or_minutes": 30,
+   "stop": "or_mid",
+   "target_r": 1.0,
+   "in_sample": {
+    "n": 2649,
+    "days": 39,
+    "mean_R": -0.0804,
+    "t": -2.86,
+    "win": 0.466,
+    "pf": 0.81,
+    "max_dd_R": -269.18,
+    "mean_bps": -4.57,
+    "total_R": -213.09
+   },
+   "out_of_sample": {
+    "n": 1524,
+    "days": 20,
+    "mean_R": -0.033,
+    "t": -1.65,
+    "win": 0.472,
+    "pf": 0.92,
+    "max_dd_R": -106.1,
+    "mean_bps": -5.72,
+    "total_R": -50.3
    },
    "selected": false,
    "validated": false
@@ -437,26 +407,56 @@
    "stop": "or_mid",
    "target_r": 2.0,
    "in_sample": {
-    "n": 3029,
+    "n": 3051,
     "days": 39,
-    "mean_R": -0.0992,
-    "t": -2.86,
-    "win": 0.393,
-    "pf": 0.81,
-    "max_dd_R": -402.26,
-    "mean_bps": -6.04,
-    "total_R": -300.39
+    "mean_R": -0.1035,
+    "t": -2.89,
+    "win": 0.389,
+    "pf": 0.8,
+    "max_dd_R": -376.84,
+    "mean_bps": -7.3,
+    "total_R": -315.85
    },
    "out_of_sample": {
-    "n": 1760,
+    "n": 1738,
     "days": 20,
-    "mean_R": -0.0671,
-    "t": -1.59,
-    "win": 0.403,
-    "pf": 0.87,
-    "max_dd_R": -167.6,
-    "mean_bps": -11.24,
-    "total_R": -118.13
+    "mean_R": -0.0532,
+    "t": -1.58,
+    "win": 0.404,
+    "pf": 0.89,
+    "max_dd_R": -144.3,
+    "mean_bps": -9.68,
+    "total_R": -92.5
+   },
+   "selected": false,
+   "validated": false
+  },
+  {
+   "rule": "ORB5-low-1R",
+   "or_minutes": 5,
+   "stop": "or_low",
+   "target_r": 1.0,
+   "in_sample": {
+    "n": 3525,
+    "days": 39,
+    "mean_R": -0.0754,
+    "t": -3.02,
+    "win": 0.455,
+    "pf": 0.81,
+    "max_dd_R": -265.67,
+    "mean_bps": -9.39,
+    "total_R": -265.67
+   },
+   "out_of_sample": {
+    "n": 1988,
+    "days": 20,
+    "mean_R": -0.0086,
+    "t": -0.86,
+    "win": 0.486,
+    "pf": 0.98,
+    "max_dd_R": -104.48,
+    "mean_bps": -5.47,
+    "total_R": -17.0
    },
    "selected": false,
    "validated": false
@@ -467,26 +467,26 @@
    "stop": "or_mid",
    "target_r": 2.0,
    "in_sample": {
-    "n": 3499,
+    "n": 3525,
     "days": 39,
-    "mean_R": -0.108,
-    "t": -3.21,
-    "win": 0.366,
-    "pf": 0.82,
-    "max_dd_R": -450.75,
-    "mean_bps": -6.93,
-    "total_R": -377.94
+    "mean_R": -0.1214,
+    "t": -3.71,
+    "win": 0.358,
+    "pf": 0.8,
+    "max_dd_R": -428.11,
+    "mean_bps": -8.84,
+    "total_R": -428.11
    },
    "out_of_sample": {
-    "n": 1970,
+    "n": 1987,
     "days": 20,
-    "mean_R": -0.0194,
-    "t": -0.93,
-    "win": 0.396,
-    "pf": 0.96,
-    "max_dd_R": -148.74,
-    "mean_bps": -4.77,
-    "total_R": -38.13
+    "mean_R": -0.0255,
+    "t": -0.98,
+    "win": 0.39,
+    "pf": 0.95,
+    "max_dd_R": -157.68,
+    "mean_bps": -5.76,
+    "total_R": -50.75
    },
    "selected": false,
    "validated": false
@@ -497,26 +497,26 @@
    "stop": "or_mid",
    "target_r": 1.0,
    "in_sample": {
-    "n": 3029,
+    "n": 3051,
     "days": 39,
-    "mean_R": -0.0905,
-    "t": -3.51,
-    "win": 0.461,
-    "pf": 0.8,
-    "max_dd_R": -325.09,
-    "mean_bps": -5.61,
-    "total_R": -274.12
+    "mean_R": -0.1066,
+    "t": -4.04,
+    "win": 0.453,
+    "pf": 0.78,
+    "max_dd_R": -351.93,
+    "mean_bps": -7.94,
+    "total_R": -325.24
    },
    "out_of_sample": {
-    "n": 1760,
+    "n": 1738,
     "days": 20,
-    "mean_R": -0.0352,
-    "t": -1.39,
-    "win": 0.483,
-    "pf": 0.92,
-    "max_dd_R": -119.42,
-    "mean_bps": -5.43,
-    "total_R": -61.9
+    "mean_R": -0.0257,
+    "t": -1.36,
+    "win": 0.487,
+    "pf": 0.94,
+    "max_dd_R": -104.94,
+    "mean_bps": -4.85,
+    "total_R": -44.63
    },
    "selected": false,
    "validated": false
@@ -527,26 +527,26 @@
    "stop": "or_mid",
    "target_r": 1.0,
    "in_sample": {
-    "n": 3499,
+    "n": 3525,
     "days": 39,
-    "mean_R": -0.1254,
-    "t": -4.67,
-    "win": 0.451,
-    "pf": 0.76,
-    "max_dd_R": -448.62,
-    "mean_bps": -8.19,
-    "total_R": -438.86
+    "mean_R": -0.1425,
+    "t": -5.72,
+    "win": 0.442,
+    "pf": 0.73,
+    "max_dd_R": -502.19,
+    "mean_bps": -10.33,
+    "total_R": -502.19
    },
    "out_of_sample": {
-    "n": 1970,
+    "n": 1987,
     "days": 20,
-    "mean_R": 0.0026,
-    "t": -0.45,
-    "win": 0.51,
-    "pf": 1.01,
-    "max_dd_R": -114.3,
-    "mean_bps": 0.04,
-    "total_R": 5.03
+    "mean_R": -0.0111,
+    "t": -0.67,
+    "win": 0.504,
+    "pf": 0.98,
+    "max_dd_R": -115.19,
+    "mean_bps": -2.19,
+    "total_R": -22.05
    },
    "selected": false,
    "validated": false
@@ -557,748 +557,753 @@
  "symbols": [
   {
    "symbol": "NVDA",
-   "price": 156.14,
-   "dollar_volume": 51519851972.159996
+   "price": 155.46,
+   "dollar_volume": 51196570991.520004
   },
   {
    "symbol": "SPY",
-   "price": 739.95,
-   "dollar_volume": 50189205028.350006
+   "price": 732.21,
+   "dollar_volume": 44532389821.5
   },
   {
    "symbol": "QQQ",
-   "price": 661.75,
-   "dollar_volume": 27668168520.5
+   "price": 656.95,
+   "dollar_volume": 31333360983.050003
   },
   {
    "symbol": "MU",
-   "price": 719.02,
-   "dollar_volume": 19122267155.06
+   "price": 712.42,
+   "dollar_volume": 21557927513.96
   },
   {
    "symbol": "AMD",
-   "price": 504.28,
-   "dollar_volume": 18045930598.36
-  },
-  {
-   "symbol": "AAPL",
-   "price": 352.78,
-   "dollar_volume": 15879698134.519999
+   "price": 502.53,
+   "dollar_volume": 14627923651.74
   },
   {
    "symbol": "MSFT",
-   "price": 517.99,
-   "dollar_volume": 15313956332.07
+   "price": 506.24,
+   "dollar_volume": 12312207353.6
   },
   {
    "symbol": "SPCX",
-   "price": 137.36,
-   "dollar_volume": 13857381598.000002
+   "price": 141.7,
+   "dollar_volume": 12035516503.4
+  },
+  {
+   "symbol": "SNDK",
+   "price": 797.24,
+   "dollar_volume": 11293077601.08
+  },
+  {
+   "symbol": "AAPL",
+   "price": 351.75,
+   "dollar_volume": 9230823997.5
+  },
+  {
+   "symbol": "GOOGL",
+   "price": 280.2,
+   "dollar_volume": 8188888431.0
+  },
+  {
+   "symbol": "TSM",
+   "price": 359.64,
+   "dollar_volume": 8117009247.822
+  },
+  {
+   "symbol": "TSLA",
+   "price": 380.11,
+   "dollar_volume": 8057525026.47
   },
   {
    "symbol": "AMZN",
    "price": 257.75,
-   "dollar_volume": 12295963492.25
-  },
-  {
-   "symbol": "TSLA",
-   "price": 379.74,
-   "dollar_volume": 11422852992.54
-  },
-  {
-   "symbol": "SNDK",
-   "price": 809.11,
-   "dollar_volume": 9891870589.09
-  },
-  {
-   "symbol": "GOOGL",
-   "price": 283.72,
-   "dollar_volume": 9668554834.6
-  },
-  {
-   "symbol": "AVGO",
-   "price": 333.4,
-   "dollar_volume": 8665501087.0
-  },
-  {
-   "symbol": "TSM",
-   "price": 373.45,
-   "dollar_volume": 7254146372.55
-  },
-  {
-   "symbol": "META",
-   "price": 626.41,
-   "dollar_volume": 7208979349.639999
+   "dollar_volume": 7484233653.5
   },
   {
    "symbol": "IWM",
-   "price": 272.94,
-   "dollar_volume": 7006379352.9
+   "price": 268.98,
+   "dollar_volume": 7386342504.72
   },
   {
-   "symbol": "GOOG",
-   "price": 281.26,
-   "dollar_volume": 5930689142.7
+   "symbol": "META",
+   "price": 618.87,
+   "dollar_volume": 7272941673.9
+  },
+  {
+   "symbol": "AVGO",
+   "price": 341.4,
+   "dollar_volume": 5785859430.0
   },
   {
    "symbol": "INTC",
-   "price": 55.47,
-   "dollar_volume": 5591547291.36
+   "price": 55.17,
+   "dollar_volume": 5375583125.190001
   },
   {
    "symbol": "SMH",
-   "price": 461.9,
-   "dollar_volume": 4535447832.8
+   "price": 460.1,
+   "dollar_volume": 5284290369.1
   },
   {
-   "symbol": "LLY",
-   "price": 1431.67,
-   "dollar_volume": 4401506204.62
-  },
-  {
-   "symbol": "GS",
-   "price": 891.54,
-   "dollar_volume": 4105876027.5
-  },
-  {
-   "symbol": "COST",
-   "price": 1113.74,
-   "dollar_volume": 3264844165.76
-  },
-  {
-   "symbol": "NBIS",
-   "price": 107.13,
-   "dollar_volume": 3198341938.62
-  },
-  {
-   "symbol": "V",
-   "price": 426.46,
-   "dollar_volume": 3151933449.04
-  },
-  {
-   "symbol": "MRVL",
-   "price": 145.36,
-   "dollar_volume": 3093299611.1200004
-  },
-  {
-   "symbol": "PLTR",
-   "price": 160.39,
-   "dollar_volume": 2820727284.4199996
+   "symbol": "GOOG",
+   "price": 277.6,
+   "dollar_volume": 4874693198.400001
   },
   {
    "symbol": "GEV",
-   "price": 763.57,
-   "dollar_volume": 2686736344.07
+   "price": 779.97,
+   "dollar_volume": 3527766091.4700003
   },
   {
-   "symbol": "DELL",
-   "price": 320.55,
-   "dollar_volume": 2676468767.7000003
-  },
-  {
-   "symbol": "CRWV",
-   "price": 49.88,
-   "dollar_volume": 2643588174.6800003
-  },
-  {
-   "symbol": "LRCX",
-   "price": 210.83,
-   "dollar_volume": 2564131537.23
-  },
-  {
-   "symbol": "SKHY",
-   "price": 122.18,
-   "dollar_volume": 2561937072.46
-  },
-  {
-   "symbol": "LITE",
-   "price": 546.0,
-   "dollar_volume": 2498167854.0
-  },
-  {
-   "symbol": "AMAT",
-   "price": 350.25,
-   "dollar_volume": 2461547893.5
-  },
-  {
-   "symbol": "TLT",
-   "price": 79.38,
-   "dollar_volume": 2453839647.8399997
-  },
-  {
-   "symbol": "JPM",
-   "price": 338.21,
-   "dollar_volume": 2441747003.7799997
-  },
-  {
-   "symbol": "ORCL",
-   "price": 119.09,
-   "dollar_volume": 2382043062.69
-  },
-  {
-   "symbol": "PG",
-   "price": 173.02,
-   "dollar_volume": 2265857289.54
-  },
-  {
-   "symbol": "BE",
-   "price": 177.28,
-   "dollar_volume": 2257091731.2
-  },
-  {
-   "symbol": "JNJ",
-   "price": 282.55,
-   "dollar_volume": 2243768541.9
-  },
-  {
-   "symbol": "WMT",
-   "price": 128.41,
-   "dollar_volume": 2233462609.74
+   "symbol": "MRVL",
+   "price": 148.74,
+   "dollar_volume": 3371851464.42
   },
   {
    "symbol": "ASML",
-   "price": 1406.79,
-   "dollar_volume": 2233226170.38
-  },
-  {
-   "symbol": "STX",
-   "price": 499.0,
-   "dollar_volume": 2230435190.0
-  },
-  {
-   "symbol": "BRK.B",
-   "price": 592.85,
-   "dollar_volume": 2218904751.6
+   "price": 1382.35,
+   "dollar_volume": 3085287700.25
   },
   {
    "symbol": "XLF",
-   "price": 58.18,
-   "dollar_volume": 2208145218.7599998
+   "price": 57.08,
+   "dollar_volume": 2907751551.04
   },
   {
-   "symbol": "NFLX",
-   "price": 60.75,
-   "dollar_volume": 2172564220.5
+   "symbol": "NBIS",
+   "price": 106.03,
+   "dollar_volume": 2799953105.6549997
   },
   {
-   "symbol": "MSTR",
-   "price": 103.03,
-   "dollar_volume": 2168239665.23
+   "symbol": "LLY",
+   "price": 1415.43,
+   "dollar_volume": 2774858512.05
   },
   {
    "symbol": "XLK",
-   "price": 164.76,
-   "dollar_volume": 2139415355.1599998
+   "price": 163.29,
+   "dollar_volume": 2744390699.79
   },
   {
-   "symbol": "XOM",
-   "price": 166.87,
-   "dollar_volume": 2113350812.98
+   "symbol": "PLTR",
+   "price": 156.56,
+   "dollar_volume": 2564773278.32
   },
   {
-   "symbol": "HOOD",
-   "price": 72.06,
-   "dollar_volume": 1996016169.8400002
+   "symbol": "ORCL",
+   "price": 115.06,
+   "dollar_volume": 2557804855.98
   },
   {
-   "symbol": "QCOM",
-   "price": 168.52,
-   "dollar_volume": 1989229122.7600002
-  },
-  {
-   "symbol": "TXN",
-   "price": 294.21,
-   "dollar_volume": 1981580844.6
-  },
-  {
-   "symbol": "HD",
-   "price": 347.51,
-   "dollar_volume": 1974258174.05
-  },
-  {
-   "symbol": "XLE",
-   "price": 63.69,
-   "dollar_volume": 1948831967.28
-  },
-  {
-   "symbol": "CAT",
-   "price": 570.49,
-   "dollar_volume": 1892050622.64
-  },
-  {
-   "symbol": "APP",
-   "price": 415.22,
-   "dollar_volume": 1880328752.64
-  },
-  {
-   "symbol": "KO",
-   "price": 99.48,
-   "dollar_volume": 1847346484.92
-  },
-  {
-   "symbol": "WDC",
-   "price": 280.93,
-   "dollar_volume": 1830270749.06
+   "symbol": "TLT",
+   "price": 79.55,
+   "dollar_volume": 2533489467.1
   },
   {
    "symbol": "UNH",
-   "price": 412.02,
-   "dollar_volume": 1813190834.6999998
+   "price": 389.76,
+   "dollar_volume": 2500192692.48
   },
   {
-   "symbol": "CSCO",
-   "price": 94.52,
-   "dollar_volume": 1752909128.56
+   "symbol": "BRK.B",
+   "price": 586.21,
+   "dollar_volume": 2458164944.78
   },
   {
-   "symbol": "DIA",
-   "price": 515.68,
-   "dollar_volume": 1744041104.9599998
+   "symbol": "LITE",
+   "price": 559.97,
+   "dollar_volume": 2404931717.4700003
   },
   {
-   "symbol": "PANW",
-   "price": 316.09,
-   "dollar_volume": 1636040116.12
+   "symbol": "WMT",
+   "price": 127.52,
+   "dollar_volume": 2382541980.96
   },
   {
-   "symbol": "MCD",
-   "price": 274.67,
-   "dollar_volume": 1572133348.39
-  },
-  {
-   "symbol": "MA",
-   "price": 661.71,
-   "dollar_volume": 1554522879.21
-  },
-  {
-   "symbol": "PEP",
-   "price": 146.43,
-   "dollar_volume": 1551233880.27
-  },
-  {
-   "symbol": "BAC",
-   "price": 50.08,
-   "dollar_volume": 1534491965.12
-  },
-  {
-   "symbol": "KDP",
-   "price": 35.58,
-   "dollar_volume": 1529607540.48
-  },
-  {
-   "symbol": "ADI",
-   "price": 383.17,
-   "dollar_volume": 1515689475.8600001
-  },
-  {
-   "symbol": "MRNA",
-   "price": 215.27,
-   "dollar_volume": 1507102471.49
-  },
-  {
-   "symbol": "TJX",
-   "price": 131.09,
-   "dollar_volume": 1499118235.46
-  },
-  {
-   "symbol": "KLAC",
-   "price": 143.96,
-   "dollar_volume": 1487430566.0400002
-  },
-  {
-   "symbol": "COHR",
-   "price": 203.43,
-   "dollar_volume": 1479125900.19
-  },
-  {
-   "symbol": "DIS",
-   "price": 118.7,
-   "dollar_volume": 1463839143.3
-  },
-  {
-   "symbol": "CBRS",
-   "price": 100.99,
-   "dollar_volume": 1450969381.4399998
-  },
-  {
-   "symbol": "ABBV",
-   "price": 294.55,
-   "dollar_volume": 1386683962.75
-  },
-  {
-   "symbol": "CRWD",
-   "price": 223.21,
-   "dollar_volume": 1383497766.69
-  },
-  {
-   "symbol": "ANET",
-   "price": 187.02,
-   "dollar_volume": 1361065541.94
-  },
-  {
-   "symbol": "VRT",
-   "price": 188.67,
-   "dollar_volume": 1360234288.6499999
-  },
-  {
-   "symbol": "COIN",
-   "price": 119.84,
-   "dollar_volume": 1340626231.8400002
-  },
-  {
-   "symbol": "CVX",
-   "price": 217.14,
-   "dollar_volume": 1328520062.1
-  },
-  {
-   "symbol": "IREN",
-   "price": 16.39,
-   "dollar_volume": 1306339545.5
-  },
-  {
-   "symbol": "BA",
-   "price": 165.22,
-   "dollar_volume": 1303172419.56
-  },
-  {
-   "symbol": "COP",
-   "price": 140.52,
-   "dollar_volume": 1290189298.2
-  },
-  {
-   "symbol": "UNP",
-   "price": 303.71,
-   "dollar_volume": 1278952573.58
-  },
-  {
-   "symbol": "TTWO",
-   "price": 213.47,
-   "dollar_volume": 1270807616.59
-  },
-  {
-   "symbol": "MRK",
-   "price": 144.46,
-   "dollar_volume": 1242987579.1200001
-  },
-  {
-   "symbol": "SO",
-   "price": 94.64,
-   "dollar_volume": 1240138710.72
-  },
-  {
-   "symbol": "IBM",
-   "price": 242.51,
-   "dollar_volume": 1225912786.02
-  },
-  {
-   "symbol": "ABNB",
-   "price": 186.19,
-   "dollar_volume": 1212163742.21
-  },
-  {
-   "symbol": "NXPI",
-   "price": 254.19,
-   "dollar_volume": 1196537148.45
-  },
-  {
-   "symbol": "MPWR",
-   "price": 1314.0,
-   "dollar_volume": 1195511364.0
-  },
-  {
-   "symbol": "GE",
-   "price": 325.18,
-   "dollar_volume": 1155695898.42
+   "symbol": "BE",
+   "price": 173.59,
+   "dollar_volume": 2223358079.0
   },
   {
    "symbol": "CRM",
-   "price": 214.83,
-   "dollar_volume": 1137567386.3400002
+   "price": 194.53,
+   "dollar_volume": 2206450689.1
   },
   {
-   "symbol": "NU",
-   "price": 12.68,
-   "dollar_volume": 1135166462.92
+   "symbol": "NKE",
+   "price": 35.85,
+   "dollar_volume": 2192082056.55
   },
   {
-   "symbol": "BABA",
-   "price": 90.62,
-   "dollar_volume": 1118246269.0
+   "symbol": "SLS",
+   "price": 19.15,
+   "dollar_volume": 2180403507.6499996
   },
   {
-   "symbol": "TMO",
-   "price": 691.33,
-   "dollar_volume": 1096495699.1100001
+   "symbol": "CRWV",
+   "price": 49.91,
+   "dollar_volume": 2176818411.25
   },
   {
-   "symbol": "PM",
-   "price": 196.04,
-   "dollar_volume": 1092647563.8
+   "symbol": "LRCX",
+   "price": 210.69,
+   "dollar_volume": 2171979402.03
   },
   {
-   "symbol": "LIN",
-   "price": 523.46,
-   "dollar_volume": 1087631578.04
+   "symbol": "MSTR",
+   "price": 96.5,
+   "dollar_volume": 2140519864.5
   },
   {
-   "symbol": "FCX",
-   "price": 55.19,
-   "dollar_volume": 1075777994.97
+   "symbol": "DIS",
+   "price": 116.93,
+   "dollar_volume": 2083605604.0800002
+  },
+  {
+   "symbol": "HD",
+   "price": 339.17,
+   "dollar_volume": 2056996859.3200002
+  },
+  {
+   "symbol": "COHR",
+   "price": 210.63,
+   "dollar_volume": 2044240608.69
+  },
+  {
+   "symbol": "NFLX",
+   "price": 59.68,
+   "dollar_volume": 2002963210.8799999
+  },
+  {
+   "symbol": "PANW",
+   "price": 309.29,
+   "dollar_volume": 1961660381.2700002
+  },
+  {
+   "symbol": "DELL",
+   "price": 322.94,
+   "dollar_volume": 1960851958.3799999
+  },
+  {
+   "symbol": "JPM",
+   "price": 329.99,
+   "dollar_volume": 1926893117.53
   },
   {
    "symbol": "NOW",
-   "price": 99.37,
-   "dollar_volume": 1075385816.69
+   "price": 92.86,
+   "dollar_volume": 1924951863.18
   },
   {
-   "symbol": "C",
-   "price": 121.32,
-   "dollar_volume": 1074055180.32
+   "symbol": "V",
+   "price": 416.98,
+   "dollar_volume": 1914332225.0
   },
   {
-   "symbol": "MS",
-   "price": 185.57,
-   "dollar_volume": 1053216267.18
+   "symbol": "KLAC",
+   "price": 144.56,
+   "dollar_volume": 1890875157.6000001
   },
   {
-   "symbol": "ELV",
-   "price": 446.28,
-   "dollar_volume": 1010498861.88
+   "symbol": "DIA",
+   "price": 507.11,
+   "dollar_volume": 1836001897.2
   },
   {
-   "symbol": "NEE",
-   "price": 85.34,
-   "dollar_volume": 1009114777.6
+   "symbol": "SKHY",
+   "price": 122.61,
+   "dollar_volume": 1792829413.32
   },
   {
-   "symbol": "CVS",
-   "price": 88.59,
-   "dollar_volume": 1006581195.96
+   "symbol": "COST",
+   "price": 1109.98,
+   "dollar_volume": 1744159303.14
   },
   {
-   "symbol": "UBER",
-   "price": 69.99,
-   "dollar_volume": 1000837192.8299999
+   "symbol": "STX",
+   "price": 504.4,
+   "dollar_volume": 1697103231.1999998
   },
   {
-   "symbol": "CEG",
-   "price": 277.82,
-   "dollar_volume": 993507379.06
+   "symbol": "QCOM",
+   "price": 166.67,
+   "dollar_volume": 1678353066.3899999
   },
   {
-   "symbol": "SCHW",
-   "price": 92.94,
-   "dollar_volume": 981870392.28
+   "symbol": "MRNA",
+   "price": 206.8,
+   "dollar_volume": 1676514158.0
   },
   {
-   "symbol": "SHOP",
-   "price": 147.81,
-   "dollar_volume": 970425565.98
+   "symbol": "TXN",
+   "price": 295.86,
+   "dollar_volume": 1643230700.52
   },
   {
-   "symbol": "NET",
-   "price": 293.59,
-   "dollar_volume": 966474205.6199999
+   "symbol": "AMAT",
+   "price": 348.6,
+   "dollar_volume": 1572606514.2450001
   },
   {
-   "symbol": "T",
-   "price": 22.36,
-   "dollar_volume": 960505551.1999999
+   "symbol": "HOOD",
+   "price": 69.19,
+   "dollar_volume": 1488377917.3999999
   },
   {
-   "symbol": "ETN",
-   "price": 336.88,
-   "dollar_volume": 957674378.88
+   "symbol": "CRWD",
+   "price": 219.53,
+   "dollar_volume": 1450191251.23
   },
   {
    "symbol": "XEL",
-   "price": 81.21,
-   "dollar_volume": 946771030.2599999
+   "price": 80.72,
+   "dollar_volume": 1436101708.72
   },
   {
-   "symbol": "PSX",
-   "price": 260.62,
-   "dollar_volume": 946075619.52
+   "symbol": "APP",
+   "price": 398.71,
+   "dollar_volume": 1429849017.48
   },
   {
-   "symbol": "BLK",
-   "price": 1197.97,
-   "dollar_volume": 937970976.99
+   "symbol": "BABA",
+   "price": 86.66,
+   "dollar_volume": 1420566437.49
   },
   {
-   "symbol": "ADBE",
-   "price": 246.0,
-   "dollar_volume": 936762834.0
+   "symbol": "XLE",
+   "price": 63.35,
+   "dollar_volume": 1413042740.705
   },
   {
-   "symbol": "ABT",
-   "price": 107.45,
-   "dollar_volume": 928832936.15
+   "symbol": "CSCO",
+   "price": 95.11,
+   "dollar_volume": 1393326404.41
   },
   {
-   "symbol": "ALAB",
-   "price": 202.34,
-   "dollar_volume": 915609138.6800001
+   "symbol": "MA",
+   "price": 645.51,
+   "dollar_volume": 1355374119.45
   },
   {
-   "symbol": "MCHP",
-   "price": 58.64,
-   "dollar_volume": 895886556.32
+   "symbol": "WDC",
+   "price": 283.33,
+   "dollar_volume": 1346081846.8899999
   },
   {
-   "symbol": "ARM",
-   "price": 175.05,
-   "dollar_volume": 895830453.45
+   "symbol": "BAC",
+   "price": 49.41,
+   "dollar_volume": 1293638447.56
   },
   {
-   "symbol": "DASH",
-   "price": 169.78,
-   "dollar_volume": 890103059.3
+   "symbol": "CAT",
+   "price": 570.96,
+   "dollar_volume": 1287586740.96
   },
   {
-   "symbol": "PFE",
-   "price": 28.86,
-   "dollar_volume": 889431058.62
+   "symbol": "UBER",
+   "price": 68.81,
+   "dollar_volume": 1249670077.75
   },
   {
-   "symbol": "CL",
-   "price": 100.99,
-   "dollar_volume": 882083521.3499999
+   "symbol": "TTWO",
+   "price": 203.93,
+   "dollar_volume": 1231211468.46
   },
   {
-   "symbol": "LOW",
-   "price": 224.93,
-   "dollar_volume": 880183704.85
+   "symbol": "JNJ",
+   "price": 278.83,
+   "dollar_volume": 1216411768.31
   },
   {
-   "symbol": "CIEN",
-   "price": 257.56,
-   "dollar_volume": 877222316.2
+   "symbol": "LIN",
+   "price": 515.11,
+   "dollar_volume": 1187856537.75
   },
   {
-   "symbol": "ACN",
-   "price": 247.7,
-   "dollar_volume": 867636624.4
+   "symbol": "IREN",
+   "price": 15.8,
+   "dollar_volume": 1180858610.615
   },
   {
-   "symbol": "SBUX",
-   "price": 108.72,
-   "dollar_volume": 862643188.8
+   "symbol": "CVX",
+   "price": 216.21,
+   "dollar_volume": 1175573336.43
   },
   {
-   "symbol": "VZ",
-   "price": 46.34,
-   "dollar_volume": 858275698.1400001
+   "symbol": "XOM",
+   "price": 167.22,
+   "dollar_volume": 1165315545.54
   },
   {
-   "symbol": "AMGN",
-   "price": 462.32,
-   "dollar_volume": 853990569.1999999
-  },
-  {
-   "symbol": "SMCI",
-   "price": 25.02,
-   "dollar_volume": 850791516.5749999
-  },
-  {
-   "symbol": "GLW",
-   "price": 106.17,
-   "dollar_volume": 847563391.26
-  },
-  {
-   "symbol": "MPC",
-   "price": 402.19,
-   "dollar_volume": 837422321.64
-  },
-  {
-   "symbol": "CRDO",
-   "price": 120.71,
-   "dollar_volume": 828166926.5799999
-  },
-  {
-   "symbol": "AAL",
-   "price": 13.24,
-   "dollar_volume": 818988930.8000001
-  },
-  {
-   "symbol": "APH",
-   "price": 75.43,
-   "dollar_volume": 817166002.0500001
-  },
-  {
-   "symbol": "BKNG",
-   "price": 157.53,
-   "dollar_volume": 812316362.46
-  },
-  {
-   "symbol": "ADP",
-   "price": 313.43,
-   "dollar_volume": 803855174.72
-  },
-  {
-   "symbol": "ISRG",
-   "price": 437.75,
-   "dollar_volume": 796392446.5
-  },
-  {
-   "symbol": "MCK",
-   "price": 1105.04,
-   "dollar_volume": 795932686.0
-  },
-  {
-   "symbol": "TGT",
-   "price": 160.32,
-   "dollar_volume": 795926114.88
-  },
-  {
-   "symbol": "RKLB",
-   "price": 57.37,
-   "dollar_volume": 782594783.4499999
-  },
-  {
-   "symbol": "COF",
-   "price": 193.22,
-   "dollar_volume": 781006639.98
-  },
-  {
-   "symbol": "CMCSA",
-   "price": 25.6,
-   "dollar_volume": 778024678.4000001
-  },
-  {
-   "symbol": "INTU",
-   "price": 345.56,
-   "dollar_volume": 776307105.64
-  },
-  {
-   "symbol": "WFC",
-   "price": 84.84,
-   "dollar_volume": 775336640.4
-  },
-  {
-   "symbol": "MELI",
-   "price": 1462.12,
-   "dollar_volume": 771576807.3199999
-  },
-  {
-   "symbol": "PWR",
-   "price": 585.9,
-   "dollar_volume": 771442812.0
-  },
-  {
-   "symbol": "GILD",
-   "price": 167.58,
-   "dollar_volume": 767980093.86
+   "symbol": "PG",
+   "price": 171.8,
+   "dollar_volume": 1160294421.8000002
   },
   {
    "symbol": "SYK",
-   "price": 310.72,
-   "dollar_volume": 765456855.6800001
+   "price": 317.6,
+   "dollar_volume": 1153495251.2
   },
   {
-   "symbol": "VLO",
-   "price": 369.73,
-   "dollar_volume": 762620626.6600001
+   "symbol": "PEP",
+   "price": 142.02,
+   "dollar_volume": 1141859404.6200001
+  },
+  {
+   "symbol": "KO",
+   "price": 98.8,
+   "dollar_volume": 1136960760.0
+  },
+  {
+   "symbol": "SMCI",
+   "price": 24.14,
+   "dollar_volume": 1126462514.6200001
+  },
+  {
+   "symbol": "TJX",
+   "price": 129.87,
+   "dollar_volume": 1115836052.605
+  },
+  {
+   "symbol": "ADI",
+   "price": 383.07,
+   "dollar_volume": 1114202381.91
+  },
+  {
+   "symbol": "CBRS",
+   "price": 104.19,
+   "dollar_volume": 1108281636.99
+  },
+  {
+   "symbol": "GS",
+   "price": 877.28,
+   "dollar_volume": 1102882202.08
+  },
+  {
+   "symbol": "MPWR",
+   "price": 1317.37,
+   "dollar_volume": 1099848500.34
+  },
+  {
+   "symbol": "NXPI",
+   "price": 252.51,
+   "dollar_volume": 1025441089.92
+  },
+  {
+   "symbol": "DDOG",
+   "price": 165.18,
+   "dollar_volume": 1005402262.26
+  },
+  {
+   "symbol": "INTU",
+   "price": 320.79,
+   "dollar_volume": 1005246791.4000001
+  },
+  {
+   "symbol": "ISRG",
+   "price": 430.53,
+   "dollar_volume": 998265605.6999999
+  },
+  {
+   "symbol": "ARM",
+   "price": 183.24,
+   "dollar_volume": 996562833.84
+  },
+  {
+   "symbol": "GILD",
+   "price": 170.26,
+   "dollar_volume": 990719784.64
+  },
+  {
+   "symbol": "VRT",
+   "price": 190.19,
+   "dollar_volume": 983043588.755
+  },
+  {
+   "symbol": "CVS",
+   "price": 85.81,
+   "dollar_volume": 963581856.69
+  },
+  {
+   "symbol": "SNOW",
+   "price": 272.96,
+   "dollar_volume": 948737990.4
+  },
+  {
+   "symbol": "MCHP",
+   "price": 59.43,
+   "dollar_volume": 947077965.75
+  },
+  {
+   "symbol": "WCN",
+   "price": 181.43,
+   "dollar_volume": 934831682.25
+  },
+  {
+   "symbol": "ACN",
+   "price": 239.76,
+   "dollar_volume": 925866806.4
+  },
+  {
+   "symbol": "COIN",
+   "price": 115.06,
+   "dollar_volume": 895804078.235
+  },
+  {
+   "symbol": "ETN",
+   "price": 337.01,
+   "dollar_volume": 892013907.47
+  },
+  {
+   "symbol": "ANET",
+   "price": 186.42,
+   "dollar_volume": 885314172.5999999
+  },
+  {
+   "symbol": "SCHW",
+   "price": 91.83,
+   "dollar_volume": 873183737.34
+  },
+  {
+   "symbol": "IBM",
+   "price": 231.11,
+   "dollar_volume": 868022120.13
+  },
+  {
+   "symbol": "ADBE",
+   "price": 235.5,
+   "dollar_volume": 863521072.83
+  },
+  {
+   "symbol": "ALAB",
+   "price": 211.36,
+   "dollar_volume": 851150101.7600001
+  },
+  {
+   "symbol": "VIK",
+   "price": 94.29,
+   "dollar_volume": 839049276.87
+  },
+  {
+   "symbol": "GE",
+   "price": 326.36,
+   "dollar_volume": 838110429.8000001
+  },
+  {
+   "symbol": "MPC",
+   "price": 395.64,
+   "dollar_volume": 837692528.4
+  },
+  {
+   "symbol": "GLW",
+   "price": 108.49,
+   "dollar_volume": 832812744.49
+  },
+  {
+   "symbol": "BKNG",
+   "price": 154.46,
+   "dollar_volume": 802875974.84
+  },
+  {
+   "symbol": "COP",
+   "price": 139.46,
+   "dollar_volume": 782408812.0400001
+  },
+  {
+   "symbol": "BA",
+   "price": 163.87,
+   "dollar_volume": 782373389.98
+  },
+  {
+   "symbol": "MRK",
+   "price": 143.4,
+   "dollar_volume": 776561046.6
+  },
+  {
+   "symbol": "LOW",
+   "price": 220.47,
+   "dollar_volume": 772945552.53
+  },
+  {
+   "symbol": "MCD",
+   "price": 275.62,
+   "dollar_volume": 772157747.315
+  },
+  {
+   "symbol": "PM",
+   "price": 194.37,
+   "dollar_volume": 765459770.46
+  },
+  {
+   "symbol": "COF",
+   "price": 186.62,
+   "dollar_volume": 763392885.255
+  },
+  {
+   "symbol": "ED",
+   "price": 119.26,
+   "dollar_volume": 755644120.82
+  },
+  {
+   "symbol": "NET",
+   "price": 284.81,
+   "dollar_volume": 746912124.045
+  },
+  {
+   "symbol": "NEE",
+   "price": 84.5,
+   "dollar_volume": 746140492.5
+  },
+  {
+   "symbol": "TGT",
+   "price": 159.5,
+   "dollar_volume": 738876891.5
+  },
+  {
+   "symbol": "UNP",
+   "price": 297.11,
+   "dollar_volume": 738208122.19
+  },
+  {
+   "symbol": "BMY",
+   "price": 61.31,
+   "dollar_volume": 725465473.33
+  },
+  {
+   "symbol": "RKLB",
+   "price": 55.05,
+   "dollar_volume": 724875554.25
+  },
+  {
+   "symbol": "SOFI",
+   "price": 14.28,
+   "dollar_volume": 710715828.48
+  },
+  {
+   "symbol": "ARKK",
+   "price": 70.91,
+   "dollar_volume": 710609626.38
+  },
+  {
+   "symbol": "PFE",
+   "price": 28.46,
+   "dollar_volume": 706291649.24
+  },
+  {
+   "symbol": "DASH",
+   "price": 164.93,
+   "dollar_volume": 701828938.02
+  },
+  {
+   "symbol": "SBUX",
+   "price": 107.49,
+   "dollar_volume": 700366681.05
+  },
+  {
+   "symbol": "C",
+   "price": 119.95,
+   "dollar_volume": 694173800.35
+  },
+  {
+   "symbol": "ABBV",
+   "price": 292.59,
+   "dollar_volume": 688580428.2299999
+  },
+  {
+   "symbol": "FCX",
+   "price": 55.34,
+   "dollar_volume": 686870136.155
+  },
+  {
+   "symbol": "UPS",
+   "price": 110.32,
+   "dollar_volume": 677183102.9599999
+  },
+  {
+   "symbol": "VZ",
+   "price": 45.94,
+   "dollar_volume": 672196422.9399999
+  },
+  {
+   "symbol": "AAL",
+   "price": 12.93,
+   "dollar_volume": 671668020.6500001
+  },
+  {
+   "symbol": "SNPS",
+   "price": 435.51,
+   "dollar_volume": 669812202.4499999
+  },
+  {
+   "symbol": "SO",
+   "price": 93.61,
+   "dollar_volume": 667517651.57
+  },
+  {
+   "symbol": "NVO",
+   "price": 40.7,
+   "dollar_volume": 661866922.745
+  },
+  {
+   "symbol": "CEG",
+   "price": 268.08,
+   "dollar_volume": 660810229.92
+  },
+  {
+   "symbol": "REGN",
+   "price": 957.76,
+   "dollar_volume": 658973359.36
+  },
+  {
+   "symbol": "CRDO",
+   "price": 123.93,
+   "dollar_volume": 657114534.72
+  },
+  {
+   "symbol": "SHOP",
+   "price": 141.9,
+   "dollar_volume": 657059719.8000001
+  },
+  {
+   "symbol": "DHR",
+   "price": 225.62,
+   "dollar_volume": 655345328.04
+  },
+  {
+   "symbol": "TMUS",
+   "price": 167.9,
+   "dollar_volume": 653435738.5
+  },
+  {
+   "symbol": "HON",
+   "price": 218.96,
+   "dollar_volume": 652695455.44
+  },
+  {
+   "symbol": "TSCO",
+   "price": 38.49,
+   "dollar_volume": 650084206.59
+  },
+  {
+   "symbol": "WELL",
+   "price": 245.77,
+   "dollar_volume": 643204175.46
+  },
+  {
+   "symbol": "T",
+   "price": 22.31,
+   "dollar_volume": 639489801.89
+  },
+  {
+   "symbol": "NTRA",
+   "price": 287.47,
+   "dollar_volume": 637093026.2900001
+  },
+  {
+   "symbol": "TER",
+   "price": 234.18,
+   "dollar_volume": 621932433.84
   }
  ],
  "eligible": {}
