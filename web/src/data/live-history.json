@@ -21066,7 +21066,216 @@
     "signals": 0,
     "below_cost": 18781
    }
+  },
+  {
+   "id": "20261122T0708",
+   "recordedAt": "2026-11-22T07:08:19.925899982+00:00",
+   "minutes": 20.0,
+   "where": "GitHub Actions (US East)",
+   "quotes": 136199,
+   "markets": {
+    "binance": 30,
+    "bybit": 6,
+    "coinbase": 6,
+    "kraken": 6,
+    "okx": 6
+   },
+   "binanceMarkets": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "XRP",
+    "BNB",
+    "DOGE",
+    "ZEC",
+    "NEAR",
+    "HYPE",
+    "RWUSD",
+    "UNI",
+    "SUI",
+    "TRX",
+    "ENA",
+    "ADA",
+    "PEPE",
+    "TAO",
+    "LINK",
+    "XAUT",
+    "LTC",
+    "DODO",
+    "ASTER",
+    "MUB",
+    "WLD",
+    "PUMP",
+    "PAXG",
+    "AAVE",
+    "AVAX",
+    "INJ",
+    "RARE"
+   ],
+   "feedDelayMs": {
+    "coinbase": 7.1,
+    "kraken": 44.1,
+    "okx": 85.3,
+    "bybit": 81.0
+   },
+   "catchupMs": {
+    "coinbase": {
+     "median": 461,
+     "n": 31
+    },
+    "kraken": {
+     "median": 147,
+     "n": 36
+    },
+    "okx": {
+     "median": -13,
+     "n": 35
+    },
+    "bybit": {
+     "median": -4,
+     "n": 36
+    }
+   },
+   "gaps": {
+    "signals": 0,
+    "fills": 0,
+    "pnl": 0.0
+   },
+   "bot": [
+    {
+     "name": "leadlag",
+     "markets": 24,
+     "ready": 17,
+     "observations": 5404851,
+     "paper": {
+      "n": 0,
+      "pnl": 0.0,
+      "mean_bps": null,
+      "t": null,
+      "win_rate": null
+     },
+     "best": [
+      {
+       "venue": "coinbase",
+       "asset": "SOL",
+       "beta": 0.3985,
+       "t": 17.54,
+       "n": 4329,
+       "count": 153455,
+       "ready": true
+      },
+      {
+       "venue": "kraken",
+       "asset": "BTC",
+       "beta": 0.2893,
+       "t": 10.68,
+       "n": 4329,
+       "count": 319689,
+       "ready": true
+      },
+      {
+       "venue": "coinbase",
+       "asset": "ETH",
+       "beta": 0.3289,
+       "t": 10.17,
+       "n": 4329,
+       "count": 234753,
+       "ready": true
+      }
+     ]
+    },
+    {
+     "name": "imbalance",
+     "markets": 100,
+     "ready": 51,
+     "observations": 2283949,
+     "paper": {
+      "n": 0,
+      "pnl": 0.0,
+      "mean_bps": null,
+      "t": null,
+      "win_rate": null
+     },
+     "best": [
+      {
+       "venue": "binance",
+       "asset": "PEPE",
+       "beta": 0.5588,
+       "t": 22.25,
+       "n": 4329,
+       "count": 77736,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "DOT",
+       "beta": 0.3371,
+       "t": 18.23,
+       "n": 2951,
+       "count": 4954,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "ENA",
+       "beta": 0.5222,
+       "t": 16.72,
+       "n": 4329,
+       "count": 89458,
+       "ready": true
+      }
+     ]
+    },
+    {
+     "name": "reversion",
+     "markets": 100,
+     "ready": 31,
+     "observations": 649341,
+     "paper": {
+      "n": 0,
+      "pnl": 0.0,
+      "mean_bps": null,
+      "t": null,
+      "win_rate": null
+     },
+     "best": [
+      {
+       "venue": "binance",
+       "asset": "HUMA",
+       "beta": 0.1715,
+       "t": 10.14,
+       "n": 1553,
+       "count": 1923,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "CYBER",
+       "beta": 0.3224,
+       "t": 8.13,
+       "n": 663,
+       "count": 719,
+       "ready": true
+      },
+      {
+       "venue": "binance",
+       "asset": "RWUSD",
+       "beta": 0.2096,
+       "t": 8.08,
+       "n": 436,
+       "count": 460,
+       "ready": true
+      }
+     ]
+    }
+   ],
+   "botCounts": {
+    "observations": 72268,
+    "labels": 71715,
+    "signals": 0,
+    "below_cost": 23826
+   }
   }
  ],
- "updated": "2026-11-21T21:44:24.673099995+00:00"
+ "updated": "2026-11-22T07:08:19.925899982+00:00"
 }
